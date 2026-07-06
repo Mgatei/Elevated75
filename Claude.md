@@ -168,6 +168,8 @@ these rules on every session:
   file), commit the current version first so the previous state is recoverable.
 - If something looks like in-progress or uncommitted work when a session starts,
   investigate before touching it — don't assume it's safe to overwrite.
+- User is new to git. explain git concepts and terminology where possible
+
 
 ## 13. Tone / product context (for copy inside the app)
 
