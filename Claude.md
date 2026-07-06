@@ -171,7 +171,47 @@ these rules on every session:
 - User is new to git. explain git concepts and terminology where possible
 
 
-## 13. Tone / product context (for copy inside the app)
+## 13. Git concepts glossary (for anyone new to GitHub)
+
+Plain-language explanations of the terms that come up when working on this repo,
+written for someone who hasn't used git/GitHub before.
+
+- **Repository ("repo")**: the project's folder, plus its full history of changes.
+  This repo is `Mgatei/Elevated75` on GitHub.
+- **Commit**: a saved snapshot of changes, with a message describing what changed.
+  Commits are the "undo points" — you can always go back to any previous commit.
+- **Branch**: a parallel line of work. `main` is the primary branch — **it is also
+  the branch Netlify deploys to production from**, so anything merged into `main`
+  goes live. Feature branches (e.g. `claude/site-overview-aozxzh`) let changes be
+  made and reviewed without touching the live site until they're merged.
+- **`origin`**: the nickname for "the copy of this repo on GitHub" (the **remote**),
+  as opposed to the copy on a laptop or in this session (**local**).
+- **`git push`**: upload local commits to the remote (GitHub). This is what makes
+  local changes visible to others / deployable.
+- **`git pull` / `git fetch`**: download changes from the remote. `fetch` just
+  downloads and lets you inspect them first; `pull` downloads AND immediately
+  merges them into the current branch.
+- **Pull request (PR)**: a request to merge one branch's changes into another
+  (usually into `main`), with a space for review/comments before it happens.
+  Nothing in a PR affects the live site until the PR is **merged**.
+- **Merge**: combining the changes from one branch into another.
+- **`HEAD`**: shorthand for "the commit you currently have checked out" — i.e.
+  where you are right now in the history.
+- **Staging area**: where `git add` puts changes before `git commit` locks them
+  in. (Not something you usually need to think about — commits in this workflow
+  typically add and commit together.)
+- **Editing directly on GitHub's website** (the pencil icon on a file) creates a
+  commit straight onto whatever branch you're viewing — if that's `main`, it
+  goes to production the moment Netlify's next deploy picks it up, with **no PR,
+  no review step, and no local testing**. That's higher-risk than the normal
+  branch → PR → merge flow, and is how the "DayS" typo shipped straight to
+  `main` earlier. Prefer making changes on a branch (even a quick one) and
+  opening a PR, so there's a review step and a diff to check before it's live.
+- **Deploy**: Netlify's process of taking the latest code on the connected
+  branch (`main`) and publishing it to the live URL. A push to `main` triggers
+  one automatically; check Netlify's **Deploys** tab to see its status/history.
+
+## 14. Tone / product context (for copy inside the app)
 
 Users are a Christian married couple (Mahdi: Liberian heritage, R&B artist,
 pivoting to QA; Lashawn: content creator). Copy should be warm, faith-centered,
