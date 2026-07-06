@@ -146,7 +146,30 @@ somewhere: the main load migration, the cloud-listener migration, `cloudLoad()`,
 3. Update **all devices** (both phones + computer) to the same version.
 4. Photos are NOT in backups/cloud — they live per-device.
 
-## 12. Tone / product context (for copy inside the app)
+## 12. Git / version-control discipline (do NOT skip)
+
+Because this is a one-file app with no tests, git history is the safety net. Follow
+these rules on every session:
+
+- **Commit before any risky or large edit** (rewriting a big function, restructuring
+  sections, bulk find/replace across the file). A commit right before is a free
+  undo button — make one even if the user didn't ask.
+- **Small, frequent commits** with clear messages, not one giant commit at the end.
+  Each commit should be a working state (passes the §7 validation checks).
+- **Never use destructive git commands** (`git reset --hard`, `git checkout -- .`,
+  `git clean -f`, `git branch -D`, force-push) unless the user explicitly asks for
+  that specific action in that moment. Prior approval does not carry forward to
+  future destructive commands.
+- **Never delete data-bearing files** (avatars, backups, exported JSON) without
+  explicit confirmation — move them aside instead if unsure whether they're needed.
+- **Always work on a branch, never commit straight to `main`** unless the user says
+  otherwise. Push with `git push -u origin <branch-name>`.
+- **Before replacing `index.html` wholesale** (e.g. pasting in a fully regenerated
+  file), commit the current version first so the previous state is recoverable.
+- If something looks like in-progress or uncommitted work when a session starts,
+  investigate before touching it — don't assume it's safe to overwrite.
+
+## 13. Tone / product context (for copy inside the app)
 
 Users are a Christian married couple (Mahdi: Liberian heritage, R&B artist,
 pivoting to QA; Lashawn: content creator). Copy should be warm, faith-centered,
