@@ -3279,6 +3279,7 @@
                                 <button class="more-item" onclick="cloudSave(); closeMoreMenu();">☁️ Save to Cloud</button>
                                 <button class="more-item" onclick="cloudLoad(); closeMoreMenu();">☁️ Load from Cloud</button>
                                 <button class="more-item" onclick="enterSpectator(); closeMoreMenu();">👁 Spectate Both</button>
+                                <button class="more-item" id="teamModeMenuItem" onclick="toggleTeamMode(); closeMoreMenu();">🤝 Team Mode: Off</button>
                                 <button class="more-item" onclick="openCustomizeLayout(); closeMoreMenu();">⚙️ Customize Layout (reorder / hide sections)</button>
                                 <button class="more-item" onclick="setStartDate(); closeMoreMenu();">📅 Set Start Date (fix day count)</button>
                                 <button class="more-item" onclick="exportData(); closeMoreMenu();">⬇ Backup</button>
@@ -4843,10 +4844,34 @@
             if (e) e.stopPropagation();
             const menu = document.getElementById('moreMenu');
             if (menu) menu.style.display = (menu.style.display === 'none') ? 'block' : 'none';
+            updateTeamModeMenuLabel();
         }
         function closeMoreMenu() {
             const menu = document.getElementById('moreMenu');
             if (menu) menu.style.display = 'none';
+        }
+
+        function updateTeamModeMenuLabel() {
+            const btn = document.getElementById('teamModeMenuItem');
+            if (!btn || !currentUser || !data[currentUser]) return;
+            btn.textContent = data[currentUser].teamMode ? '🤝 Team Mode: ON (tap to turn off)' : '🤝 Team Mode: Off (tap to turn on)';
+        }
+
+        function toggleTeamMode() {
+            if (!currentUser || !data[currentUser]) return;
+            if (currentProfileType !== 'mahdi' && currentProfileType !== 'lashawn') {
+                alert('Team Mode links the Mahdi/Lashawn pair together — it isn\'t available on this account.');
+                return;
+            }
+            const next = !data[currentUser].teamMode;
+            if (next && !confirm('Turn on Team Mode?\n\nIf you or your partner miss two weeks under the 70% goal, or either of you taps "Reset Journey," BOTH of your journeys reset together — as a team.\n\nThis only takes effect once your partner also turns Team Mode on in their own account. You\'ll each get a chance to confirm before an actual reset happens.')) return;
+            data[currentUser].teamMode = next;
+            data[currentUser].lastModified = Date.now();
+            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+            cloudSaveSilent();
+            alert(next
+                ? '🤝 Team Mode is ON for your account. Once your partner turns it on too, your resets link together.'
+                : 'Team Mode turned off. Your resets are independent again.');
         }
         document.addEventListener('click', function(e) {
             const wrap = document.querySelector('.more-menu-wrap');
@@ -5196,24 +5221,31 @@
                 if (data[currentUser].weekFlags[k] === 'warned') priorWarnings++;
             });
 
+            const teamNote = data[currentUser].teamMode
+                ? '\n\n🤝 Team Mode is ON — this also resets your partner\'s journey once their device sees it.'
+                : '';
+
             if (priorWarnings === 0) {
                 // STAGE 1 — Warning
                 data[currentUser].weekFlags[lastCompleteWeek] = 'warned';
                 try { localStorage.setItem('75data', JSON.stringify(data)); } catch(e) {}
                 const comp = companionFor(currentUser);
-                alert('⚠️ Week ' + weekNum + ' came in at ' + pct + '% — below the 70% goal.\n\n' + comp.name + ': This is your warning, not your end. Lock back in this week. If another week falls below 70%, the journey resets to keep the standard real.\n\nYou\'ve got this — let\'s recommit.');
+                alert('⚠️ Week ' + weekNum + ' came in at ' + pct + '% — below the 70% goal.\n\n' + comp.name + ': This is your warning, not your end. Lock back in this week. If another week falls below 70%, the journey resets to keep the standard real.\n\nYou\'ve got this — let\'s recommit.' + teamNote);
             } else {
                 // STAGE 2 — Auto reset
                 data[currentUser].weekFlags[lastCompleteWeek] = 'reset';
                 try { localStorage.setItem('75data', JSON.stringify(data)); } catch(e) {}
                 const comp = companionFor(currentUser);
-                alert('🔄 Week ' + weekNum + ' also came in under 70% (' + pct + '%).\n\n' + comp.name + ': As agreed, the journey resets now — today becomes Day 1 again. Your progress is archived to Past Journeys. This isn\'t failure; it\'s the standard you set for yourself. Let\'s begin again, stronger.');
+                alert('🔄 Week ' + weekNum + ' also came in under 70% (' + pct + '%).\n\n' + comp.name + ': As agreed, the journey resets now — today becomes Day 1 again. Your progress is archived to Past Journeys. This isn\'t failure; it\'s the standard you set for yourself. Let\'s begin again, stronger.' + teamNote);
                 autoReset();
             }
         }
 
-        function autoReset() {
-            // Same as resetData but without the confirm prompt (already agreed via the rule)
+        // Shared archive-and-wipe used by every reset path: the manual "Reset Journey" button,
+        // the automatic weekly-accountability failure, and a Team Mode reset triggered by a
+        // partner's device. reason is 'manual' | 'weekly-accountability' | 'team'. Returns false
+        // (without touching anything) if localStorage is full, true otherwise.
+        function performReset(reason) {
             const today = new Date();
             const todayStr = formatDateKey(today);
             const u = data[currentUser];
@@ -5239,22 +5271,87 @@
                 }));
                 if (total > 0 && count/total >= 0.75) completedDays++;
             }
+            const reasonLabels = {
+                manual: 'Manual reset',
+                'weekly-accountability': 'Auto-reset (weekly goal missed twice)',
+                team: "Team reset (partner's journey reset)"
+            };
             archives.push({
                 archivedOn: todayStr, archivedReadable: readableDate, startDate: u.startDate,
                 reachedDay: currentDay, completedDays: completedDays, totalChecks: totalChecks,
                 days: u.days || {}, goals: u.goals || {}, photos: u.photos || {},
-                emotions: u.emotions || {}, checkins: u.checkins || {}, reason: 'Auto-reset (weekly goal missed twice)'
+                emotions: u.emotions || {}, checkins: u.checkins || {}, reason: reasonLabels[reason] || 'Reset'
             });
-            previousResets.push({ date: todayStr, readable: readableDate, reachedDay: currentDay, auto: true });
+            previousResets.push({ date: todayStr, readable: readableDate, reachedDay: currentDay, auto: reason !== 'manual' });
+
             const keepTheme = u.themeMode || 'auto';
+            const keepProfileType = u.profileType || 'default';
+            const keepTeamMode = !!u.teamMode;
+            const keepSeen = u.lastSeenPartnerResetAt || 0;
+
+            // Full wipe — fresh start. contentSeed is deliberately omitted so ensureUserKeys
+            // rerolls it below — a new journey gets a different rotation of verses/quotes/
+            // suggestions instead of replaying the same sequence from day 1 again.
             data[currentUser] = {
                 days: {}, goals: {}, photos: {}, startDate: todayStr,
-                resets: previousResets, archives: archives, themeMode: keepTheme,
+                resets: previousResets, archives: archives,
+                themeMode: keepTheme, profileType: keepProfileType, teamMode: keepTeamMode,
+                lastSeenPartnerResetAt: keepSeen,
                 emotions: {}, checkins: {}, weekFlags: {}
             };
-            try { localStorage.setItem('75data', JSON.stringify(data)); } catch(e) {}
+            ensureUserKeys(currentUser);
+            data[currentUser].lastModified = Date.now();
+            // Only an ORIGINATING reset (something you did, not one you're honoring because your
+            // partner reset) broadcasts a new team-reset event for a partner's device to notice.
+            if (keepTeamMode && reason !== 'team') {
+                data[currentUser].lastTeamResetAt = Date.now();
+                data[currentUser].lastTeamResetReason = reason;
+            }
+            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) { return false; }
+            // Push the reset up to the cloud right away so other devices (and a Team Mode
+            // partner) see it on their next sync, instead of only living in this localStorage.
+            cloudSaveSilent();
             viewingOffset = null;
             render();
+            return true;
+        }
+
+        function autoReset() {
+            // Same as resetData but without the confirm prompt (already agreed via the rule)
+            performReset('weekly-accountability');
+        }
+
+        // Team Mode (mutual opt-in, Mahdi/Lashawn pair only): after every cloud sync, check
+        // whether the partner's account just broadcast a reset event this account hasn't yet
+        // honored. If so, confirm with the user before resetting THIS account to match — one
+        // account can never write the other's data directly (by design), so this is how a
+        // reset actually "spreads" from one side to the other, one confirmed step at a time.
+        let teamResetPromptShown = false;
+        function checkTeamReset() {
+            if (!currentUser || !data[currentUser] || !data[currentUser].teamMode) return;
+            if (currentProfileType !== 'mahdi' && currentProfileType !== 'lashawn') return;
+            const partnerUid = (currentProfileType === 'mahdi') ? slotUid.lashawn : slotUid.mahdi;
+            if (!partnerUid || !data[partnerUid]) return;
+            const partner = data[partnerUid];
+            if (!partner.teamMode) return; // requires mutual opt-in
+            const partnerEventAt = partner.lastTeamResetAt || 0;
+            const alreadySeen = data[currentUser].lastSeenPartnerResetAt || 0;
+            if (partnerEventAt <= alreadySeen) return; // nothing new to honor
+            if (teamResetPromptShown) return; // don't stack prompts within a session
+            teamResetPromptShown = true;
+            const reasonText = (partner.lastTeamResetReason === 'weekly-accountability')
+                ? "Your partner's week fell short of the 70% goal."
+                : "Your partner started a new journey.";
+            const proceed = confirm('🤝 Team Mode\n\n' + reasonText + ' Since you both turned on Team Mode, you reset together — today becomes Day 1 for you too.\n\nYour current progress is archived to Past Journeys first. This can\'t be undone.\n\nReset now?');
+            teamResetPromptShown = false;
+            if (proceed) {
+                data[currentUser].lastSeenPartnerResetAt = partnerEventAt;
+                if (performReset('team')) {
+                    alert('🔄 Reset together. Fresh start, side by side. 💛');
+                }
+            }
+            // If declined, lastSeenPartnerResetAt is left untouched — it'll ask again on the
+            // next sync rather than letting the event quietly go unhandled.
         }
 
         function showCheckin() {
@@ -6866,6 +6963,7 @@
                             applyThemeMode();
                             render();
                         }
+                        checkTeamReset();
                         if (callback) callback();
                     }
                 }).catch(function(err) {
@@ -6902,6 +7000,13 @@
             // up first, so a fresh journey or a restart doesn't always replay the same sequence
             // from the top. Stable within a journey — only rerolled on Reset Journey.
             if (typeof data[u].contentSeed !== 'number') data[u].contentSeed = Math.floor(Math.random() * 100000);
+            // Team Mode (mutual opt-in, Mahdi/Lashawn pair only): when both accounts have it on,
+            // a reset by either one also resets the other. lastTeamResetAt/Reason is the event a
+            // partner's device watches for; lastSeenPartnerResetAt is this account's own dedup
+            // marker so it doesn't re-prompt for an event it already honored.
+            if (typeof data[u].teamMode !== 'boolean') data[u].teamMode = false;
+            if (typeof data[u].lastTeamResetAt !== 'number') data[u].lastTeamResetAt = 0;
+            if (typeof data[u].lastSeenPartnerResetAt !== 'number') data[u].lastSeenPartnerResetAt = 0;
         }
 
         // Picks a stable-but-randomized index into a day-rotating content array: same offset
@@ -8381,81 +8486,21 @@
         }
 
         function resetData() {
-            const currentDay = getTodayOffset() + 1;
             const today = new Date();
-            const todayStr = formatDateKey(today);
             const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const readableDate = monthNames[today.getMonth()] + ' ' + today.getDate() + ', ' + today.getFullYear();
             const endD = new Date(today);
             endD.setDate(endD.getDate() + 74);
             const endStr = monthNames[endD.getMonth()] + ' ' + endD.getDate() + ', ' + endD.getFullYear();
+            const teamNote = (data[currentUser] && data[currentUser].teamMode)
+                ? '\n\n🤝 Team Mode is ON — once your partner\'s device sees this, their journey resets too.'
+                : '';
 
-            if (confirm('Start a brand-new journey?\n\nToday (' + readableDate + ') becomes Day 1, running through ' + endStr + '.\n\nThis FULLY clears your current journey — checkmarks, goals, photos, emotions, and check-ins all wiped clean.\n\nDon\'t worry: your current journey is saved to "Past Journeys" so you can always look back. This cannot be undone.')) {
-                const u = data[currentUser];
-                const previousResets = u.resets || [];
-                const archives = u.archives || [];
-
-                // Count stats from the journey being archived
-                let completedDays = 0, totalChecks = 0;
-                const startStr = u.startDate || todayStr;
-                const sp = startStr.split('-');
-                const archStart = new Date(parseInt(sp[0],10), parseInt(sp[1],10)-1, parseInt(sp[2],10));
-                for (let i = 0; i < 75; i++) {
-                    const dd = new Date(archStart); dd.setDate(dd.getDate() + i);
-                    const dk = formatDateKey(dd);
-                    const day = u.days[dk];
-                    if (!day) continue;
-                    let count = 0, total = 0;
-                    pillarsFor(currentUser).forEach(p => p.items.forEach(item => {
-                        total++;
-                        if (day[p.name + '-' + item]) { count++; totalChecks++; }
-                    }));
-                    if (total > 0 && count/total >= 0.75) completedDays++;
+            if (confirm('Start a brand-new journey?\n\nToday (' + readableDate + ') becomes Day 1, running through ' + endStr + '.\n\nThis FULLY clears your current journey — checkmarks, goals, photos, emotions, and check-ins all wiped clean.\n\nDon\'t worry: your current journey is saved to "Past Journeys" so you can always look back. This cannot be undone.' + teamNote)) {
+                if (!performReset('manual')) {
+                    alert('Storage is full — your old photos may be too large to archive. Back up first, then try again.');
+                    return;
                 }
-
-                // Archive the full journey snapshot
-                archives.push({
-                    archivedOn: todayStr,
-                    archivedReadable: readableDate,
-                    startDate: u.startDate,
-                    reachedDay: currentDay,
-                    completedDays: completedDays,
-                    totalChecks: totalChecks,
-                    days: u.days || {},
-                    goals: u.goals || {},
-                    photos: u.photos || {},
-                    emotions: u.emotions || {},
-                    checkins: u.checkins || {}
-                });
-
-                previousResets.push({ date: todayStr, readable: readableDate, reachedDay: currentDay });
-                const keepTheme = u.themeMode || 'auto';
-                const keepProfileType = u.profileType || 'default';
-
-                // Full wipe — fresh start. contentSeed is deliberately omitted so ensureUserKeys
-                // rerolls it below — a new journey gets a fresh, different rotation of verses/
-                // quotes/suggestions instead of replaying the same sequence from day 1 again.
-                data[currentUser] = {
-                    days: {},
-                    goals: {},
-                    photos: {},
-                    startDate: todayStr,
-                    resets: previousResets,
-                    archives: archives,
-                    themeMode: keepTheme,
-                    profileType: keepProfileType,
-                    emotions: {},
-                    checkins: {}
-                };
-                ensureUserKeys(currentUser);
-                data[currentUser].lastModified = Date.now();
-                try { localStorage.setItem('75data', JSON.stringify(data)); }
-                catch (e) { alert('Storage is full — your old photos may be too large to archive. Back up first, then try again.'); return; }
-                // Push the reset up to the cloud right away so other devices see it on their
-                // next sync/load, instead of only living in this browser's localStorage.
-                cloudSaveSilent();
-                viewingOffset = null;
-                render();
                 alert('Fresh start! Today is Day 1 of your new 75-day journey.\n\nYour previous journey is saved under Progress → Past Journeys. Let\'s go. 🔥');
             }
         }
