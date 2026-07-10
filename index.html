@@ -4477,6 +4477,11 @@
                 ["Long walk with a podcast or worship", "Jog intervals at your own pace", "Cool down with gentle stretches"],
                 ["Hike somewhere new for inspiration", "Cycling for lower-body strength", "Hydrate and protect your skin in the sun"],
                 ["Walk-and-talk with a friend or Mahdi", "Light jog plus bodyweight squats", "End with gratitude for your body"]
+            ],
+            default: [
+                ["Brisk walk or light jog outdoors", "Explore a local trail or park", "Move at a pace that feels good"],
+                ["Bike ride or a walk somewhere new", "Stretch and breathe to close out", "Notice something beautiful along the way"],
+                ["Outdoor bodyweight circuit at a park", "Jog-walk intervals", "Finish with deep breathing in the sun"]
             ]
         };
 
@@ -4499,6 +4504,11 @@
                 ["Dance or Zumba-style cardio", "Resistance band full-body", "Celebrate showing up today"],
                 ["Strength circuit — build muscle, not just burn", "Pilates or mat work", "Slow, controlled movements"],
                 ["Boxing or HIIT intervals", "Glute bridges and lower-body sculpt", "Cool down with deep breaths"]
+            ],
+            default: [
+                ["Bodyweight circuit: squats, push-ups, planks", "Resistance band strength session", "Slow, controlled reps — quality over quantity"],
+                ["Dumbbell or bodyweight full-body strength", "Core finisher: planks and holds", "Stretch and breathe to finish"],
+                ["Cardio intervals — your choice of style", "Mobility and stretch work", "Celebrate showing up today"]
             ]
         };
 
@@ -5254,7 +5264,7 @@
             document.getElementById('checkinName').textContent = comp.name;
             const name = displayNameFor(currentProfileType);
             document.getElementById('checkinGreeting').textContent = 'Hey ' + name + ", it's " + comp.name + ', ' + comp.role + '.';
-            document.getElementById('checkinPrompt').textContent = CHECKIN_PROMPTS[todayOffset % CHECKIN_PROMPTS.length];
+            document.getElementById('checkinPrompt').textContent = CHECKIN_PROMPTS[seededIndex(todayOffset, CHECKIN_PROMPTS.length)];
             document.getElementById('checkinInput').value = '';
             // Ensure full check-in mode (input + submit visible, back hidden)
             document.getElementById('checkinInput').style.display = 'block';
@@ -5791,7 +5801,7 @@
             const greetEl = document.getElementById('greetingBox');
             if (greetEl) {
                 const name = displayNameFor(currentProfileType);
-                const greeting = GREETINGS[activeOffset % GREETINGS.length].replace('{name}', name);
+                const greeting = GREETINGS[seededIndex(activeOffset, GREETINGS.length)].replace('{name}', name);
                 const dateKey = getDateKey(activeOffset);
                 const savedEmotion = (data[currentUser].emotions && data[currentUser].emotions[dateKey]) ? data[currentUser].emotions[dateKey].emotion : null;
                 const savedCheckin = (data[currentUser].checkins && data[currentUser].checkins[dateKey]) ? data[currentUser].checkins[dateKey] : null;
@@ -5816,7 +5826,7 @@
             }
 
             // Verse of the day
-            const verse = VERSES[activeOffset % VERSES.length];
+            const verse = VERSES[seededIndex(activeOffset, VERSES.length)];
             document.getElementById('verseOfDay').innerHTML =
                 '<div class="verse-label">✝ Verse of the Day (CSB)</div>' +
                 '<div class="verse-text">"' + verse.t + '"</div>' +
@@ -5825,7 +5835,7 @@
             // Wisdom quote of the day (both users, different collections)
             const quoteEl = document.getElementById('quoteOfDay');
             const quoteSet = (currentProfileType === 'mahdi') ? WISDOM_QUOTES : WISDOM_QUOTES_HER;
-            const q = quoteSet[activeOffset % quoteSet.length];
+            const q = quoteSet[seededIndex(activeOffset, quoteSet.length)];
             quoteEl.style.display = 'block';
             quoteEl.innerHTML =
                 '<div class="verse-label">' + (currentProfileType === 'mahdi' ? '✊🏾' : '👑') + ' Wisdom of the Day</div>' +
@@ -5839,7 +5849,7 @@
                 data[currentUser].goals = {};
             }
 
-            const prayerFocus = PRAYER_FOCUS[activeOffset % PRAYER_FOCUS.length];
+            const prayerFocus = PRAYER_FOCUS[seededIndex(activeOffset, PRAYER_FOCUS.length)];
 
             // Sections are always open now (hybrid layout) — no collapse state to initialize.
             pillarsInitialized = true;
@@ -5909,8 +5919,10 @@
 
                     // Physical Activity — merged indoor + outdoor, progress photo optional camera button
                     if (item === 'Physical Activity') {
-                        const indoorSet = INDOOR_WORKOUTS[currentUser][activeOffset % INDOOR_WORKOUTS[currentUser].length];
-                        const outdoorSet = OUTDOOR_WORKOUTS[currentUser][activeOffset % OUTDOOR_WORKOUTS[currentUser].length];
+                        const indoorList = INDOOR_WORKOUTS[currentProfileType] || INDOOR_WORKOUTS.default;
+                        const outdoorList = OUTDOOR_WORKOUTS[currentProfileType] || OUTDOOR_WORKOUTS.default;
+                        const indoorSet = indoorList[seededIndex(activeOffset, indoorList.length)];
+                        const outdoorSet = outdoorList[seededIndex(activeOffset, outdoorList.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>Indoor movement ideas (aim for 45+ mins):</strong><br>';
                         indoorSet.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -5931,8 +5943,8 @@
 
                     // Faith and Mind — Bible (15-30 min) + Book reading (10-15 pages) merged
                     if (item === 'Faith and Mind') {
-                        const bibleSet = BIBLE_TIPS[activeOffset % BIBLE_TIPS.length];
-                        const readingSet = READING_TIPS[activeOffset % READING_TIPS.length];
+                        const bibleSet = BIBLE_TIPS[seededIndex(activeOffset, BIBLE_TIPS.length)];
+                        const readingSet = READING_TIPS[seededIndex(activeOffset, READING_TIPS.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>📖 Bible (goal: 15–30 min):</strong><br>';
                         bibleSet.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -5958,7 +5970,7 @@
                             html += '<em>The right church feeds your spirit and roots you in community. Keep seeking until it fits.</em>';
                             html += '</div>';
                         } else {
-                            const set = FAITH_FEED[activeOffset % FAITH_FEED.length];
+                            const set = FAITH_FEED[seededIndex(activeOffset, FAITH_FEED.length)];
                             html += '<div class="peace-hint">';
                             html += '<strong>Faith feed today (sermon, worship, or devotional):</strong><br>';
                             set.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -5980,8 +5992,8 @@
                     if (item === 'Love and Connection') {
                         const idx = ((spouseTipIndex !== null ? spouseTipIndex : activeOffset) % SPOUSE_TIPS.length + SPOUSE_TIPS.length) % SPOUSE_TIPS.length;
                         const spouseTip = SPOUSE_TIPS[idx];
-                        const familySet = FAMILY_TIPS[activeOffset % FAMILY_TIPS.length];
-                        const peaceSet = PEACE_TIPS[activeOffset % PEACE_TIPS.length];
+                        const familySet = FAMILY_TIPS[seededIndex(activeOffset, FAMILY_TIPS.length)];
+                        const peaceSet = PEACE_TIPS[seededIndex(activeOffset, PEACE_TIPS.length)];
                         const spouseName = currentProfileType === 'mahdi' ? 'Lashawn' : 'Mahdi';
                         html += '<div class="peace-hint">';
                         html += '<strong>💑 With ' + spouseName + ' today:</strong><br>';
@@ -6005,7 +6017,7 @@
                     }
 
                     if (item === 'Time with Mahdi') {
-                        const tip = SPOUSE_TIPS_HER[activeOffset % SPOUSE_TIPS_HER.length];
+                        const tip = SPOUSE_TIPS_HER[seededIndex(activeOffset, SPOUSE_TIPS_HER.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>Building love & support with Mahdi today:</strong><br>';
                         html += tip + '<br>';
@@ -6015,7 +6027,7 @@
 
                     // Content creation guide (Lashawn only)
                     if (item === 'Content') {
-                        const tip = CONTENT_TIPS[activeOffset % CONTENT_TIPS.length];
+                        const tip = CONTENT_TIPS[seededIndex(activeOffset, CONTENT_TIPS.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>Content inspiration for today:</strong><br>';
                         html += tip + '<br>';
@@ -6025,7 +6037,7 @@
 
                     // Engagement guide (Lashawn) — practical social media engagement, 3 ideas/day
                     if (item === 'Engagement') {
-                        const set = ENGAGEMENT_TIPS[activeOffset % ENGAGEMENT_TIPS.length];
+                        const set = ENGAGEMENT_TIPS[seededIndex(activeOffset, ENGAGEMENT_TIPS.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>Engagement ideas for today — pick one or more:</strong><br>';
                         set.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -6035,7 +6047,7 @@
 
                     // Music Work guidance (Mahdi)
                     if (item === 'Music Work') {
-                        const set = MUSIC_TIPS[activeOffset % MUSIC_TIPS.length];
+                        const set = MUSIC_TIPS[seededIndex(activeOffset, MUSIC_TIPS.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>Music focus for today — pick one:</strong><br>';
                         set.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -6045,7 +6057,7 @@
 
                     // Clothing Brand Work guidance (Mahdi)
                     if (item === 'Brand Work') {
-                        const set = CLOTHING_TIPS[activeOffset % CLOTHING_TIPS.length];
+                        const set = CLOTHING_TIPS[seededIndex(activeOffset, CLOTHING_TIPS.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>Brand focus for today — pick one:</strong><br>';
                         set.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -6055,7 +6067,7 @@
 
                     // Wellness guides (Lashawn)
                     if (item === 'Me Time') {
-                        const set = METIME_TIPS[activeOffset % METIME_TIPS.length];
+                        const set = METIME_TIPS[seededIndex(activeOffset, METIME_TIPS.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>Ideas for your me time today — pick one:</strong><br>';
                         set.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -6063,7 +6075,7 @@
                         html += '</div>';
                     }
                     if (item === 'Self-Care' && currentProfileType === 'lashawn') {
-                        const set = SELFCARE_HER[activeOffset % SELFCARE_HER.length];
+                        const set = SELFCARE_HER[seededIndex(activeOffset, SELFCARE_HER.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>Self-care ideas for today — pick one:</strong><br>';
                         set.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -6071,7 +6083,7 @@
                         html += '</div>';
                     }
                     if (item === 'Boundaries' && currentProfileType === 'lashawn') {
-                        const set = BOUNDARIES_HER[activeOffset % BOUNDARIES_HER.length];
+                        const set = BOUNDARIES_HER[seededIndex(activeOffset, BOUNDARIES_HER.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>Boundary ideas for today — pick one:</strong><br>';
                         set.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -6079,7 +6091,7 @@
                         html += '</div>';
                     }
                     if (item === 'Inner Beauty') {
-                        const set = INNERBEAUTY_TIPS[activeOffset % INNERBEAUTY_TIPS.length];
+                        const set = INNERBEAUTY_TIPS[seededIndex(activeOffset, INNERBEAUTY_TIPS.length)];
                         html += '<div class="peace-hint">';
                         html += '<strong>Inner beauty ideas for today — pick one:</strong><br>';
                         set.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -6090,14 +6102,14 @@
                     // Job search (Mahdi) / Career growth (Lashawn) strategy — rotating, per user.
                     if (item === 'Job Apps' || item === 'Career Growth') {
                         if (currentProfileType === 'mahdi') {
-                            const set = JOB_TIPS_MAHDI[activeOffset % JOB_TIPS_MAHDI.length];
+                            const set = JOB_TIPS_MAHDI[seededIndex(activeOffset, JOB_TIPS_MAHDI.length)];
                             html += '<div class="peace-hint">';
                             html += '<strong>Job search strategy today (goal: 10–15 apps):</strong><br>';
                             set.forEach(function(line) { html += '• ' + line + '<br>'; });
                             html += '<em>Consistency compounds. Every application is a rep — keep swinging.</em>';
                             html += '</div>';
                         } else {
-                            const set = JOB_TIPS_LASHAWN[activeOffset % JOB_TIPS_LASHAWN.length];
+                            const set = JOB_TIPS_LASHAWN[seededIndex(activeOffset, JOB_TIPS_LASHAWN.length)];
                             html += '<div class="peace-hint">';
                             html += '<strong>Growing in your career today:</strong><br>';
                             set.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -6108,7 +6120,7 @@
 
                     // Diet / Nutrition guide (rotating) — for both Diet (Mahdi) and Nutrition (Lashawn)
                     if (item === 'Healthy Choices') {
-                        const set = DIET_TIPS[activeOffset % DIET_TIPS.length];
+                        const set = DIET_TIPS[seededIndex(activeOffset, DIET_TIPS.length)];
                         html += '<div class="nourish-hc-guide">';
                         html += '<strong>Caring for yourself today:</strong><br>';
                         set.forEach(function(line) { html += '• ' + line + '<br>'; });
@@ -6868,6 +6880,17 @@
             if (!data[u].layout) data[u].layout = { order: [], hidden: [] };
             if (!data[u].sectionLocks) data[u].sectionLocks = {};
             if (!data[u].profileType) data[u].profileType = 'default';
+            // Randomizes which day of content (verse, quotes, activity suggestions, etc.) shows
+            // up first, so a fresh journey or a restart doesn't always replay the same sequence
+            // from the top. Stable within a journey — only rerolled on Reset Journey.
+            if (typeof data[u].contentSeed !== 'number') data[u].contentSeed = Math.floor(Math.random() * 100000);
+        }
+
+        // Picks a stable-but-randomized index into a day-rotating content array: same offset
+        // shows the same item all day, but the starting point differs per account/journey.
+        function seededIndex(offset, len) {
+            const seed = (data[currentUser] && typeof data[currentUser].contentSeed === 'number') ? data[currentUser].contentSeed : 0;
+            return ((offset + seed) % len + len) % len;
         }
 
         // Push every account currently held in `data` up to the cloud (used after restoring a
@@ -8389,8 +8412,11 @@
 
                 previousResets.push({ date: todayStr, readable: readableDate, reachedDay: currentDay });
                 const keepTheme = u.themeMode || 'auto';
+                const keepProfileType = u.profileType || 'default';
 
-                // Full wipe — fresh start
+                // Full wipe — fresh start. contentSeed is deliberately omitted so ensureUserKeys
+                // rerolls it below — a new journey gets a fresh, different rotation of verses/
+                // quotes/suggestions instead of replaying the same sequence from day 1 again.
                 data[currentUser] = {
                     days: {},
                     goals: {},
@@ -8399,11 +8425,17 @@
                     resets: previousResets,
                     archives: archives,
                     themeMode: keepTheme,
+                    profileType: keepProfileType,
                     emotions: {},
                     checkins: {}
                 };
+                ensureUserKeys(currentUser);
+                data[currentUser].lastModified = Date.now();
                 try { localStorage.setItem('75data', JSON.stringify(data)); }
                 catch (e) { alert('Storage is full — your old photos may be too large to archive. Back up first, then try again.'); return; }
+                // Push the reset up to the cloud right away so other devices see it on their
+                // next sync/load, instead of only living in this browser's localStorage.
+                cloudSaveSilent();
                 viewingOffset = null;
                 render();
                 alert('Fresh start! Today is Day 1 of your new 75-day journey.\n\nYour previous journey is saved under Progress → Past Journeys. Let\'s go. 🔥');
