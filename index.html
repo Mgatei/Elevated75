@@ -253,6 +253,36 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
+        .auth-password-wrap {
+            position: relative;
+            display: flex;
+        }
+
+        .auth-password-wrap .auth-input {
+            flex: 1;
+            padding-right: 42px;
+            min-width: 0;
+        }
+
+        .auth-eye-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            padding: 6px;
+            color: inherit;
+            opacity: 0.75;
+        }
+
+        .auth-eye-btn:hover {
+            opacity: 1;
+        }
+
         .auth-error {
             color: #ff8a8a;
             font-size: 12px;
@@ -3210,7 +3240,10 @@
             </div>
             <form class="auth-form" onsubmit="event.preventDefault(); submitAuthForm();">
                 <input type="email" id="authEmail" class="auth-input" placeholder="Email" autocomplete="username" required>
-                <input type="password" id="authPassword" class="auth-input" placeholder="Password" autocomplete="current-password" required>
+                <div class="auth-password-wrap">
+                    <input type="password" id="authPassword" class="auth-input" placeholder="Password" autocomplete="current-password" required>
+                    <button type="button" class="auth-eye-btn" id="authEyeBtn" onclick="toggleAuthPasswordVisibility()" aria-label="Show password">👁</button>
+                </div>
                 <div class="auth-profile-picker" id="authProfilePicker" style="display:none;">
                     <div class="auth-profile-label">Whose journey is this?</div>
                     <label class="auth-profile-option"><input type="radio" name="authProfileType" value="mahdi"> Mahdi's journey</label>
@@ -4890,6 +4923,16 @@
             } else if (btn.dataset.label) {
                 btn.textContent = btn.dataset.label;
             }
+        }
+
+        function toggleAuthPasswordVisibility() {
+            const input = document.getElementById('authPassword');
+            const btn = document.getElementById('authEyeBtn');
+            if (!input || !btn) return;
+            const showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            btn.textContent = showing ? '👁' : '🙈';
+            btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
         }
 
         // Turns Firebase's error codes into plain-language messages next to the form.
@@ -8375,11 +8418,16 @@
                 }
                 fbDB = firebase.firestore();
                 fbReady = true;
-                // Firebase persists the signed-in session on its own (survives refresh, and lets
-                // a device stay logged in). This listener is our single source of truth for
-                // which screen to show — the auth gate, or (once signed in) straight into that
-                // account's own journey. authHandledUid guards against re-processing a uid that
-                // an explicit sign-in/sign-up submit has already routed into the app.
+                // Explicitly keep the signed-in session on this device across refreshes/restarts
+                // (Firebase's default, but set explicitly so it can never end up on the
+                // tab-only/no-persistence setting some browser privacy modes fall back to).
+                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(e) {
+                    console.warn('Could not set auth persistence:', e);
+                });
+                // This listener is our single source of truth for which screen to show — the
+                // auth gate, or (once signed in) straight into that account's own journey.
+                // authHandledUid guards against re-processing a uid that an explicit sign-in/
+                // sign-up submit has already routed into the app.
                 if (!authListenerAttached) {
                     authListenerAttached = true;
                     firebase.auth().onAuthStateChanged(function(user) {
