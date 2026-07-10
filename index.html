@@ -6792,6 +6792,24 @@
             }, 2500);
         }
 
+        // There is no live/real-time listener (intentionally — it used to cause disruptive
+        // re-renders mid-typing). Instead, whenever you come back to this tab/app (unlock your
+        // phone, alt-tab back, reopen it), pull the latest from the cloud automatically so you
+        // don't have to remember to tap "Load from Cloud". Debounced so rapid focus flicker
+        // doesn't spam Firestore reads.
+        let lastAutoPullAt = 0;
+        function pullOnReturnToApp() {
+            if (!currentUser || !fbReady) return;
+            const now = Date.now();
+            if (now - lastAutoPullAt < 5000) return;
+            lastAutoPullAt = now;
+            cloudSyncAll();
+        }
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') pullOnReturnToApp();
+        });
+        window.addEventListener('focus', pullOnReturnToApp);
+
         // Pull BOTH users' latest data down from the cloud, so every device (and the
         // spectator view / other account) shows up-to-date progress for both people.
         // Preserves each device's local photos (those aren't cloud-synced). Does NOT
