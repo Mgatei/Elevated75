@@ -4633,7 +4633,7 @@
         // Any new sections not yet in the saved order are appended at the end (never lost).
         function getOrderedPillars(u) {
             u = u || currentUser;
-            const base = pillars[u] || [];
+            const base = pillarsFor(u);
             const pref = getLayoutPref(u);
             const byName = {};
             base.forEach(function(p) { byName[p.name] = p; });
