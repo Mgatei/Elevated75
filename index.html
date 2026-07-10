@@ -209,6 +209,140 @@
             color: #ffffff;
         }
 
+        .auth-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .auth-tab {
+            padding: 10px 22px;
+            border: 1px solid #d4af37;
+            background: transparent;
+            color: #888;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            background: #d4af37;
+            color: #5a1f1f;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .auth-input {
+            padding: 14px 16px;
+            border: 2px solid #d4af37;
+            background: transparent;
+            color: #fff;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .auth-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .auth-password-wrap {
+            position: relative;
+            display: flex;
+        }
+
+        .auth-password-wrap .auth-input {
+            flex: 1;
+            padding-right: 42px;
+            min-width: 0;
+        }
+
+        .auth-eye-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            padding: 6px;
+            color: inherit;
+            opacity: 0.75;
+        }
+
+        .auth-eye-btn:hover {
+            opacity: 1;
+        }
+
+        .auth-error {
+            color: #ff8a8a;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .auth-profile-picker {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            padding: 12px 14px;
+        }
+
+        .auth-profile-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .auth-profile-option {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        body.login-light .auth-profile-picker {
+            border-color: #b8954a;
+        }
+
+        body.login-light .auth-profile-label {
+            color: #8a6d3b;
+        }
+
+        body.login-light .auth-input {
+            color: #4a3820;
+            border-color: #b8954a;
+        }
+
+        body.login-light .auth-input::placeholder {
+            color: rgba(74, 56, 32, 0.5);
+        }
+
+        body.login-light .auth-tab {
+            color: #8a6d3b;
+            border-color: #b8954a;
+        }
+
+        body.login-light .auth-tab.active {
+            background: #b8954a;
+            color: #ffffff;
+        }
+
         .header {
             border-top: 2px solid #d4af37;
             border-bottom: 1px solid #8b5a5a;
@@ -3071,6 +3205,7 @@
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script>
         // Firebase config for cloud save/load (Elevated tracker)
         const firebaseConfig = {
@@ -3095,16 +3230,30 @@
     </script>
 </head>
 <body>
-    <div id="loginScreen" class="login-screen">
+    <div id="authScreen" class="login-screen">
         <div class="login-content">
             <div class="login-title">Elevated</div>
             <div class="login-subtitle">75 Days of Transformation</div>
-            <div class="login-buttons">
-                <button class="login-btn" onclick="login('mahdi')">Mahdi's Journey</button>
-                <button class="login-btn" onclick="login('lashawn')">Lashawn's Journey</button>
-                <button class="login-btn login-spectate" onclick="enterSpectator()">👁 Spectate Both</button>
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab active" id="authTabLogin" onclick="setAuthMode('login')">Log In</button>
+                <button type="button" class="auth-tab" id="authTabSignup" onclick="setAuthMode('signup')">Sign Up</button>
             </div>
-            <button class="login-theme-btn" id="loginThemeBtn" onclick="toggleLoginTheme()">🌙 Dark</button>
+            <form class="auth-form" onsubmit="event.preventDefault(); submitAuthForm();">
+                <input type="email" id="authEmail" class="auth-input" placeholder="Email" autocomplete="username" required>
+                <div class="auth-password-wrap">
+                    <input type="password" id="authPassword" class="auth-input" placeholder="Password" autocomplete="current-password" required>
+                    <button type="button" class="auth-eye-btn" id="authEyeBtn" onclick="toggleAuthPasswordVisibility()" aria-label="Show password">👁</button>
+                </div>
+                <div class="auth-profile-picker" id="authProfilePicker" style="display:none;">
+                    <div class="auth-profile-label">Whose journey is this?</div>
+                    <label class="auth-profile-option"><input type="radio" name="authProfileType" value="mahdi"> Mahdi's journey</label>
+                    <label class="auth-profile-option"><input type="radio" name="authProfileType" value="lashawn"> Lashawn's journey</label>
+                    <label class="auth-profile-option"><input type="radio" name="authProfileType" value="default" checked> Just me — start fresh</label>
+                </div>
+                <div id="authError" class="auth-error" style="display:none;"></div>
+                <button type="submit" class="login-btn" id="authSubmitBtn">Log In</button>
+            </form>
+            <button class="login-theme-btn" onclick="toggleLoginTheme()">🌙 Dark</button>
         </div>
     </div>
 
@@ -3123,17 +3272,19 @@
                     </div>
                     <div class="header-buttons">
                         <button class="btn-small" id="themeBtn" onclick="toggleTheme()">🌗 Auto</button>
-                        <button class="btn-small" onclick="switchUser()">Switch</button>
+                        <button class="btn-small" onclick="logOut()">🚪 Log Out</button>
                         <div class="more-menu-wrap">
                             <button class="btn-small" onclick="toggleMoreMenu(event)">⚙ More</button>
                             <div id="moreMenu" class="more-menu" style="display:none;">
                                 <button class="more-item" onclick="cloudSave(); closeMoreMenu();">☁️ Save to Cloud</button>
                                 <button class="more-item" onclick="cloudLoad(); closeMoreMenu();">☁️ Load from Cloud</button>
+                                <button class="more-item" onclick="enterSpectator(); closeMoreMenu();">👁 Spectate Both</button>
                                 <button class="more-item" onclick="openCustomizeLayout(); closeMoreMenu();">⚙️ Customize Layout (reorder / hide sections)</button>
                                 <button class="more-item" onclick="setStartDate(); closeMoreMenu();">📅 Set Start Date (fix day count)</button>
                                 <button class="more-item" onclick="exportData(); closeMoreMenu();">⬇ Backup</button>
                                 <button class="more-item" onclick="document.getElementById('importFile').click(); closeMoreMenu();">⬆ Restore</button>
                                 <button class="more-item more-item-danger" onclick="resetData(); closeMoreMenu();">↺ Reset Journey</button>
+                                <button class="more-item" onclick="logOut(); closeMoreMenu();">🚪 Log Out</button>
                             </div>
                         </div>
                         <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importData(event)">
@@ -3334,7 +3485,15 @@
 
     <script>
         const START_DATE = new Date(2026, 5, 26);
+        // currentUser is the signed-in Firebase Auth UID — the real, private data key.
+        // currentProfileType is the display/layout style ('mahdi' | 'lashawn' | 'default') claimed
+        // at sign-up; it drives pillars/theme/copy exactly like the old literal 'mahdi'/'lashawn'
+        // did, but is now decoupled from data storage so each account's data stays private to it.
         let currentUser = null;
+        let currentProfileType = 'default';
+        // Which real UID (if any) currently owns the 'mahdi' / 'lashawn' style slots — resolved
+        // from Firestore so Together/Spectate can find the other partner's data by UID.
+        let slotUid = { mahdi: null, lashawn: null };
         let viewingOffset = null; // null = today; otherwise specific day offset
         let editingDay = false; // when viewing a past day, must opt-in to edit
         let collapsedPillars = {}; // pillarName -> true if collapsed
@@ -3345,7 +3504,7 @@
         // Per-user color themes. Mahdi: blood red / regal green. Lashawn: aubergine / dusty rose.
         function getThemeColors() {
             const isLight = document.body.classList.contains('light-mode');
-            if (currentUser === 'lashawn') {
+            if (currentProfileType === 'lashawn') {
                 return isLight ? '#7d5260' : '#2e1a2e'; // dusty rose-mauve / deep plum
             }
             return isLight ? '#1b4d2f' : '#5a1f1f'; // regal green / blood red
@@ -3364,12 +3523,21 @@
         // Daily companions — a guide who walks the journey with you
         const COMPANIONS = {
             mahdi: { name: 'Eli', emoji: '👨🏿‍🦱', role: 'your brother on this journey' },
-            lashawn: { name: 'Nia', emoji: '👩🏿', role: 'your sister on this journey' }
+            lashawn: { name: 'Nia', emoji: '👩🏿', role: 'your sister on this journey' },
+            default: { name: 'Sage', emoji: '🌿', role: 'your companion on this journey' }
         };
 
         // Simple drawn cartoon-style face avatars for each companion (replaces the emoji look)
         function companionAvatarSVG(user, size) {
             size = size || 40;
+            if (user !== 'mahdi' && user !== 'lashawn') {
+                // Sage: neutral leaf-in-circle mark for any account that isn't Mahdi or Lashawn.
+                return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">'
+                    + '<circle cx="32" cy="32" r="30" fill="#d4af37" opacity="0.15"/>'
+                    + '<circle cx="32" cy="32" r="22" fill="none" stroke="#d4af37" stroke-width="2"/>'
+                    + '<path d="M32 44c-6-2-10-8-10-16 8 0 14 4 16 10 2-6 8-10 16-10 0 8-4 14-10 16-2 1-4 1.5-6 1.5s-4-0.5-6-1.5z" fill="#d4af37"/>'
+                    + '</svg>';
+            }
             if (user === 'mahdi') {
                 // Eli: continuous attached hood draping to the shoulders, kind eyes, full beard, gentle smile
                 return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">'
@@ -4385,8 +4553,57 @@
                 { name: 'Content', icon: '📱', items: ['Content', 'Engagement'] },
                 { name: 'Wellness', icon: '🧘🏾‍♀️', items: ['Me Time', 'Self-Care', 'Boundaries', 'Inner Beauty'] },
                 { name: 'Love', icon: '❤️', items: ['Love and Connection'] }
+            ],
+            // Generic starter layout for any sign-up that isn't Mahdi or Lashawn themselves.
+            default: [
+                { name: 'Nourish', icon: '💧', items: ['Water', 'Healthy Choices'] },
+                { name: 'Faith', icon: '🙏', items: ['Prayer', 'Faith and Mind', 'Journal'] },
+                { name: 'Physical', icon: '💪', items: ['Physical Activity'] },
+                { name: 'Professional', icon: '💼', items: ['Prof Dev'] },
+                { name: 'Love', icon: '❤️', items: ['Love and Connection'] }
             ]
         };
+
+        // ===== PROFILE TYPE HELPERS =====
+        // A UID's profileType ('mahdi' | 'lashawn' | 'default') is stored on data[uid] itself,
+        // set once at sign-up. These resolve pillars/companion/theme for any UID — never index
+        // pillars/COMPANIONS by a raw UID directly, always go through profileType.
+        function profileTypeFor(uid) {
+            return (uid && data[uid] && data[uid].profileType) || 'default';
+        }
+        function pillarsFor(uid) {
+            return pillars[profileTypeFor(uid)] || pillars.default;
+        }
+        function companionFor(uid) {
+            return COMPANIONS[profileTypeFor(uid)] || COMPANIONS.default;
+        }
+        function journeySubtitle(pt) {
+            if (pt === 'mahdi') return "Mahdi's 75-Day Journey";
+            if (pt === 'lashawn') return "Lashawn's 75-Day Journey";
+            return 'Your 75-Day Journey';
+        }
+        function displayNameFor(pt) {
+            if (pt === 'mahdi') return 'Mahdi';
+            if (pt === 'lashawn') return 'Lashawn';
+            return 'Friend';
+        }
+        // Look up which real accounts (if any) currently own the 'mahdi'/'lashawn' style slots,
+        // so Together/Spectate can find the other partner's private data by UID instead of a
+        // shared fixed key. Cheap Firestore reads; safe to call before every cross-partner render.
+        function refreshSlotUids(callback) {
+            if (!fbReady || !fbDB) { if (callback) callback(); return; }
+            let remaining = 2;
+            ['mahdi', 'lashawn'].forEach(function(pt) {
+                fbDB.collection('slots').doc(pt).get().then(function(doc) {
+                    slotUid[pt] = doc.exists ? doc.data().uid : null;
+                }).catch(function() {
+                    // Leave whatever we last knew; don't block rendering on a transient error.
+                }).then(function() {
+                    remaining--;
+                    if (remaining === 0 && callback) callback();
+                });
+            });
+        }
 
         // ===== CUSTOM LAYOUT (per-user section order + show/hide) =====
         // Stored at data[user].layout = { order: [sectionNames...], hidden: [sectionNames...] }
@@ -4428,7 +4645,7 @@
             if (!currentUser) { alert('Log in first.'); return; }
             const pref = getLayoutPref(currentUser);
             // Build a working order: saved order first, then any sections not yet in it
-            const base = pillars[currentUser].map(function(p) { return p.name; });
+            const base = pillarsFor(currentUser).map(function(p) { return p.name; });
             const order = [];
             pref.order.forEach(function(n) { if (base.indexOf(n) > -1) order.push(n); });
             base.forEach(function(n) { if (order.indexOf(n) === -1) order.push(n); });
@@ -4441,7 +4658,7 @@
             const el = document.getElementById('customizeList');
             if (!el || !_customizeWorking) return;
             const iconByName = {};
-            pillars[currentUser].forEach(function(p) { iconByName[p.name] = p.icon; });
+            pillarsFor(currentUser).forEach(function(p) { iconByName[p.name] = p.icon; });
             let html = '';
             _customizeWorking.order.forEach(function(name, i) {
                 const hidden = _customizeWorking.hidden.indexOf(name) > -1;
@@ -4489,7 +4706,7 @@
         function resetCustomizeLayout() {
             if (!confirm('Reset to the default section order and show all sections?')) return;
             _customizeWorking = {
-                order: pillars[currentUser].map(function(p) { return p.name; }),
+                order: pillarsFor(currentUser).map(function(p) { return p.name; }),
                 hidden: []
             };
             renderCustomizeList();
@@ -4563,8 +4780,9 @@
             const mode = localStorage.getItem('loginTheme') || 'dark';
             const isLight = (mode === 'light');
             document.body.classList.toggle('login-light', isLight);
-            const btn = document.getElementById('loginThemeBtn');
-            if (btn) btn.textContent = isLight ? '☀️ Light' : '🌙 Dark';
+            document.querySelectorAll('.login-theme-btn').forEach(function(btn) {
+                btn.textContent = isLight ? '☀️ Light' : '🌙 Dark';
+            });
         }
 
         function toggleLoginTheme() {
@@ -4627,19 +4845,20 @@
 
         function login(user) {
             currentUser = user;
+            currentProfileType = profileTypeFor(user);
             viewingOffset = null;
-            try { localStorage.setItem('activeUser', user); } catch (e) {}
             document.body.classList.remove('login-light');
-            if (user === 'lashawn') {
+            if (currentProfileType === 'lashawn') {
                 document.body.classList.add('lashawn-theme');
             } else {
                 document.body.classList.remove('lashawn-theme');
             }
-            document.getElementById('loginScreen').style.display = 'none';
+            const authScreen = document.getElementById('authScreen');
+            if (authScreen) authScreen.style.display = 'none';
             const appScreen = document.getElementById('appScreen');
             appScreen.style.display = 'block';
             applyThemeMode();
-            document.getElementById('subtitle').textContent = (user === 'mahdi' ? 'Mahdi' : 'Lashawn') + "'s 75-Day Journey";
+            document.getElementById('subtitle').textContent = journeySubtitle(currentProfileType);
             // Always start on the Daily tab
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -4653,6 +4872,196 @@
             // On login, pull the latest of BOTH journeys so the current account, the other
             // account, and the Together view all reflect the newest progress from every device.
             setTimeout(function() { cloudSyncAll(); }, 600);
+        }
+
+        // ===== FIREBASE EMAIL/PASSWORD AUTH =====
+        // Each signed-in account's data lives at data[uid] / journeys/{uid} — private to that
+        // UID. profileType ('mahdi' | 'lashawn' | 'default'), claimed once at sign-up, only
+        // controls which pillars/theme/companion the account displays; it never grants access
+        // to another account's data.
+        let authMode = 'login'; // 'login' or 'signup'
+        let authListenerAttached = false;
+        let authHandledUid = null; // uid already routed into the app by an explicit submit,
+                                    // so onAuthStateChanged doesn't redundantly/racily re-process it
+
+        function setAuthMode(mode) {
+            authMode = mode;
+            clearAuthError();
+            const tabLogin = document.getElementById('authTabLogin');
+            const tabSignup = document.getElementById('authTabSignup');
+            if (tabLogin) tabLogin.classList.toggle('active', mode === 'login');
+            if (tabSignup) tabSignup.classList.toggle('active', mode === 'signup');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            if (submitBtn) submitBtn.textContent = (mode === 'login') ? 'Log In' : 'Create Account';
+            const pwField = document.getElementById('authPassword');
+            if (pwField) pwField.setAttribute('autocomplete', (mode === 'login') ? 'current-password' : 'new-password');
+            const picker = document.getElementById('authProfilePicker');
+            if (picker) picker.style.display = (mode === 'signup') ? 'flex' : 'none';
+        }
+
+        function showAuthError(msg) {
+            const el = document.getElementById('authError');
+            if (!el) return;
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function clearAuthError() {
+            const el = document.getElementById('authError');
+            if (!el) return;
+            el.textContent = '';
+            el.style.display = 'none';
+        }
+
+        function setAuthBusy(busy) {
+            const btn = document.getElementById('authSubmitBtn');
+            if (!btn) return;
+            btn.disabled = busy;
+            if (busy) {
+                btn.dataset.label = btn.textContent;
+                btn.textContent = 'Please wait…';
+            } else if (btn.dataset.label) {
+                btn.textContent = btn.dataset.label;
+            }
+        }
+
+        function toggleAuthPasswordVisibility() {
+            const input = document.getElementById('authPassword');
+            const btn = document.getElementById('authEyeBtn');
+            if (!input || !btn) return;
+            const showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            btn.textContent = showing ? '👁' : '🙈';
+            btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+        }
+
+        // Turns Firebase's error codes into plain-language messages next to the form.
+        function friendlyAuthError(err) {
+            const code = err && err.code;
+            switch (code) {
+                case 'auth/email-already-in-use': return 'That email already has an account — try logging in instead.';
+                case 'auth/invalid-email': return "That doesn't look like a valid email address.";
+                case 'auth/weak-password': return 'Password should be at least 6 characters.';
+                case 'auth/wrong-password': return 'Incorrect password. Try again.';
+                case 'auth/user-not-found': return 'No account found with that email.';
+                case 'auth/invalid-credential': return 'Incorrect email or password.';
+                case 'auth/too-many-requests': return 'Too many attempts — please wait a moment and try again.';
+                case 'auth/network-request-failed': return 'Network error — check your connection and try again.';
+                default: return (err && err.message) ? err.message : 'Something went wrong. Please try again.';
+            }
+        }
+
+        function submitAuthForm() {
+            clearAuthError();
+            const email = (document.getElementById('authEmail').value || '').trim();
+            const password = document.getElementById('authPassword').value || '';
+            if (!email || !password) { showAuthError('Enter both an email and a password.'); return; }
+            if (!fbReady) { showAuthError('Still connecting to the cloud — try again in a moment.'); return; }
+            setAuthBusy(true);
+            if (authMode === 'signup') {
+                const checkedEl = document.querySelector('input[name="authProfileType"]:checked');
+                const chosenType = checkedEl ? checkedEl.value : 'default';
+                firebase.auth().createUserWithEmailAndPassword(email, password)
+                    .then(function(cred) {
+                        const uid = cred.user.uid;
+                        return claimProfileSlot(uid, chosenType)
+                            .then(function(finalType) {
+                                // Create their Firestore profile doc right after the auth account exists.
+                                return fbDB.collection('users').doc(uid).set({
+                                    email: email,
+                                    profileType: finalType,
+                                    createdAt: new Date().toISOString()
+                                }).then(function() { return migrateLegacyIdentity(uid, finalType); })
+                                  .then(function() {
+                                      authHandledUid = uid;
+                                      login(uid);
+                                  });
+                            })
+                            .catch(function(err) {
+                                // Don't leave an orphaned auth account behind if the slot claim failed.
+                                return cred.user.delete().catch(function() {}).then(function() { return Promise.reject(err); });
+                            });
+                    })
+                    .catch(function(err) {
+                        setAuthBusy(false);
+                        showAuthError(friendlyAuthError(err));
+                    });
+            } else {
+                firebase.auth().signInWithEmailAndPassword(email, password)
+                    .then(function(cred) {
+                        const uid = cred.user.uid;
+                        return fbDB.collection('users').doc(uid).get().then(function(doc) {
+                            const profileType = doc.exists ? (doc.data().profileType || 'default') : 'default';
+                            if (!data[uid]) data[uid] = {};
+                            data[uid].profileType = profileType;
+                            ensureUserKeys(uid);
+                            authHandledUid = uid;
+                            login(uid);
+                        });
+                    })
+                    .catch(function(err) {
+                        setAuthBusy(false);
+                        showAuthError(friendlyAuthError(err));
+                    });
+            }
+        }
+
+        // Claims the 'mahdi'/'lashawn' style slot for a UID exactly once (first-come-first-
+        // served) via a Firestore transaction, so nobody else can later claim — and thus see
+        // themself rendered as — an already-taken identity. 'default' needs no claim; any number
+        // of accounts can use the generic layout.
+        function claimProfileSlot(uid, profileType) {
+            if (profileType !== 'mahdi' && profileType !== 'lashawn') return Promise.resolve('default');
+            return fbDB.runTransaction(function(tx) {
+                const ref = fbDB.collection('slots').doc(profileType);
+                return tx.get(ref).then(function(doc) {
+                    if (doc.exists && doc.data().uid !== uid) {
+                        return Promise.reject({ code: 'app/slot-taken', message: 'That journey\'s already claimed — log in instead, or choose "Just me".' });
+                    }
+                    tx.set(ref, { uid: uid, claimedAt: new Date().toISOString() });
+                });
+            }).then(function() { return profileType; });
+        }
+
+        // Brings a claimed identity's pre-existing progress (local + cloud) forward into the
+        // new account's own private UID-keyed record. Never deletes the legacy 'mahdi'/'lashawn'
+        // copy — this is additive, so nothing is lost if something goes wrong.
+        function migrateLegacyIdentity(uid, profileType) {
+            if ((profileType === 'mahdi' || profileType === 'lashawn') && !data[uid] && data[profileType]) {
+                data[uid] = JSON.parse(JSON.stringify(data[profileType]));
+            }
+            if (!data[uid]) data[uid] = {};
+            data[uid].profileType = profileType;
+            ensureUserKeys(uid);
+            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+
+            if (!fbReady || !fbDB || (profileType !== 'mahdi' && profileType !== 'lashawn')) return Promise.resolve();
+            return fbDB.collection('journeys').doc(uid).get().then(function(newDoc) {
+                if (newDoc.exists) return; // already migrated
+                return fbDB.collection('journeys').doc(profileType).get().then(function(oldDoc) {
+                    if (!oldDoc.exists) return;
+                    return fbDB.collection('journeys').doc(uid).set(oldDoc.data());
+                });
+            }).catch(function(e) { console.warn('Legacy migration cloud copy failed:', e); });
+        }
+
+        function logOut() {
+            if (currentUser) {
+                save();
+                stopCloudListener();
+            }
+            if (clockInterval) clearInterval(clockInterval);
+            currentUser = null;
+            currentProfileType = 'default';
+            authHandledUid = null;
+            viewingOffset = null;
+            document.body.classList.remove('lashawn-theme');
+            document.body.classList.remove('light-mode');
+            document.body.style.background = '';
+            if (fbReady && typeof firebase !== 'undefined') {
+                firebase.auth().signOut().catch(function(err) { console.warn('Sign out failed:', err); });
+            }
+            // onAuthStateChanged (below) handles hiding appScreen and showing the auth screen.
         }
 
         // ===== DAILY COMPANION CHECK-IN =====
@@ -4674,7 +5083,7 @@
             const dk = getDateKey(activeOffset);
             const dd = data[currentUser].days[dk] || {};
             const undone = [];
-            pillars[currentUser].forEach(function(pillar) {
+            pillarsFor(currentUser).forEach(function(pillar) {
                 pillar.items.forEach(function(item) {
                     // Skip items that aren't "tasks" in the checkbox sense for reminders? Keep all for honesty.
                     if (!dd[pillar.name + '-' + item]) {
@@ -4692,11 +5101,11 @@
 
         function showReturnReminder() {
             const undone = getUndoneTasks();
-            const comp = COMPANIONS[currentUser];
-            const name = (currentUser === 'mahdi') ? 'Mahdi' : 'Lashawn';
+            const comp = companionFor(currentUser);
+            const name = displayNameFor(currentProfileType);
             if (undone.length === 0) {
                 // Everything done — celebrate, no reminder needed
-                document.getElementById('checkinAvatar').innerHTML = companionAvatarSVG(currentUser, 56);
+                document.getElementById('checkinAvatar').innerHTML = companionAvatarSVG(currentProfileType, 56);
                 document.getElementById('checkinName').textContent = comp.name;
                 document.getElementById('checkinGreeting').textContent = 'Welcome back, ' + name + '.';
                 document.getElementById('checkinPrompt').textContent = 'You\'ve completed everything today. Proud of you — go rest in that. 🔥';
@@ -4709,7 +5118,7 @@
             const shown = undone.slice(0, 6);
             let list = shown.join(', ');
             if (undone.length > shown.length) list += ', and ' + (undone.length - shown.length) + ' more';
-            document.getElementById('checkinAvatar').innerHTML = companionAvatarSVG(currentUser, 56);
+            document.getElementById('checkinAvatar').innerHTML = companionAvatarSVG(currentProfileType, 56);
             document.getElementById('checkinName').textContent = comp.name;
             document.getElementById('checkinGreeting').textContent = 'Welcome back, ' + name + '.';
             document.getElementById('checkinPrompt').innerHTML = 'A gentle reminder — still on your list today:<br><strong>' + escapeHtml(list) + '</strong><br><br>No rush. Take it one at a time. 💛';
@@ -4737,7 +5146,7 @@
                 elapsedDays++;
                 const dk = formatDateKey(dd);
                 const dayData = data[user].days[dk];
-                pillars[user].forEach(p => p.items.forEach(item => {
+                pillarsFor(user).forEach(p => p.items.forEach(item => {
                     total++;
                     if (dayData && dayData[p.name + '-' + item]) count++;
                 }));
@@ -4781,13 +5190,13 @@
                 // STAGE 1 — Warning
                 data[currentUser].weekFlags[lastCompleteWeek] = 'warned';
                 try { localStorage.setItem('75data', JSON.stringify(data)); } catch(e) {}
-                const comp = COMPANIONS[currentUser];
+                const comp = companionFor(currentUser);
                 alert('⚠️ Week ' + weekNum + ' came in at ' + pct + '% — below the 70% goal.\n\n' + comp.name + ': This is your warning, not your end. Lock back in this week. If another week falls below 70%, the journey resets to keep the standard real.\n\nYou\'ve got this — let\'s recommit.');
             } else {
                 // STAGE 2 — Auto reset
                 data[currentUser].weekFlags[lastCompleteWeek] = 'reset';
                 try { localStorage.setItem('75data', JSON.stringify(data)); } catch(e) {}
-                const comp = COMPANIONS[currentUser];
+                const comp = companionFor(currentUser);
                 alert('🔄 Week ' + weekNum + ' also came in under 70% (' + pct + '%).\n\n' + comp.name + ': As agreed, the journey resets now — today becomes Day 1 again. Your progress is archived to Past Journeys. This isn\'t failure; it\'s the standard you set for yourself. Let\'s begin again, stronger.');
                 autoReset();
             }
@@ -4814,7 +5223,7 @@
                 const day = u.days[dk];
                 if (!day) continue;
                 let count = 0, total = 0;
-                pillars[currentUser].forEach(p => p.items.forEach(item => {
+                pillarsFor(currentUser).forEach(p => p.items.forEach(item => {
                     total++;
                     if (day[p.name + '-' + item]) { count++; totalChecks++; }
                 }));
@@ -4839,11 +5248,11 @@
         }
 
         function showCheckin() {
-            const comp = COMPANIONS[currentUser];
+            const comp = companionFor(currentUser);
             const todayOffset = getTodayOffset();
-            document.getElementById('checkinAvatar').innerHTML = companionAvatarSVG(currentUser, 56);
+            document.getElementById('checkinAvatar').innerHTML = companionAvatarSVG(currentProfileType, 56);
             document.getElementById('checkinName').textContent = comp.name;
-            const name = (currentUser === 'mahdi') ? 'Mahdi' : 'Lashawn';
+            const name = displayNameFor(currentProfileType);
             document.getElementById('checkinGreeting').textContent = 'Hey ' + name + ", it's " + comp.name + ', ' + comp.role + '.';
             document.getElementById('checkinPrompt').textContent = CHECKIN_PROMPTS[todayOffset % CHECKIN_PROMPTS.length];
             document.getElementById('checkinInput').value = '';
@@ -4878,7 +5287,7 @@
         function completeCheckin() {
             const text = document.getElementById('checkinInput').value.trim();
             if (text === '') {
-                alert("Take a moment — share even a few words with " + COMPANIONS[currentUser].name + " before we begin.");
+                alert("Take a moment — share even a few words with " + companionFor(currentUser).name + " before we begin.");
                 return;
             }
             const todayKey = getDateKey(getTodayOffset());
@@ -4887,7 +5296,7 @@
             try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
             document.getElementById('checkinModal').style.display = 'none';
             render();
-            const comp = COMPANIONS[currentUser];
+            const comp = companionFor(currentUser);
             setTimeout(function() {
                 alert(comp.name + ": Thank you for sharing. Your day is unlocked — let's make it count. 💛");
             }, 150);
@@ -4910,21 +5319,6 @@
             if (data[currentUser].checkins) delete data[currentUser].checkins[dateKey];
             try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
             render();
-        }
-
-        function switchUser() {
-            save();
-            stopCloudListener();
-            if (clockInterval) clearInterval(clockInterval);
-            currentUser = null;
-            viewingOffset = null;
-            try { localStorage.removeItem('activeUser'); } catch (e) {}
-            document.body.classList.remove('lashawn-theme');
-            document.body.classList.remove('light-mode');
-            document.body.style.background = '';
-            document.getElementById('appScreen').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'flex';
-            applyLoginTheme();
         }
 
         function switchTab(tab, btnEl) {
@@ -4965,7 +5359,7 @@
                 const dk = formatDateKey(d);
                 const dd = data[user].days[dk];
                 let count = 0, total = 0;
-                (pillars[user] || []).forEach(p => p.items.forEach(item => {
+                (pillarsFor(user) || []).forEach(p => p.items.forEach(item => {
                     total++;
                     if (dd && dd[p.name + '-' + item]) { count++; totalChecks++; }
                 }));
@@ -4996,13 +5390,12 @@
         }
 
         function enterSpectator() {
-            document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('appScreen').style.display = 'none';
             document.getElementById('spectatorScreen').style.display = 'block';
             // Neutral theme for spectator (use a calm dark base)
             document.body.classList.remove('lashawn-theme');
             document.body.classList.remove('login-light');
-            renderSpectator();
+            refreshSlotUids(function() { renderSpectator(); });
             // Pull the latest of BOTH journeys from the cloud, then refresh the view
             const sc = document.getElementById('spectatorContent');
             if (sc) {
@@ -5019,13 +5412,13 @@
         function exitSpectator() {
             document.getElementById('spectatorScreen').style.display = 'none';
             document.getElementById('spectatorContent').innerHTML = '';
-            document.getElementById('loginScreen').style.display = 'flex';
-            applyLoginTheme();
+            document.getElementById('appScreen').style.display = 'block';
+            applyThemeMode();
         }
 
         function spectatorCard(user, name, accent) {
             const s = computeUserStats(user);
-            const comp = COMPANIONS[user];
+            const comp = companionFor(user);
             if (!s) return '<div class="spec-card"><div class="spec-name">' + name + '</div><div style="opacity:0.7;">No data yet.</div></div>';
 
             // Build a mini 75-day grid (read-only)
@@ -5041,7 +5434,7 @@
                 const dk = formatDateKey(d);
                 const dd = data[user].days[dk];
                 let count = 0, total = 0;
-                pillars[user].forEach(p => p.items.forEach(item => { total++; if (dd && dd[p.name+'-'+item]) count++; }));
+                pillarsFor(user).forEach(p => p.items.forEach(item => { total++; if (dd && dd[p.name+'-'+item]) count++; }));
                 const pct = total > 0 ? count/total : 0;
                 let cls = 'spec-cell';
                 if (i === todayOffset) cls += ' spec-today';
@@ -5053,7 +5446,7 @@
             grid += '</div>';
 
             let h = '<div class="spec-card" style="border-top:3px solid ' + accent + ';">';
-            h += '<div class="spec-name" style="color:' + accent + ';">' + companionAvatarSVG(user, 22) + ' ' + name + '</div>';
+            h += '<div class="spec-name" style="color:' + accent + ';">' + companionAvatarSVG(profileTypeFor(user), 22) + ' ' + name + '</div>';
             h += '<div class="spec-day">Day ' + s.dayNum + ' of 75 · ' + s.todayPct + '% today</div>';
             h += grid;
             h += '<div class="spec-metrics">';
@@ -5077,12 +5470,12 @@
             html += '<div class="spec-sub">A quiet view of how you\'re both doing. Look, cheer, and step back out — nothing here can be changed.</div>';
             html += '<div class="spec-legend"><span><i class="lg lg-strong"></i> Strong day</span> <span><i class="lg lg-partial"></i> Partial</span> <span><i class="lg lg-today"></i> Today</span> <span><i class="lg lg-future"></i> Upcoming</span></div>';
             html += '<div class="spec-cards">';
-            html += spectatorCard('mahdi', 'Mahdi', '#d4af37');
-            html += spectatorCard('lashawn', 'Lashawn', '#e6b8c2');
+            html += spectatorCard(slotUid.mahdi, 'Mahdi', '#d4af37');
+            html += spectatorCard(slotUid.lashawn, 'Lashawn', '#e6b8c2');
             html += '</div>';
 
-            const m = computeUserStats('mahdi');
-            const l = computeUserStats('lashawn');
+            const m = computeUserStats(slotUid.mahdi);
+            const l = computeUserStats(slotUid.lashawn);
             if (m && l) {
                 html += '<div class="spec-combined">';
                 html += '<div class="spec-combined-title">Together So Far</div>';
@@ -5105,10 +5498,10 @@
                     if (document.getElementById('togetherContent')) renderTogether();
                 });
             }
-            const mStats = computeUserStats('mahdi');
-            const lStats = computeUserStats('lashawn');
-            const mComp = COMPANIONS['mahdi'];
-            const lComp = COMPANIONS['lashawn'];
+            const mStats = computeUserStats(slotUid.mahdi);
+            const lStats = computeUserStats(slotUid.lashawn);
+            const mComp = companionFor(slotUid.mahdi);
+            const lComp = companionFor(slotUid.lashawn);
 
             function card(name, emoji, s, accent) {
                 if (!s) return '<div class="together-card">No data yet for ' + name + '.</div>';
@@ -5178,7 +5571,7 @@
                 const dd = data[currentUser].days[dk];
                 if (!dd) continue;
                 let count = 0, total = 0;
-                pillars[currentUser].forEach(p => p.items.forEach(item => {
+                pillarsFor(currentUser).forEach(p => p.items.forEach(item => {
                     total++;
                     if (dd[p.name + '-' + item]) { count++; totalChecks++; }
                 }));
@@ -5341,7 +5734,7 @@
                 const day = u.days[dk];
                 if (!day) continue;
                 let cnt = 0, tot = 0;
-                pillars[currentUser].forEach(p => p.items.forEach(item => { tot++; if (day[p.name+'-'+item]) { cnt++; curChecks++; } }));
+                pillarsFor(currentUser).forEach(p => p.items.forEach(item => { tot++; if (day[p.name+'-'+item]) { cnt++; curChecks++; } }));
                 if (tot > 0 && cnt/tot >= 0.75) curStrong++;
             }
             archives.push({
@@ -5397,21 +5790,21 @@
             // Daily greeting
             const greetEl = document.getElementById('greetingBox');
             if (greetEl) {
-                const name = (currentUser === 'mahdi') ? 'Mahdi' : 'Lashawn';
+                const name = displayNameFor(currentProfileType);
                 const greeting = GREETINGS[activeOffset % GREETINGS.length].replace('{name}', name);
                 const dateKey = getDateKey(activeOffset);
                 const savedEmotion = (data[currentUser].emotions && data[currentUser].emotions[dateKey]) ? data[currentUser].emotions[dateKey].emotion : null;
                 const savedCheckin = (data[currentUser].checkins && data[currentUser].checkins[dateKey]) ? data[currentUser].checkins[dateKey] : null;
-                const comp = COMPANIONS[currentUser];
+                const comp = companionFor(currentUser);
                 let gHtml = '<div class="greeting-text">' + greeting + '</div>';
 
                 // Companion check-in display + redo/delete
                 if (savedCheckin && savedCheckin !== '(skipped)') {
-                    gHtml += '<div class="greeting-checkin">' + companionAvatarSVG(currentUser, 22) + ' <strong>' + comp.name + '\'s check-in:</strong> "' + escapeHtml(savedCheckin) + '" ';
+                    gHtml += '<div class="greeting-checkin">' + companionAvatarSVG(currentProfileType, 22) + ' <strong>' + comp.name + '\'s check-in:</strong> "' + escapeHtml(savedCheckin) + '" ';
                     gHtml += '<span class="greeting-cta" onclick="redoCheckin()">redo</span> · ';
                     gHtml += '<span class="greeting-cta" onclick="deleteCheckin()">delete</span></div>';
                 } else if (savedCheckin === '(skipped)') {
-                    gHtml += '<div class="greeting-checkin">' + companionAvatarSVG(currentUser, 22) + ' You skipped today\'s check-in. <span class="greeting-cta" onclick="redoCheckin()">check in now</span></div>';
+                    gHtml += '<div class="greeting-checkin">' + companionAvatarSVG(currentProfileType, 22) + ' You skipped today\'s check-in. <span class="greeting-cta" onclick="redoCheckin()">check in now</span></div>';
                 }
 
                 if (savedEmotion) {
@@ -5431,11 +5824,11 @@
 
             // Wisdom quote of the day (both users, different collections)
             const quoteEl = document.getElementById('quoteOfDay');
-            const quoteSet = (currentUser === 'mahdi') ? WISDOM_QUOTES : WISDOM_QUOTES_HER;
+            const quoteSet = (currentProfileType === 'mahdi') ? WISDOM_QUOTES : WISDOM_QUOTES_HER;
             const q = quoteSet[activeOffset % quoteSet.length];
             quoteEl.style.display = 'block';
             quoteEl.innerHTML =
-                '<div class="verse-label">' + (currentUser === 'mahdi' ? '✊🏾' : '👑') + ' Wisdom of the Day</div>' +
+                '<div class="verse-label">' + (currentProfileType === 'mahdi' ? '✊🏾' : '👑') + ' Wisdom of the Day</div>' +
                 '<div class="verse-text">"' + q.t + '"</div>' +
                 '<div class="verse-ref">— ' + q.r + '</div>';
 
@@ -5521,10 +5914,10 @@
                         html += '<div class="peace-hint">';
                         html += '<strong>Indoor movement ideas (aim for 45+ mins):</strong><br>';
                         indoorSet.forEach(function(line) { html += '• ' + line + '<br>'; });
-                        html += '<em>' + (currentUser === 'mahdi' ? 'Strength is built daily. Protect the knee, move at your own pace.' : 'Strong and steady is the goal — move in a way that feels good and sustainable.') + '</em>';
+                        html += '<em>' + (currentProfileType === 'mahdi' ? 'Strength is built daily. Protect the knee, move at your own pace.' : 'Strong and steady is the goal — move in a way that feels good and sustainable.') + '</em>';
                         html += '<br><br><strong>Outdoor movement ideas:</strong><br>';
                         outdoorSet.forEach(function(line) { html += '• ' + line + '<br>'; });
-                        html += '<em>' + (currentUser === 'mahdi' ? 'Outside air resets the mind.' : 'Sunshine + movement lifts your mood as much as your body.') + '</em>';
+                        html += '<em>' + (currentProfileType === 'mahdi' ? 'Outside air resets the mind.' : 'Sunshine + movement lifts your mood as much as your body.') + '</em>';
                         html += '</div>';
                         // Optional progress photo — camera button only, no checkbox obligation
                         const photoItemKey = pillar.name + '-Physical Activity';
@@ -5589,7 +5982,7 @@
                         const spouseTip = SPOUSE_TIPS[idx];
                         const familySet = FAMILY_TIPS[activeOffset % FAMILY_TIPS.length];
                         const peaceSet = PEACE_TIPS[activeOffset % PEACE_TIPS.length];
-                        const spouseName = currentUser === 'mahdi' ? 'Lashawn' : 'Mahdi';
+                        const spouseName = currentProfileType === 'mahdi' ? 'Lashawn' : 'Mahdi';
                         html += '<div class="peace-hint">';
                         html += '<strong>💑 With ' + spouseName + ' today:</strong><br>';
                         html += spouseTip + '<br>';
@@ -5669,7 +6062,7 @@
                         html += '<em>You pour into everyone. This is for you. Protect it.</em>';
                         html += '</div>';
                     }
-                    if (item === 'Self-Care' && currentUser === 'lashawn') {
+                    if (item === 'Self-Care' && currentProfileType === 'lashawn') {
                         const set = SELFCARE_HER[activeOffset % SELFCARE_HER.length];
                         html += '<div class="peace-hint">';
                         html += '<strong>Self-care ideas for today — pick one:</strong><br>';
@@ -5677,7 +6070,7 @@
                         html += '<em>Caring for yourself isn\'t vanity — it\'s honoring what God made.</em>';
                         html += '</div>';
                     }
-                    if (item === 'Boundaries' && currentUser === 'lashawn') {
+                    if (item === 'Boundaries' && currentProfileType === 'lashawn') {
                         const set = BOUNDARIES_HER[activeOffset % BOUNDARIES_HER.length];
                         html += '<div class="peace-hint">';
                         html += '<strong>Boundary ideas for today — pick one:</strong><br>';
@@ -5696,7 +6089,7 @@
 
                     // Job search (Mahdi) / Career growth (Lashawn) strategy — rotating, per user.
                     if (item === 'Job Apps' || item === 'Career Growth') {
-                        if (currentUser === 'mahdi') {
+                        if (currentProfileType === 'mahdi') {
                             const set = JOB_TIPS_MAHDI[activeOffset % JOB_TIPS_MAHDI.length];
                             html += '<div class="peace-hint">';
                             html += '<strong>Job search strategy today (goal: 10–15 apps):</strong><br>';
@@ -6058,7 +6451,7 @@
             // A day is editable if it's today, OR it's a past day you've opted to edit. Future days are locked.
             const editable = isToday || (isPast && editingDay);
 
-            pillars[currentUser].forEach(pillar => {
+            pillarsFor(currentUser).forEach(pillar => {
                 pillar.items.forEach(item => {
                     const itemKey = pillar.name + '-' + item;
                     const checkbox = document.getElementById(itemKey);
@@ -6299,7 +6692,7 @@
             if (!data[currentUser].days[todayKey]) data[currentUser].days[todayKey] = {};
             if (!data[currentUser].goals) data[currentUser].goals = {};
             
-            pillars[currentUser].forEach(pillar => {
+            pillarsFor(currentUser).forEach(pillar => {
                 pillar.items.forEach(item => {
                     const itemKey = pillar.name + '-' + item;
                     const checkbox = document.getElementById(itemKey);
@@ -6393,7 +6786,16 @@
         // overwrite the current user's freshly-typed local data unless the cloud copy is newer.
         function cloudSyncAll(callback) {
             if (!fbReady || !fbDB) { if (callback) callback(); return; }
-            const users = ['mahdi', 'lashawn'];
+            refreshSlotUids(function() {
+                // Sync this account plus whichever real accounts currently own the 'mahdi'/
+                // 'lashawn' slots, so Together/Spectate can see partner progress by UID.
+                const users = Array.from(new Set([currentUser, slotUid.mahdi, slotUid.lashawn].filter(Boolean)));
+                if (users.length === 0) { if (callback) callback(); return; }
+                cloudSyncAllUsers(users, callback);
+            });
+        }
+
+        function cloudSyncAllUsers(users, callback) {
             let remaining = users.length;
             let changedCurrent = false;
             users.forEach(function(u) {
@@ -6465,14 +6867,18 @@
             if (!data[u].locked) data[u].locked = {};
             if (!data[u].layout) data[u].layout = { order: [], hidden: [] };
             if (!data[u].sectionLocks) data[u].sectionLocks = {};
+            if (!data[u].profileType) data[u].profileType = 'default';
         }
 
-        // Push BOTH users' data up to the cloud (used after restoring a combined backup),
-        // so a restore on one device reaches both accounts on every device.
+        // Push every account currently held in `data` up to the cloud (used after restoring a
+        // combined backup), so a restore on one device reaches every account on every device.
+        // Keyed generically (not a hardcoded pair) so it covers both legacy 'mahdi'/'lashawn'
+        // backups and real per-account UIDs.
         function pushBothToCloud(callback) {
             if (!fbReady || !fbDB) { if (callback) callback(false); return; }
-            const users = ['mahdi', 'lashawn'];
+            const users = Object.keys(data);
             let remaining = users.length;
+            if (remaining === 0) { if (callback) callback(true); return; }
             users.forEach(function(u) {
                 try {
                     const payload = JSON.parse(JSON.stringify(data[u]));
@@ -6544,7 +6950,7 @@
         function selectAll() {
             // Toggle: if everything fillable is already checked, uncheck all; otherwise check all that have content.
             let allChecked = true;
-            pillars[currentUser].forEach(pillar => {
+            pillarsFor(currentUser).forEach(pillar => {
                 pillar.items.forEach(item => {
                     const checkbox = document.getElementById(pillar.name + '-' + item);
                     if (checkbox && !checkbox.checked) allChecked = false;
@@ -6553,7 +6959,7 @@
             const newState = !allChecked;
 
             let skipped = 0;
-            pillars[currentUser].forEach(pillar => {
+            pillarsFor(currentUser).forEach(pillar => {
                 pillar.items.forEach(item => {
                     const itemKey = pillar.name + '-' + item;
                     const checkbox = document.getElementById(itemKey);
@@ -6588,7 +6994,7 @@
         }
 
         function clearAll() {
-            pillars[currentUser].forEach(pillar => {
+            pillarsFor(currentUser).forEach(pillar => {
                 pillar.items.forEach(item => {
                     const itemKey = pillar.name + '-' + item;
                     const checkbox = document.getElementById(itemKey);
@@ -6611,7 +7017,7 @@
             const dayData = data[currentUser].days[todayKey] || {};
             let count = 0, total = 0;
             const doneList = [];
-            pillars[currentUser].forEach(p => p.items.forEach(item => {
+            pillarsFor(currentUser).forEach(p => p.items.forEach(item => {
                 total++;
                 if (dayData[p.name + '-' + item]) { count++; doneList.push(item); }
             }));
@@ -6758,7 +7164,7 @@
             lines.push({ h: 'Day ' + (offset + 1) + ' — ' + dayNames[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() });
 
             let count = 0, total = 0;
-            pillars[currentUser].forEach(p => {
+            pillarsFor(currentUser).forEach(p => {
                 lines.push({ pillar: p.icon + ' ' + p.name });
                 p.items.forEach(item => {
                     total++;
@@ -6781,7 +7187,7 @@
 
         function exportProgress(scope, format) {
             save();
-            const userName = currentUser === 'mahdi' ? 'Mahdi' : 'Lashawn';
+            const userName = displayNameFor(currentProfileType);
             let allLines = [];
             allLines.push({ title: userName + "'s 75-Day Journey" });
 
@@ -6926,7 +7332,7 @@
 
         function toggleAllSwitch(switchEl) {
             const newState = switchEl.checked;
-            pillars[currentUser].forEach(function(pillar) {
+            pillarsFor(currentUser).forEach(function(pillar) {
                 pillar.items.forEach(function(item) {
                     const itemKey = pillar.name + '-' + item;
                     const cb = document.getElementById(itemKey);
@@ -7049,7 +7455,7 @@
             const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
             const dk = getDateKey(activeOffset);
             const dd = data[currentUser].days[dk] || {};
-            const pillar = pillars[currentUser].find(function(p) { return p.name === pillarName; });
+            const pillar = pillarsFor(currentUser).find(function(p) { return p.name === pillarName; });
             if (!pillar) return;
             let done = 0;
             pillar.items.forEach(function(item) {
@@ -7177,7 +7583,7 @@
             
             let count = 0;
             let total = 0;
-            pillars[currentUser].forEach(pillar => {
+            pillarsFor(currentUser).forEach(pillar => {
                 pillar.items.forEach(item => {
                     total++;
                     const itemKey = pillar.name + '-' + item;
@@ -7209,7 +7615,7 @@
                 const dateKey = getDateKey(i);
                 const prevData = data[currentUser].days[dateKey] || {};
                 let prevCount = 0;
-                pillars[currentUser].forEach(p => {
+                pillarsFor(currentUser).forEach(p => {
                     p.items.forEach(item => {
                         const itemKey = p.name + '-' + item;
                         if (prevData[itemKey]) prevCount++;
@@ -7686,7 +8092,7 @@
 
                     let count = 0;
                     let total = 0;
-                    pillars[currentUser].forEach(p => {
+                    pillarsFor(currentUser).forEach(p => {
                         p.items.forEach(item => {
                             total++;
                             const itemKey = p.name + '-' + item;
@@ -7732,7 +8138,7 @@
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             let html = '<strong style="color: #d4af37; font-size: 14px;">' + monthNames[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + '</strong><br><br>';
             
-            pillars[currentUser].forEach(p => {
+            pillarsFor(currentUser).forEach(p => {
                 html += '<strong style="color: #d4af37;">' + p.icon + ' ' + p.name + '</strong><br>';
                 p.items.forEach(item => {
                     const itemKey = p.name + '-' + item;
@@ -7761,7 +8167,7 @@
             for (let i = 0; i < 75; i++) {
                 const dateKey = getDateKey(i);
                 const dayData = data[currentUser].days[dateKey];
-                pillars[currentUser].forEach(p => {
+                pillarsFor(currentUser).forEach(p => {
                     p.items.forEach(item => {
                         const itemKey = p.name + '-' + item;
                         if (item.toLowerCase().indexOf(term) > -1 && dayData && dayData[itemKey]) {
@@ -7816,37 +8222,29 @@
             reader.onload = function(e) {
                 try {
                     const imported = JSON.parse(e.target.result);
-                    if (!imported.mahdi && !imported.lashawn) {
+                    if (!imported || typeof imported !== 'object' || Object.keys(imported).length === 0) {
                         alert('That doesn\'t look like a valid backup file.');
                         return;
                     }
                     if (confirm('Restore this backup?\n\nThis replaces BOTH accounts\' data with the saved version, and (if connected) pushes it to the cloud so both devices get it.')) {
                         data = imported;
-                        // Re-run migration to ensure all keys exist, and stamp as freshly authoritative
+                        // Re-run migration to ensure all keys exist on every account in the
+                        // backup, and stamp as freshly authoritative so it wins the next sync.
                         const now = Date.now();
-                        ['mahdi', 'lashawn'].forEach(function(u) {
+                        Object.keys(data).forEach(function(u) {
                             if (!data[u]) data[u] = {};
-                            if (!data[u].days) data[u].days = {};
-                            if (!data[u].goals) data[u].goals = {};
-                            if (!data[u].photos) data[u].photos = {};
-                            if (!data[u].startDate) data[u].startDate = '2026-06-26';
-                            if (!data[u].resets) data[u].resets = [];
-                            if (!data[u].themeMode) data[u].themeMode = 'auto';
-                            if (!data[u].emotions) data[u].emotions = {};
-                            if (!data[u].checkins) data[u].checkins = {};
-                            if (!data[u].archives) data[u].archives = [];
-                            if (!data[u].weekFlags) data[u].weekFlags = {};
-                            if (!data[u].entries) data[u].entries = {};
-                            if (!data[u].wheel) data[u].wheel = {};
-                            if (!data[u].bible) data[u].bible = {};
-                            if (!data[u].locked) data[u].locked = {};
-            if (!data[u].layout) data[u].layout = { order: [], hidden: [] };
-            if (!data[u].sectionLocks) data[u].sectionLocks = {};
-                            // Mark restored data as the newest so it wins on the next cloud sync
+                            ensureUserKeys(u);
                             data[u].lastModified = now;
                         });
+                        // Never leave the currently signed-in account without a record, even if
+                        // this backup predates their account.
+                        if (currentUser && !data[currentUser]) {
+                            data[currentUser] = {};
+                            ensureUserKeys(currentUser);
+                            data[currentUser].lastModified = now;
+                        }
                         localStorage.setItem('75data', JSON.stringify(data));
-                        // Push BOTH accounts up to the cloud so the restore reaches both devices
+                        // Push every restored account up to the cloud so the restore reaches every device
                         pushBothToCloud(function(pushed) {
                             if (pushed) {
                                 alert('✅ Backup restored — and synced to the cloud for both accounts.\n\nOn the other device, open the app (or tap ☁️ Load from Cloud) to pull it down.');
@@ -7967,7 +8365,7 @@
                     const day = u.days[dk];
                     if (!day) continue;
                     let count = 0, total = 0;
-                    pillars[currentUser].forEach(p => p.items.forEach(item => {
+                    pillarsFor(currentUser).forEach(p => p.items.forEach(item => {
                         total++;
                         if (day[p.name + '-' + item]) { count++; totalChecks++; }
                     }));
@@ -8020,6 +8418,50 @@
                 }
                 fbDB = firebase.firestore();
                 fbReady = true;
+                // Explicitly keep the signed-in session on this device across refreshes/restarts
+                // (Firebase's default, but set explicitly so it can never end up on the
+                // tab-only/no-persistence setting some browser privacy modes fall back to).
+                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(e) {
+                    console.warn('Could not set auth persistence:', e);
+                });
+                // This listener is our single source of truth for which screen to show — the
+                // auth gate, or (once signed in) straight into that account's own journey.
+                // authHandledUid guards against re-processing a uid that an explicit sign-in/
+                // sign-up submit has already routed into the app.
+                if (!authListenerAttached) {
+                    authListenerAttached = true;
+                    firebase.auth().onAuthStateChanged(function(user) {
+                        const authScreen = document.getElementById('authScreen');
+                        if (user) {
+                            if (authHandledUid === user.uid) return;
+                            authHandledUid = user.uid;
+                            setAuthBusy(false);
+                            if (authScreen) authScreen.style.display = 'none';
+                            // Persisted session restore (e.g. after a refresh) — look up this
+                            // account's profileType, then go straight into their own journey.
+                            fbDB.collection('users').doc(user.uid).get().then(function(doc) {
+                                const profileType = doc.exists ? (doc.data().profileType || 'default') : 'default';
+                                if (!data[user.uid]) data[user.uid] = {};
+                                data[user.uid].profileType = profileType;
+                                ensureUserKeys(user.uid);
+                                login(user.uid);
+                            }).catch(function(e) {
+                                console.warn('Profile lookup failed on session restore:', e);
+                                authHandledUid = null;
+                                if (authScreen) authScreen.style.display = 'flex';
+                            });
+                        } else {
+                            authHandledUid = null;
+                            currentUser = null;
+                            currentProfileType = 'default';
+                            const appScreen = document.getElementById('appScreen');
+                            if (appScreen) appScreen.style.display = 'none';
+                            if (authScreen) authScreen.style.display = 'flex';
+                            setAuthBusy(false);
+                            applyLoginTheme();
+                        }
+                    });
+                }
                 return true;
             } catch (e) {
                 console.warn('Firebase init failed:', e);
@@ -8028,21 +8470,16 @@
         }
 
         window.onload = function() {
-            // Login screen has its own independent theme.
+            // Auth/login screens have their own independent theme.
             applyLoginTheme();
             // Initialize Firebase now that the library scripts have loaded. Retry briefly if needed.
+            // onAuthStateChanged (registered inside initFirebase) decides which screen shows next.
             if (!initFirebase()) {
                 let tries = 0;
                 const t = setInterval(function() {
                     tries++;
                     if (initFirebase() || tries > 20) clearInterval(t);
                 }, 250);
-            }
-            // If a user was active before a refresh, keep them on their page instead of kicking them to login.
-            let savedUser = null;
-            try { savedUser = localStorage.getItem('activeUser'); } catch (e) {}
-            if (savedUser === 'mahdi' || savedUser === 'lashawn') {
-                login(savedUser);
             }
             // In-app theme is per-user and applied on login (light / dark / auto by time of day).
         };
