@@ -3240,6 +3240,7 @@
             </div>
             <form class="auth-form" onsubmit="event.preventDefault(); submitAuthForm();">
                 <input type="email" id="authEmail" class="auth-input" placeholder="Email" autocomplete="username" required>
+                <input type="text" id="authDisplayName" class="auth-input" placeholder="Your first name" autocomplete="given-name" style="display:none;">
                 <div class="auth-password-wrap">
                     <input type="password" id="authPassword" class="auth-input" placeholder="Password" autocomplete="current-password" required>
                     <button type="button" class="auth-eye-btn" id="authEyeBtn" onclick="toggleAuthPasswordVisibility()" aria-label="Show password">👁</button>
@@ -3279,6 +3280,9 @@
                                 <button class="more-item" onclick="cloudSave(); closeMoreMenu();">☁️ Save to Cloud</button>
                                 <button class="more-item" onclick="cloudLoad(); closeMoreMenu();">☁️ Load from Cloud</button>
                                 <button class="more-item" onclick="enterSpectator(); closeMoreMenu();">👁 Spectate Both</button>
+                                <button class="more-item" onclick="getInviteCode(); closeMoreMenu();">🔗 Get Invite Code</button>
+                                <button class="more-item" onclick="redeemInviteCode(); closeMoreMenu();">🔗 Enter Partner's Code</button>
+                                <button class="more-item" onclick="unpairPartner(); closeMoreMenu();">🔗 Unpair from Partner</button>
                                 <button class="more-item" id="teamModeMenuItem" onclick="toggleTeamMode(); closeMoreMenu();">🤝 Team Mode: Off</button>
                                 <button class="more-item" onclick="openCustomizeLayout(); closeMoreMenu();">⚙️ Customize Layout (reorder / hide sections)</button>
                                 <button class="more-item" onclick="setStartDate(); closeMoreMenu();">📅 Set Start Date (fix day count)</button>
@@ -4598,6 +4602,35 @@
             if (pt === 'lashawn') return 'Lashawn';
             return 'Friend';
         }
+        // The real, personal name for an account if they set one at sign-up (any couple beyond
+        // Mahdi/Lashawn), falling back to the style-based name otherwise.
+        function nameFor(uid) {
+            if (uid && data[uid] && data[uid].displayName) return data[uid].displayName;
+            return displayNameFor(profileTypeFor(uid));
+        }
+        // Accent color for Together/Spectate cards. Mahdi/Lashawn keep their existing fixed
+        // colors always (unchanged from before); any other paired couple gets gold for "you"
+        // and a secondary color for your partner, whoever is viewing.
+        function accentFor(uid) {
+            const pt = profileTypeFor(uid);
+            if (pt === 'mahdi') return '#d4af37';
+            if (pt === 'lashawn') return '#e6b8c2';
+            return (uid === currentUser) ? '#d4af37' : '#8ab4d8';
+        }
+        // Resolves "who is this account's partner" for Together/Spectate/Team Mode, covering
+        // both the original Mahdi/Lashawn slot pairing AND any couple linked via invite code.
+        // The invite-code path requires BOTH sides to point at each other (mutual), so a
+        // one-sided/stale link is never treated as an active pairing.
+        function getPartnerUid(uid) {
+            uid = uid || currentUser;
+            if (!uid || !data[uid]) return null;
+            const pt = profileTypeFor(uid);
+            if (pt === 'mahdi') return slotUid.lashawn;
+            if (pt === 'lashawn') return slotUid.mahdi;
+            const claimed = data[uid].partnerUid;
+            if (claimed && data[claimed] && data[claimed].partnerUid === uid) return claimed;
+            return null;
+        }
         // Look up which real accounts (if any) currently own the 'mahdi'/'lashawn' style slots,
         // so Together/Spectate can find the other partner's private data by UID instead of a
         // shared fixed key. Cheap Firestore reads; safe to call before every cross-partner render.
@@ -4859,8 +4892,8 @@
 
         function toggleTeamMode() {
             if (!currentUser || !data[currentUser]) return;
-            if (currentProfileType !== 'mahdi' && currentProfileType !== 'lashawn') {
-                alert('Team Mode links the Mahdi/Lashawn pair together — it isn\'t available on this account.');
+            if (currentProfileType !== 'mahdi' && currentProfileType !== 'lashawn' && !getPartnerUid(currentUser)) {
+                alert('Team Mode links you with a partner — pair up first with ⚙ More → 🔗 Get Invite Code or 🔗 Enter Partner\'s Code.');
                 return;
             }
             const next = !data[currentUser].teamMode;
@@ -4932,6 +4965,8 @@
             if (pwField) pwField.setAttribute('autocomplete', (mode === 'login') ? 'current-password' : 'new-password');
             const picker = document.getElementById('authProfilePicker');
             if (picker) picker.style.display = (mode === 'signup') ? 'flex' : 'none';
+            const nameField = document.getElementById('authDisplayName');
+            if (nameField) nameField.style.display = (mode === 'signup') ? 'block' : 'none';
         }
 
         function showAuthError(msg) {
@@ -4996,6 +5031,8 @@
             if (authMode === 'signup') {
                 const checkedEl = document.querySelector('input[name="authProfileType"]:checked');
                 const chosenType = checkedEl ? checkedEl.value : 'default';
+                const nameField = document.getElementById('authDisplayName');
+                const chosenName = ((nameField && nameField.value) || '').trim() || email.split('@')[0];
                 firebase.auth().createUserWithEmailAndPassword(email, password)
                     .then(function(cred) {
                         const uid = cred.user.uid;
@@ -5005,9 +5042,13 @@
                                 return fbDB.collection('users').doc(uid).set({
                                     email: email,
                                     profileType: finalType,
+                                    displayName: chosenName,
                                     createdAt: new Date().toISOString()
                                 }).then(function() { return migrateLegacyIdentity(uid, finalType); })
                                   .then(function() {
+                                      // Mahdi/Lashawn keep their existing names; only a generic
+                                      // 'default' account uses the name they just typed in.
+                                      if (finalType === 'default') data[uid].displayName = chosenName;
                                       authHandledUid = uid;
                                       login(uid);
                                   });
@@ -5029,6 +5070,7 @@
                             const profileType = doc.exists ? (doc.data().profileType || 'default') : 'default';
                             if (!data[uid]) data[uid] = {};
                             data[uid].profileType = profileType;
+                            if (doc.exists && doc.data().displayName) data[uid].displayName = doc.data().displayName;
                             ensureUserKeys(uid);
                             authHandledUid = uid;
                             login(uid);
@@ -5329,8 +5371,7 @@
         let teamResetPromptShown = false;
         function checkTeamReset() {
             if (!currentUser || !data[currentUser] || !data[currentUser].teamMode) return;
-            if (currentProfileType !== 'mahdi' && currentProfileType !== 'lashawn') return;
-            const partnerUid = (currentProfileType === 'mahdi') ? slotUid.lashawn : slotUid.mahdi;
+            const partnerUid = getPartnerUid(currentUser);
             if (!partnerUid || !data[partnerUid]) return;
             const partner = data[partnerUid];
             if (!partner.teamMode) return; // requires mutual opt-in
@@ -5352,6 +5393,108 @@
             }
             // If declined, lastSeenPartnerResetAt is left untouched — it'll ask again on the
             // next sync rather than letting the event quietly go unhandled.
+        }
+
+        // ===== PARTNER PAIRING (invite codes) =====
+        // Lets any two accounts link as a couple, beyond the original Mahdi/Lashawn pair. Each
+        // side only ever writes its OWN data[uid]/journeys/{uid} doc — the shared invites/{code}
+        // doc is how the two sides discover and confirm the pairing without either one being
+        // able to write directly into the other's private data.
+        function generateInviteCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous chars (0/O, 1/I)
+            let code = '';
+            for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            return code;
+        }
+
+        function getInviteCode() {
+            if (!currentUser || !data[currentUser]) return;
+            if (!fbReady) { alert('Still connecting to the cloud — try again in a moment.'); return; }
+            if (data[currentUser].partnerUid) {
+                alert('You\'re already paired with ' + nameFor(data[currentUser].partnerUid) + '. Unpair first if you want to link with someone else.');
+                return;
+            }
+            if (data[currentUser].inviteCode) {
+                alert('🔗 Your invite code: ' + data[currentUser].inviteCode + '\n\nShare it with your partner — they enter it from ⚙ More → 🔗 Enter Partner\'s Code.');
+                return;
+            }
+            const code = generateInviteCode();
+            fbDB.collection('invites').doc(code).set({
+                ownerUid: currentUser,
+                createdAt: new Date().toISOString()
+            }).then(function() {
+                data[currentUser].inviteCode = code;
+                data[currentUser].lastModified = Date.now();
+                try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+                cloudSaveSilent();
+                alert('🔗 Your invite code: ' + code + '\n\nShare it with your partner — they enter it from ⚙ More → 🔗 Enter Partner\'s Code. Once they do, you\'ll both see each other\'s progress in Together and Spectate.');
+            }).catch(function(err) {
+                alert('Could not create an invite code: ' + err.message);
+            });
+        }
+
+        function redeemInviteCode() {
+            if (!currentUser || !data[currentUser]) return;
+            if (!fbReady) { alert('Still connecting to the cloud — try again in a moment.'); return; }
+            if (data[currentUser].partnerUid) {
+                alert('You\'re already paired with ' + nameFor(data[currentUser].partnerUid) + '. Unpair first if you want to link with someone else.');
+                return;
+            }
+            const raw = prompt('Enter your partner\'s invite code:');
+            if (!raw) return;
+            const code = raw.trim().toUpperCase();
+            if (!code) return;
+            fbDB.runTransaction(function(tx) {
+                const ref = fbDB.collection('invites').doc(code);
+                return tx.get(ref).then(function(doc) {
+                    if (!doc.exists) return Promise.reject({ message: 'That code doesn\'t match an active invite. Double check with your partner.' });
+                    const invite = doc.data();
+                    if (invite.ownerUid === currentUser) return Promise.reject({ message: 'That\'s your own invite code — have your partner enter it, not you.' });
+                    if (invite.redeemedBy && invite.redeemedBy !== currentUser) return Promise.reject({ message: 'That code has already been used.' });
+                    tx.update(ref, { redeemedBy: currentUser, redeemedAt: new Date().toISOString() });
+                    return invite.ownerUid;
+                });
+            }).then(function(ownerUid) {
+                data[currentUser].partnerUid = ownerUid;
+                data[currentUser].lastModified = Date.now();
+                try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+                cloudSaveSilent();
+                alert('🔗 Paired! Once your partner\'s app syncs, you\'ll both see each other\'s progress in Together and Spectate.');
+            }).catch(function(err) {
+                alert(err && err.message ? err.message : 'Could not redeem that code.');
+            });
+        }
+
+        // Owner's side: notice when someone has redeemed our invite code, and complete the
+        // pairing by pointing back at them (a self-write, same as every other cross-account
+        // signal in this app).
+        function checkInviteRedemption() {
+            if (!currentUser || !data[currentUser] || !data[currentUser].inviteCode || data[currentUser].partnerUid) return;
+            if (!fbReady || !fbDB) return;
+            fbDB.collection('invites').doc(data[currentUser].inviteCode).get().then(function(doc) {
+                if (!doc.exists) return;
+                const invite = doc.data();
+                if (invite.redeemedBy && invite.redeemedBy !== currentUser && !data[currentUser].partnerUid) {
+                    data[currentUser].partnerUid = invite.redeemedBy;
+                    data[currentUser].lastModified = Date.now();
+                    try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+                    cloudSaveSilent();
+                    alert('🔗 ' + nameFor(invite.redeemedBy) + ' just paired with you using your invite code! You can now see each other\'s progress in Together and Spectate.');
+                }
+            }).catch(function(e) { console.warn('Invite redemption check failed:', e); });
+        }
+
+        function unpairPartner() {
+            if (!currentUser || !data[currentUser]) return;
+            if (!data[currentUser].partnerUid) { alert('You\'re not paired with anyone yet.'); return; }
+            const partnerName = nameFor(data[currentUser].partnerUid);
+            if (!confirm('Unpair from ' + partnerName + '?\n\nThey\'ll stop appearing in your Together/Spectate view. This only unpairs your side — you can pair again anytime with a new invite code.')) return;
+            data[currentUser].partnerUid = null;
+            data[currentUser].inviteCode = null;
+            data[currentUser].lastModified = Date.now();
+            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+            cloudSaveSilent();
+            alert('Unpaired from ' + partnerName + '.');
         }
 
         function showCheckin() {
@@ -5523,7 +5666,9 @@
             applyThemeMode();
         }
 
-        function spectatorCard(user, name, accent) {
+        function spectatorCard(user) {
+            const name = nameFor(user);
+            const accent = accentFor(user);
             const s = computeUserStats(user);
             const comp = companionFor(user);
             if (!s) return '<div class="spec-card"><div class="spec-name">' + name + '</div><div style="opacity:0.7;">No data yet.</div></div>';
@@ -5573,16 +5718,18 @@
         function renderSpectator() {
             const el = document.getElementById('spectatorContent');
             if (!el) return;
+            const partnerUid = getPartnerUid(currentUser);
             let html = '<div class="spec-header">Elevated — Both Journeys</div>';
             html += '<div class="spec-sub">A quiet view of how you\'re both doing. Look, cheer, and step back out — nothing here can be changed.</div>';
             html += '<div class="spec-legend"><span><i class="lg lg-strong"></i> Strong day</span> <span><i class="lg lg-partial"></i> Partial</span> <span><i class="lg lg-today"></i> Today</span> <span><i class="lg lg-future"></i> Upcoming</span></div>';
             html += '<div class="spec-cards">';
-            html += spectatorCard(slotUid.mahdi, 'Mahdi', '#d4af37');
-            html += spectatorCard(slotUid.lashawn, 'Lashawn', '#e6b8c2');
+            html += spectatorCard(currentUser);
+            html += partnerUid ? spectatorCard(partnerUid)
+                : '<div class="spec-card"><div class="spec-name">Your Partner</div><div style="opacity:0.7;">Not paired yet — share an invite code from ⚙ More → 🔗 Get Invite Code.</div></div>';
             html += '</div>';
 
-            const m = computeUserStats(slotUid.mahdi);
-            const l = computeUserStats(slotUid.lashawn);
+            const m = computeUserStats(currentUser);
+            const l = partnerUid ? computeUserStats(partnerUid) : null;
             if (m && l) {
                 html += '<div class="spec-combined">';
                 html += '<div class="spec-combined-title">Together So Far</div>';
@@ -5605,10 +5752,13 @@
                     if (document.getElementById('togetherContent')) renderTogether();
                 });
             }
-            const mStats = computeUserStats(slotUid.mahdi);
-            const lStats = computeUserStats(slotUid.lashawn);
-            const mComp = companionFor(slotUid.mahdi);
-            const lComp = companionFor(slotUid.lashawn);
+            const partnerUid = getPartnerUid(currentUser);
+            const myName = nameFor(currentUser);
+            const partnerName = partnerUid ? nameFor(partnerUid) : 'Your Partner';
+            const mStats = computeUserStats(currentUser);
+            const lStats = partnerUid ? computeUserStats(partnerUid) : null;
+            const mComp = companionFor(currentUser);
+            const lComp = partnerUid ? companionFor(partnerUid) : null;
 
             function card(name, emoji, s, accent) {
                 if (!s) return '<div class="together-card">No data yet for ' + name + '.</div>';
@@ -5632,11 +5782,12 @@
                 return h;
             }
 
-            const mAccent = '#d4af37';
-            const lAccent = '#e6b8c2';
+            const mAccent = accentFor(currentUser);
+            const lAccent = partnerUid ? accentFor(partnerUid) : '#8ab4d8';
             let html = '<div class="together-grid">';
-            html += card('Mahdi', mComp.emoji, mStats, mAccent);
-            html += card('Lashawn', lComp.emoji, lStats, lAccent);
+            html += card(myName, mComp.emoji, mStats, mAccent);
+            html += partnerUid ? card(partnerName, lComp.emoji, lStats, lAccent)
+                : '<div class="together-card">Not paired with a partner yet. Share an invite code from ⚙ More → 🔗 Get Invite Code to see their progress here too.</div>';
             html += '</div>';
 
             // Combined encouragement
@@ -5650,8 +5801,8 @@
                 // Gentle nudge
                 let nudge = '';
                 if (mStats.todayPct >= 75 && lStats.todayPct >= 75) nudge = 'You\'re both crushing today — celebrate that together. 🔥';
-                else if (mStats.todayPct >= 75 && lStats.todayPct < 50) nudge = 'Mahdi\'s ahead today — maybe send Lashawn some encouragement. 💛';
-                else if (lStats.todayPct >= 75 && mStats.todayPct < 50) nudge = 'Lashawn\'s ahead today — maybe send Mahdi some encouragement. 💛';
+                else if (mStats.todayPct >= 75 && lStats.todayPct < 50) nudge = myName + '\'s ahead today — maybe send ' + partnerName + ' some encouragement. 💛';
+                else if (lStats.todayPct >= 75 && mStats.todayPct < 50) nudge = partnerName + '\'s ahead today — maybe send ' + myName + ' some encouragement. 💛';
                 else nudge = 'Keep cheering each other on — you go further together.';
                 html += '<div class="together-nudge">' + nudge + '</div>';
                 html += '</div>';
@@ -6914,9 +7065,15 @@
         function cloudSyncAll(callback) {
             if (!fbReady || !fbDB) { if (callback) callback(); return; }
             refreshSlotUids(function() {
-                // Sync this account plus whichever real accounts currently own the 'mahdi'/
-                // 'lashawn' slots, so Together/Spectate can see partner progress by UID.
-                const users = Array.from(new Set([currentUser, slotUid.mahdi, slotUid.lashawn].filter(Boolean)));
+                // Sync this account, whichever real accounts currently own the 'mahdi'/'lashawn'
+                // slots, and (for any other couple) the partner this account has invite-paired
+                // with — so Together/Spectate/Team Mode can see partner progress by UID.
+                const users = Array.from(new Set([
+                    currentUser,
+                    slotUid.mahdi,
+                    slotUid.lashawn,
+                    (data[currentUser] ? data[currentUser].partnerUid : null)
+                ].filter(Boolean)));
                 if (users.length === 0) { if (callback) callback(); return; }
                 cloudSyncAllUsers(users, callback);
             });
@@ -6963,6 +7120,7 @@
                             applyThemeMode();
                             render();
                         }
+                        checkInviteRedemption();
                         checkTeamReset();
                         if (callback) callback();
                     }
@@ -7000,13 +7158,18 @@
             // up first, so a fresh journey or a restart doesn't always replay the same sequence
             // from the top. Stable within a journey — only rerolled on Reset Journey.
             if (typeof data[u].contentSeed !== 'number') data[u].contentSeed = Math.floor(Math.random() * 100000);
-            // Team Mode (mutual opt-in, Mahdi/Lashawn pair only): when both accounts have it on,
-            // a reset by either one also resets the other. lastTeamResetAt/Reason is the event a
+            // Team Mode (mutual opt-in, any paired couple): when both accounts have it on, a
+            // reset by either one also resets the other. lastTeamResetAt/Reason is the event a
             // partner's device watches for; lastSeenPartnerResetAt is this account's own dedup
             // marker so it doesn't re-prompt for an event it already honored.
             if (typeof data[u].teamMode !== 'boolean') data[u].teamMode = false;
             if (typeof data[u].lastTeamResetAt !== 'number') data[u].lastTeamResetAt = 0;
             if (typeof data[u].lastSeenPartnerResetAt !== 'number') data[u].lastSeenPartnerResetAt = 0;
+            // Partner pairing (invite codes): partnerUid is set once a code is redeemed by/with
+            // this account; inviteCode is this account's own outstanding code (if it generated
+            // one and is waiting for a partner to redeem it).
+            if (typeof data[u].partnerUid === 'undefined') data[u].partnerUid = null;
+            if (typeof data[u].inviteCode === 'undefined') data[u].inviteCode = null;
         }
 
         // Picks a stable-but-randomized index into a day-rotating content array: same offset
@@ -8538,6 +8701,7 @@
                                 const profileType = doc.exists ? (doc.data().profileType || 'default') : 'default';
                                 if (!data[user.uid]) data[user.uid] = {};
                                 data[user.uid].profileType = profileType;
+                                if (doc.exists && doc.data().displayName) data[user.uid].displayName = doc.data().displayName;
                                 ensureUserKeys(user.uid);
                                 login(user.uid);
                             }).catch(function(e) {
