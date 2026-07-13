@@ -49,8 +49,14 @@
         }
 
         body.lashawn-theme .btn-primary {
-            background: #e6b8c2 !important;
+            background: linear-gradient(135deg, #f0cdd6, #e6b8c2 55%, #d49aa8) !important;
             color: #2e1a2e !important;
+            box-shadow: 0 4px 16px rgba(230,184,194,0.3);
+        }
+
+        body.lashawn-theme .btn-primary:hover {
+            background: linear-gradient(135deg, #f5dde3, #e6b8c2 55%, #d49aa8) !important;
+            box-shadow: 0 10px 28px rgba(230,184,194,0.4);
         }
 
         body.lashawn-theme .btn-small:hover,
@@ -344,14 +350,32 @@
         }
 
         .header {
-            border-top: 2px solid #d4af37;
-            border-bottom: 1px solid #8b5a5a;
-            padding: 40px 0;
-            margin-bottom: 50px;
+            border-top: none;
+            border-bottom: 1px solid rgba(212,175,55,0.22);
+            padding: 36px 0 32px;
+            margin-bottom: 44px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 0 0 3px 3px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
         }
 
         body.light-mode .header {
-            border-bottom: 1px solid #2d7a4a;
+            border-bottom: 1px solid rgba(45,122,74,0.3);
+        }
+
+        body.light-mode .header::before {
+            background: linear-gradient(90deg, transparent, #2d7a4a, transparent);
+        }
+
+        body.lashawn-theme .header::before {
+            background: linear-gradient(90deg, transparent, #e6b8c2, transparent);
         }
 
         .header-top {
@@ -410,19 +434,19 @@
         .more-menu {
             position: absolute;
             right: 0;
-            top: calc(100% + 6px);
-            background: #2e1a1a;
-            border: 1px solid #d4af37;
-            border-radius: 4px;
+            top: calc(100% + 8px);
+            background: linear-gradient(165deg, #33201f, #2a1717);
+            border: 1px solid rgba(212,175,55,0.5);
+            border-radius: 14px;
             min-width: 170px;
             z-index: 500;
             overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.45);
         }
 
         body.lashawn-theme .more-menu {
-            background: #2e1a2e;
-            border-color: #e6b8c2;
+            background: linear-gradient(165deg, #38223a, #2e1a2e);
+            border-color: rgba(230,184,194,0.5);
         }
 
         .more-item {
@@ -664,11 +688,12 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            background: rgba(0,0,0,0.15);
+            background: rgba(0,0,0,0.16);
             border: 1px solid rgba(212,175,55,0.2);
-            border-radius: 10px;
-            padding: 14px 10px;
+            border-radius: 14px;
+            padding: 16px 10px;
             margin-bottom: 8px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
         }
 
         body.lashawn-theme .stats { border-color: rgba(230,184,194,0.2); }
@@ -781,12 +806,29 @@
 
         /* Hybrid layout: slim, always-open section boxes (lighter than the original heavy boxes) */
         .pillar-slim {
-            padding: 14px 16px !important;
-            border: 1px solid rgba(139, 90, 90, 0.5);
-            border-radius: 10px;
-            margin-bottom: 14px;
+            padding: 18px 20px !important;
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            background: linear-gradient(160deg, rgba(212,175,55,0.07), rgba(212,175,55,0.015) 60%);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+            transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
         }
-        body.light-mode .pillar-slim { border-color: rgba(45, 122, 74, 0.4); }
+        .pillar-slim:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.24);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+        body.light-mode .pillar-slim {
+            border-color: rgba(45, 122, 74, 0.3);
+            background: linear-gradient(160deg, rgba(45,122,74,0.06), rgba(45,122,74,0.01) 60%);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+        body.light-mode .pillar-slim:hover { border-color: rgba(45, 122, 74, 0.5); }
+        body.lashawn-theme .pillar-slim {
+            border-color: rgba(230,184,194,0.28);
+            background: linear-gradient(160deg, rgba(230,184,194,0.09), rgba(230,184,194,0.02) 60%);
+        }
+        body.lashawn-theme .pillar-slim:hover { border-color: rgba(230,184,194,0.5); }
         .pillar-slim::before { display: none; }
         .pillar-slim .pillar-header-static {
             padding-bottom: 8px !important;
@@ -1581,6 +1623,97 @@
             border-radius: 12px;
             cursor: pointer;
             white-space: nowrap;
+        }
+
+        .job-tracker-box { max-width: 560px; text-align: left; }
+        .job-tracker-open-btn {
+            background: rgba(212,175,55,0.15);
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        body.lashawn-theme .job-tracker-open-btn {
+            border-color: #e6b8c2;
+            color: #e6b8c2;
+            background: rgba(230,184,194,0.15);
+        }
+        .job-tracker-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .job-tracker-form input,
+        .job-tracker-form select {
+            background: rgba(212,175,55,0.12);
+            border: 1px solid #d4af37;
+            color: inherit;
+            padding: 10px 12px;
+            font-size: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            border-radius: 6px;
+            width: 100%;
+        }
+        body.lashawn-theme .job-tracker-form input,
+        body.lashawn-theme .job-tracker-form select {
+            border-color: #e6b8c2;
+            background: rgba(230,184,194,0.15);
+        }
+        .job-tracker-form button { grid-column: 1 / -1; }
+        .job-tracker-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 42vh;
+            overflow-y: auto;
+        }
+        .job-tracker-empty {
+            font-size: 12px;
+            opacity: 0.7;
+            font-style: italic;
+            text-align: center;
+            padding: 12px 0;
+        }
+        .job-tracker-row {
+            display: grid;
+            grid-template-columns: 1.3fr 1.1fr auto auto auto;
+            gap: 8px;
+            align-items: center;
+            padding: 10px 12px;
+            border: 1px solid rgba(212,175,55,0.4);
+            border-radius: 10px;
+            background: rgba(212,175,55,0.05);
+        }
+        body.lashawn-theme .job-tracker-row {
+            border-color: rgba(230,184,194,0.4);
+            background: rgba(230,184,194,0.05);
+        }
+        .job-tracker-company { font-size: 13px; font-weight: 800; }
+        .job-tracker-role { font-size: 11px; opacity: 0.75; }
+        .job-tracker-date { font-size: 10px; opacity: 0.6; white-space: nowrap; }
+        .job-tracker-status-select {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 6px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+        }
+        .job-tracker-del {
+            background: transparent;
+            border: none;
+            color: #ff6b6b;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 2px 6px;
         }
 
         .optional-photo-btn {
@@ -2441,17 +2574,31 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease, opacity 0.25s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212,175,55,0.25);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(212,175,55,0.2);
         }
 
         .btn-primary {
-            background: #d4af37;
-            color: #5a1f1f;
+            background: linear-gradient(135deg, #e9c766, #d4af37 55%, #b8952e);
+            color: #3a1810;
+            border-color: #d4af37;
+            box-shadow: 0 4px 16px rgba(212,175,55,0.3);
         }
 
         .btn-primary:hover {
-            background: transparent;
-            color: #d4af37;
+            background: linear-gradient(135deg, #f2d47a, #d4af37 55%, #b8952e);
+            color: #3a1810;
+            box-shadow: 0 10px 28px rgba(212,175,55,0.4);
         }
 
         .btn-secondary:hover {
@@ -2460,15 +2607,24 @@
         }
 
         .summary-box {
-            padding: 30px;
-            border: 1px solid #8b5a5a;
-            margin-bottom: 20px;
+            padding: 28px 30px;
+            border: 1px solid rgba(212,175,55,0.22);
+            border-radius: 16px;
+            margin-bottom: 22px;
             position: relative;
+            background: linear-gradient(160deg, rgba(212,175,55,0.05), rgba(212,175,55,0.01) 60%);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.16);
         }
 
         body.light-mode .summary-box {
-            border: 1px solid #2d7a4a;
-            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(45,122,74,0.3);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+
+        body.lashawn-theme .summary-box {
+            border-color: rgba(230,184,194,0.28);
+            background: linear-gradient(160deg, rgba(230,184,194,0.07), rgba(230,184,194,0.015) 60%);
         }
 
         .summary-title {
@@ -2770,7 +2926,9 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -2784,19 +2942,20 @@
         }
 
         .modal-box {
-            background: #2e1a1a;
-            border: 2px solid #d4af37;
+            background: linear-gradient(165deg, #33201f, #2a1717);
+            border: 1px solid rgba(212,175,55,0.5);
             padding: 40px 32px;
             max-width: 380px;
             width: 90%;
             text-align: center;
-            border-radius: 6px;
-            animation: modalPop 0.35s ease;
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         body.lashawn-theme .modal-box {
-            background: #2e1a2e;
-            border-color: #e6b8c2;
+            background: linear-gradient(165deg, #38223a, #2e1a2e);
+            border-color: rgba(230,184,194,0.5);
         }
 
         @keyframes modalPop {
@@ -3450,6 +3609,30 @@
                 <button class="modal-btn modal-btn-primary" onclick="saveCustomizeLayout()">Save Layout</button>
                 <button class="modal-btn modal-btn-ghost" onclick="resetCustomizeLayout()">Reset to Default</button>
                 <button class="modal-btn modal-btn-ghost" onclick="closeCustomizeLayout()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="jobTrackerModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box job-tracker-box">
+            <div class="modal-title">📋 Job Application Tracker</div>
+            <div class="customize-hint">Every company you apply to, in one running list. Add one below — it's saved to your account and syncs across your devices.</div>
+            <div class="job-tracker-form">
+                <input type="text" id="jtCompany" placeholder="Company">
+                <input type="text" id="jtRole" placeholder="Role / Position">
+                <select id="jtStatus">
+                    <option value="Applied">Applied</option>
+                    <option value="Interviewing">Interviewing</option>
+                    <option value="Offer">Offer</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="No Response">No Response</option>
+                </select>
+                <input type="date" id="jtDate">
+                <button type="button" class="modal-btn modal-btn-primary" onclick="addJobApplication()">+ Add to List</button>
+            </div>
+            <div class="job-tracker-list" id="jobTrackerList"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-ghost" onclick="closeJobTrackerModal()">Close</button>
             </div>
         </div>
     </div>
@@ -4759,6 +4942,98 @@
         function closeCustomizeLayout() {
             document.getElementById('customizeLayoutModal').style.display = 'none';
             _customizeWorking = null;
+        }
+
+        // ===== JOB APPLICATION TRACKER (Job Apps item) =====
+        // A running list, not tied to any single day — applying to a company sticks around
+        // until its status changes or it's removed.
+        function jobStatusColor(status) {
+            switch (status) {
+                case 'Interviewing': return { bg: 'rgba(90,160,255,0.2)', fg: '#5aa0ff' };
+                case 'Offer': return { bg: 'rgba(62,201,107,0.2)', fg: '#3ec96b' };
+                case 'Rejected': return { bg: 'rgba(255,107,107,0.2)', fg: '#ff6b6b' };
+                case 'No Response': return { bg: 'rgba(153,153,153,0.2)', fg: '#999' };
+                default: return { bg: 'rgba(212,175,55,0.2)', fg: '#d4af37' };
+            }
+        }
+
+        function openJobTracker() {
+            if (!currentUser) return;
+            renderJobTrackerList();
+            document.getElementById('jobTrackerModal').style.display = 'flex';
+        }
+
+        function closeJobTrackerModal() {
+            document.getElementById('jobTrackerModal').style.display = 'none';
+        }
+
+        function addJobApplication() {
+            const company = (document.getElementById('jtCompany').value || '').trim();
+            if (!company) { alert('Enter a company name first.'); return; }
+            const role = (document.getElementById('jtRole').value || '').trim();
+            const status = document.getElementById('jtStatus').value || 'Applied';
+            const dateApplied = document.getElementById('jtDate').value || formatDateKey(new Date());
+            if (!data[currentUser].jobApplications) data[currentUser].jobApplications = [];
+            data[currentUser].jobApplications.unshift({
+                id: 'ja-' + Date.now() + '-' + Math.floor(Math.random() * 10000),
+                company: company, role: role, status: status, dateApplied: dateApplied
+            });
+            data[currentUser].lastModified = Date.now();
+            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+            scheduleCloudAutoSave();
+            document.getElementById('jtCompany').value = '';
+            document.getElementById('jtRole').value = '';
+            document.getElementById('jtStatus').value = 'Applied';
+            document.getElementById('jtDate').value = '';
+            renderJobTrackerList();
+            render(); // refresh the tracker button's count
+        }
+
+        function updateJobApplicationStatus(id, status) {
+            const list = data[currentUser].jobApplications || [];
+            const entry = list.find(function(e) { return e.id === id; });
+            if (!entry) return;
+            entry.status = status;
+            data[currentUser].lastModified = Date.now();
+            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+            scheduleCloudAutoSave();
+            renderJobTrackerList();
+        }
+
+        function deleteJobApplication(id) {
+            if (!confirm('Remove this company from your tracker?')) return;
+            data[currentUser].jobApplications = (data[currentUser].jobApplications || []).filter(function(e) { return e.id !== id; });
+            data[currentUser].lastModified = Date.now();
+            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+            scheduleCloudAutoSave();
+            renderJobTrackerList();
+            render();
+        }
+
+        function renderJobTrackerList() {
+            const el = document.getElementById('jobTrackerList');
+            if (!el) return;
+            const list = data[currentUser].jobApplications || [];
+            if (list.length === 0) {
+                el.innerHTML = '<div class="job-tracker-empty">No companies added yet — add your first one above.</div>';
+                return;
+            }
+            let html = '';
+            list.forEach(function(entry) {
+                const c = jobStatusColor(entry.status);
+                html += '<div class="job-tracker-row">';
+                html += '<div class="job-tracker-company">' + escapeHtml(entry.company) + '</div>';
+                html += '<div class="job-tracker-role">' + escapeHtml(entry.role || '—') + '</div>';
+                html += '<div class="job-tracker-date">' + escapeHtml(entry.dateApplied || '') + '</div>';
+                html += '<select class="job-tracker-status-select" style="background:' + c.bg + '; color:' + c.fg + ';" onchange="updateJobApplicationStatus(\'' + entry.id + '\', this.value)">';
+                ['Applied', 'Interviewing', 'Offer', 'Rejected', 'No Response'].forEach(function(s) {
+                    html += '<option value="' + s + '"' + (s === entry.status ? ' selected' : '') + '>' + s + '</option>';
+                });
+                html += '</select>';
+                html += '<button type="button" class="job-tracker-del" onclick="deleteJobApplication(\'' + entry.id + '\')" title="Remove">✕</button>';
+                html += '</div>';
+            });
+            el.innerHTML = html;
         }
 
         function getStartDate() {
@@ -6366,6 +6641,11 @@
                         }
                     }
 
+                    // Job Apps — running company tracker (not day-specific; sticks around across the journey)
+                    if (item === 'Job Apps') {
+                        html += '<button type="button" class="job-tracker-open-btn" onclick="openJobTracker()">📋 Track Applications (' + (data[currentUser].jobApplications || []).length + ')</button>';
+                    }
+
                     // Diet / Nutrition guide (rotating) — for both Diet (Mahdi) and Nutrition (Lashawn)
                     if (item === 'Healthy Choices') {
                         const set = DIET_TIPS[seededIndex(activeOffset, DIET_TIPS.length)];
@@ -7170,6 +7450,10 @@
             // one and is waiting for a partner to redeem it).
             if (typeof data[u].partnerUid === 'undefined') data[u].partnerUid = null;
             if (typeof data[u].inviteCode === 'undefined') data[u].inviteCode = null;
+            // Running job-application list (Job Apps item) — persists across the whole
+            // journey, not tied to any single day, so applying to a company sticks around
+            // until its status changes or it's removed.
+            if (!Array.isArray(data[u].jobApplications)) data[u].jobApplications = [];
         }
 
         // Picks a stable-but-randomized index into a day-rotating content array: same offset
