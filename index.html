@@ -438,11 +438,38 @@
             background: linear-gradient(165deg, #33201f, #2a1717);
             border: 1px solid rgba(212,175,55,0.5);
             border-radius: 14px;
-            min-width: 170px;
+            min-width: 200px;
+            max-height: 74vh;
             z-index: 500;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
             box-shadow: 0 12px 32px rgba(0,0,0,0.45);
         }
+
+        .more-section-label {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #d4af37;
+            opacity: 0.6;
+            padding: 10px 14px 4px;
+            pointer-events: none;
+        }
+
+        body.lashawn-theme .more-section-label { color: #e6b8c2; }
+
+        .more-section-label:not(:first-child) {
+            margin-top: 4px;
+            border-top: 1px solid rgba(212,175,55,0.15);
+            padding-top: 10px;
+        }
+
+        body.lashawn-theme .more-section-label:not(:first-child) {
+            border-top-color: rgba(230,184,194,0.15);
+        }
+
+        .more-section-danger { color: #ff6b6b; opacity: 0.85; }
 
         body.lashawn-theme .more-menu {
             background: linear-gradient(165deg, #38223a, #2e1a2e);
@@ -789,6 +816,12 @@
 
         .tab-content.active {
             display: block;
+            animation: tabFadeIn 0.3s ease;
+        }
+
+        @keyframes tabFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .pillars {
@@ -1123,6 +1156,27 @@
             gap: 12px;
             padding: 12px;
             flex-direction: column;
+            border-radius: 10px;
+        }
+
+        @keyframes itemCheckPulse {
+            0% { transform: scale(1); background: transparent; }
+            35% { transform: scale(1.012); background: rgba(212,175,55,0.14); }
+            100% { transform: scale(1); background: transparent; }
+        }
+
+        .item-check-pulse {
+            animation: itemCheckPulse 0.4s ease;
+        }
+
+        body.lashawn-theme .item-check-pulse {
+            animation-name: itemCheckPulseRose;
+        }
+
+        @keyframes itemCheckPulseRose {
+            0% { transform: scale(1); background: transparent; }
+            35% { transform: scale(1.012); background: rgba(230,184,194,0.16); }
+            100% { transform: scale(1); background: transparent; }
         }
 
         .item input[type="checkbox"] {
@@ -1131,6 +1185,11 @@
             height: 18px;
             cursor: pointer;
             accent-color: #d4af37;
+            transition: transform 0.15s ease;
+        }
+
+        .item input[type="checkbox"]:active {
+            transform: scale(1.15);
         }
 
         .item-label {
@@ -3012,7 +3071,7 @@
             letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.2s ease;
-            border-radius: 4px;
+            border-radius: 10px;
         }
 
         body.lashawn-theme .modal-btn {
@@ -3048,6 +3107,116 @@
         .modal-btn-ghost:hover {
             background: #666;
             color: #fff;
+        }
+
+        .modal-btn-danger {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .modal-btn-danger:hover {
+            background: #ff6b6b;
+            color: #2a1010;
+        }
+
+        /* ===== Custom toast notifications (replaces window.alert) ===== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            max-width: 92vw;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            background: linear-gradient(165deg, #33201f, #2a1717);
+            border: 1px solid rgba(212,175,55,0.5);
+            border-radius: 14px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+            padding: 14px 40px 14px 18px;
+            max-width: 420px;
+            width: 90vw;
+            color: #fff;
+            font-size: 13px;
+            line-height: 1.55;
+            white-space: pre-line;
+            position: relative;
+            animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        body.lashawn-theme .toast {
+            background: linear-gradient(165deg, #38223a, #2e1a2e);
+            border-color: rgba(230,184,194,0.5);
+        }
+
+        body.light-mode .toast {
+            background: linear-gradient(165deg, #fdf8ee, #f2e8d0);
+            color: #2e1a1a;
+            border-color: rgba(45,122,74,0.4);
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-16px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(-10px) scale(0.95); }
+        }
+
+        .toast.toast-leaving { animation: toastOut 0.25s ease forwards; }
+
+        .toast-close {
+            position: absolute;
+            top: 8px; right: 8px;
+            background: none;
+            border: none;
+            color: inherit;
+            opacity: 0.55;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 0;
+        }
+
+        .toast-close:hover { opacity: 1; transform: none; box-shadow: none; }
+
+        /* ===== Custom confirm/prompt modals (replaces window.confirm / window.prompt) ===== */
+        .confirm-box { max-width: 420px; text-align: left; }
+
+        .confirm-message {
+            font-size: 13px;
+            line-height: 1.65;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            white-space: pre-line;
+        }
+
+        .modal-input {
+            display: block;
+            width: 100%;
+            background: rgba(212,175,55,0.12);
+            border: 1px solid #d4af37;
+            color: inherit;
+            padding: 12px 14px;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 600;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        body.lashawn-theme .modal-input {
+            border-color: #e6b8c2;
+            background: rgba(230,184,194,0.15);
         }
 
         .bottom-nav {
@@ -3436,19 +3605,27 @@
                         <div class="more-menu-wrap">
                             <button class="btn-small" onclick="toggleMoreMenu(event)">⚙ More</button>
                             <div id="moreMenu" class="more-menu" style="display:none;">
+                                <div class="more-section-label">Cloud Sync</div>
                                 <button class="more-item" onclick="cloudSave(); closeMoreMenu();">☁️ Save to Cloud</button>
                                 <button class="more-item" onclick="cloudLoad(); closeMoreMenu();">☁️ Load from Cloud</button>
+
+                                <div class="more-section-label">Together</div>
                                 <button class="more-item" onclick="enterSpectator(); closeMoreMenu();">👁 Spectate Both</button>
                                 <button class="more-item" onclick="getInviteCode(); closeMoreMenu();">🔗 Get Invite Code</button>
                                 <button class="more-item" onclick="redeemInviteCode(); closeMoreMenu();">🔗 Enter Partner's Code</button>
                                 <button class="more-item" onclick="unpairPartner(); closeMoreMenu();">🔗 Unpair from Partner</button>
                                 <button class="more-item" id="teamModeMenuItem" onclick="toggleTeamMode(); closeMoreMenu();">🤝 Team Mode: Off</button>
-                                <button class="more-item" onclick="openCustomizeLayout(); closeMoreMenu();">⚙️ Customize Layout (reorder / hide sections)</button>
-                                <button class="more-item" onclick="setStartDate(); closeMoreMenu();">📅 Set Start Date (fix day count)</button>
+
+                                <div class="more-section-label">Personalize</div>
+                                <button class="more-item" onclick="openCustomizeLayout(); closeMoreMenu();">⚙️ Customize Layout</button>
+                                <button class="more-item" onclick="setStartDate(); closeMoreMenu();">📅 Set Start Date</button>
+
+                                <div class="more-section-label">Data</div>
                                 <button class="more-item" onclick="exportData(); closeMoreMenu();">⬇ Backup</button>
                                 <button class="more-item" onclick="document.getElementById('importFile').click(); closeMoreMenu();">⬆ Restore</button>
+
+                                <div class="more-section-label more-section-danger">Danger Zone</div>
                                 <button class="more-item more-item-danger" onclick="resetData(); closeMoreMenu();">↺ Reset Journey</button>
-                                <button class="more-item" onclick="logOut(); closeMoreMenu();">🚪 Log Out</button>
                             </div>
                         </div>
                         <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importData(event)">
@@ -3613,6 +3790,31 @@
         </div>
     </div>
 
+    <div id="toastContainer" class="toast-container"></div>
+
+    <div id="confirmModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box confirm-box">
+            <div class="modal-title" id="confirmModalTitle">Are you sure?</div>
+            <div class="confirm-message" id="confirmModalMessage"></div>
+            <div class="modal-buttons">
+                <button type="button" class="modal-btn modal-btn-primary" id="confirmModalYesBtn" onclick="resolveConfirmModal(true)">Confirm</button>
+                <button type="button" class="modal-btn modal-btn-ghost" onclick="resolveConfirmModal(false)">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="promptModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box confirm-box">
+            <div class="modal-title" id="promptModalTitle">One more thing</div>
+            <div class="confirm-message" id="promptModalMessage"></div>
+            <input type="text" id="promptModalInput" class="modal-input" onkeydown="if(event.key==='Enter'){event.preventDefault(); resolvePromptModal(true);}">
+            <div class="modal-buttons">
+                <button type="button" class="modal-btn modal-btn-primary" onclick="resolvePromptModal(true)">Submit</button>
+                <button type="button" class="modal-btn modal-btn-ghost" onclick="resolvePromptModal(false)">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div id="jobTrackerModal" class="modal-overlay" style="display:none;">
         <div class="modal-box job-tracker-box">
             <div class="modal-title">📋 Job Application Tracker</div>
@@ -3682,6 +3884,83 @@
         // Which real UID (if any) currently owns the 'mahdi' / 'lashawn' style slots — resolved
         // from Firestore so Together/Spectate can find the other partner's data by UID.
         let slotUid = { mahdi: null, lashawn: null };
+
+        // ===== CUSTOM DIALOGS (replace window.alert/confirm/prompt with in-app UI) =====
+        // alert() is simple fire-and-forget, so it's safe to redirect the whole global function
+        // at once — every existing alert('...') call site anywhere in this file automatically
+        // uses the toast below with no per-call-site changes needed.
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            if (!container) { return; }
+            const el = document.createElement('div');
+            el.className = 'toast';
+            const textSpan = document.createElement('span');
+            textSpan.textContent = message;
+            el.appendChild(textSpan);
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.className = 'toast-close';
+            closeBtn.textContent = '✕';
+            closeBtn.setAttribute('aria-label', 'Dismiss');
+            closeBtn.onclick = function() { dismissToast(el); };
+            el.appendChild(closeBtn);
+            container.appendChild(el);
+            const duration = Math.min(10000, Math.max(4000, 3000 + message.length * 40));
+            el._timer = setTimeout(function() { dismissToast(el); }, duration);
+        }
+        function dismissToast(el) {
+            if (!el || el._dismissing) return;
+            el._dismissing = true;
+            if (el._timer) clearTimeout(el._timer);
+            el.classList.add('toast-leaving');
+            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 250);
+        }
+        window.alert = function(message) { showToast(String(message)); };
+
+        // confirm()/prompt() are synchronous natively, but a custom modal can't block like that —
+        // every confirm()/prompt() call site in this file was rewritten to use these callback-
+        // based equivalents instead of relying on a synchronous return value.
+        let __confirmResolver = null;
+        let __confirmCancelHandler = null;
+        function showConfirm(message, onYes, opts) {
+            opts = opts || {};
+            document.getElementById('confirmModalTitle').textContent = opts.title || 'Are you sure?';
+            document.getElementById('confirmModalMessage').textContent = message;
+            const yesBtn = document.getElementById('confirmModalYesBtn');
+            yesBtn.textContent = opts.confirmLabel || 'Confirm';
+            yesBtn.className = 'modal-btn ' + (opts.danger ? 'modal-btn-danger' : 'modal-btn-primary');
+            __confirmResolver = onYes;
+            __confirmCancelHandler = opts.onCancel || null;
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+        function resolveConfirmModal(result) {
+            document.getElementById('confirmModal').style.display = 'none';
+            const cb = __confirmResolver;
+            const cancelCb = __confirmCancelHandler;
+            __confirmResolver = null;
+            __confirmCancelHandler = null;
+            if (result && cb) cb();
+            else if (!result && cancelCb) cancelCb();
+        }
+
+        let __promptResolver = null;
+        function showPrompt(message, onSubmit, defaultValue) {
+            document.getElementById('promptModalMessage').textContent = message;
+            const input = document.getElementById('promptModalInput');
+            input.value = defaultValue || '';
+            __promptResolver = onSubmit;
+            document.getElementById('promptModal').style.display = 'flex';
+            setTimeout(function() { input.focus(); }, 50);
+        }
+        function resolvePromptModal(submitted) {
+            const input = document.getElementById('promptModalInput');
+            const value = input.value;
+            document.getElementById('promptModal').style.display = 'none';
+            const cb = __promptResolver;
+            __promptResolver = null;
+            if (submitted && cb) cb(value);
+        }
+
         let viewingOffset = null; // null = today; otherwise specific day offset
         let editingDay = false; // when viewing a past day, must opt-in to edit
         let collapsedPillars = {}; // pillarName -> true if collapsed
@@ -4931,12 +5210,13 @@
         }
 
         function resetCustomizeLayout() {
-            if (!confirm('Reset to the default section order and show all sections?')) return;
-            _customizeWorking = {
-                order: pillarsFor(currentUser).map(function(p) { return p.name; }),
-                hidden: []
-            };
-            renderCustomizeList();
+            showConfirm('Reset to the default section order and show all sections?', function() {
+                _customizeWorking = {
+                    order: pillarsFor(currentUser).map(function(p) { return p.name; }),
+                    hidden: []
+                };
+                renderCustomizeList();
+            });
         }
 
         function closeCustomizeLayout() {
@@ -5001,13 +5281,14 @@
         }
 
         function deleteJobApplication(id) {
-            if (!confirm('Remove this company from your tracker?')) return;
-            data[currentUser].jobApplications = (data[currentUser].jobApplications || []).filter(function(e) { return e.id !== id; });
-            data[currentUser].lastModified = Date.now();
-            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
-            scheduleCloudAutoSave();
-            renderJobTrackerList();
-            render();
+            showConfirm('Remove this company from your tracker?', function() {
+                data[currentUser].jobApplications = (data[currentUser].jobApplications || []).filter(function(e) { return e.id !== id; });
+                data[currentUser].lastModified = Date.now();
+                try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+                scheduleCloudAutoSave();
+                renderJobTrackerList();
+                render();
+            }, { danger: true, confirmLabel: 'Remove' });
         }
 
         function renderJobTrackerList() {
@@ -5047,23 +5328,25 @@
             if (!currentUser) { alert('Log in first.'); return; }
             const current = data[currentUser].startDate || '2026-06-26';
             const todayOffset = getTodayOffset();
-            const input = prompt(
+            showPrompt(
                 'Your journey currently starts on ' + current + ', which makes today Day ' + (todayOffset + 1) + '.\n\n' +
                 'Enter the correct START date (the date that was Day 1) as YYYY-MM-DD.\n' +
                 'For example, if today should be Day 2, set the start date to yesterday.',
+                function(input) {
+                    if (!input) return;
+                    const m = input.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+                    if (!m) { alert('Please use the format YYYY-MM-DD, e.g. 2026-06-28'); return; }
+                    data[currentUser].startDate = input.trim();
+                    data[currentUser].lastModified = Date.now();
+                    try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+                    scheduleCloudAutoSave();
+                    pillarsInitialized = false;
+                    render();
+                    const newOffset = getTodayOffset();
+                    alert('Start date set to ' + input.trim() + '. Today is now Day ' + (newOffset + 1) + '.');
+                },
                 current
             );
-            if (!input) return;
-            const m = input.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
-            if (!m) { alert('Please use the format YYYY-MM-DD, e.g. 2026-06-28'); return; }
-            data[currentUser].startDate = input.trim();
-            data[currentUser].lastModified = Date.now();
-            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
-            scheduleCloudAutoSave();
-            pillarsInitialized = false;
-            render();
-            const newOffset = getTodayOffset();
-            alert('Start date set to ' + input.trim() + '. Today is now Day ' + (newOffset + 1) + '.');
         }
 
         // Parse a YYYY-MM-DD string as LOCAL date (avoids UTC day-shift)
@@ -5172,14 +5455,20 @@
                 return;
             }
             const next = !data[currentUser].teamMode;
-            if (next && !confirm('Turn on Team Mode?\n\nIf you or your partner miss two weeks under the 70% goal, or either of you taps "Reset Journey," BOTH of your journeys reset together — as a team.\n\nThis only takes effect once your partner also turns Team Mode on in their own account. You\'ll each get a chance to confirm before an actual reset happens.')) return;
-            data[currentUser].teamMode = next;
-            data[currentUser].lastModified = Date.now();
-            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
-            cloudSaveSilent();
-            alert(next
-                ? '🤝 Team Mode is ON for your account. Once your partner turns it on too, your resets link together.'
-                : 'Team Mode turned off. Your resets are independent again.');
+            function applyTeamModeToggle() {
+                data[currentUser].teamMode = next;
+                data[currentUser].lastModified = Date.now();
+                try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+                cloudSaveSilent();
+                alert(next
+                    ? '🤝 Team Mode is ON for your account. Once your partner turns it on too, your resets link together.'
+                    : 'Team Mode turned off. Your resets are independent again.');
+            }
+            if (next) {
+                showConfirm('Turn on Team Mode?\n\nIf you or your partner miss two weeks under the 70% goal, or either of you taps "Reset Journey," BOTH of your journeys reset together — as a team.\n\nThis only takes effect once your partner also turns Team Mode on in their own account. You\'ll each get a chance to confirm before an actual reset happens.', applyTeamModeToggle);
+            } else {
+                applyTeamModeToggle();
+            }
         }
         document.addEventListener('click', function(e) {
             const wrap = document.querySelector('.more-menu-wrap');
@@ -5658,16 +5947,18 @@
             const reasonText = (partner.lastTeamResetReason === 'weekly-accountability')
                 ? "Your partner's week fell short of the 70% goal."
                 : "Your partner started a new journey.";
-            const proceed = confirm('🤝 Team Mode\n\n' + reasonText + ' Since you both turned on Team Mode, you reset together — today becomes Day 1 for you too.\n\nYour current progress is archived to Past Journeys first. This can\'t be undone.\n\nReset now?');
-            teamResetPromptShown = false;
-            if (proceed) {
+            showConfirm('🤝 Team Mode\n\n' + reasonText + ' Since you both turned on Team Mode, you reset together — today becomes Day 1 for you too.\n\nYour current progress is archived to Past Journeys first. This can\'t be undone.\n\nReset now?', function() {
+                teamResetPromptShown = false;
                 data[currentUser].lastSeenPartnerResetAt = partnerEventAt;
                 if (performReset('team')) {
                     alert('🔄 Reset together. Fresh start, side by side. 💛');
                 }
-            }
-            // If declined, lastSeenPartnerResetAt is left untouched — it'll ask again on the
-            // next sync rather than letting the event quietly go unhandled.
+            }, {
+                confirmLabel: 'Reset Now',
+                // If declined, lastSeenPartnerResetAt is left untouched — it'll ask again on the
+                // next sync rather than letting the event quietly go unhandled.
+                onCancel: function() { teamResetPromptShown = false; }
+            });
         }
 
         // ===== PARTNER PAIRING (invite codes) =====
@@ -5715,28 +6006,29 @@
                 alert('You\'re already paired with ' + nameFor(data[currentUser].partnerUid) + '. Unpair first if you want to link with someone else.');
                 return;
             }
-            const raw = prompt('Enter your partner\'s invite code:');
-            if (!raw) return;
-            const code = raw.trim().toUpperCase();
-            if (!code) return;
-            fbDB.runTransaction(function(tx) {
-                const ref = fbDB.collection('invites').doc(code);
-                return tx.get(ref).then(function(doc) {
-                    if (!doc.exists) return Promise.reject({ message: 'That code doesn\'t match an active invite. Double check with your partner.' });
-                    const invite = doc.data();
-                    if (invite.ownerUid === currentUser) return Promise.reject({ message: 'That\'s your own invite code — have your partner enter it, not you.' });
-                    if (invite.redeemedBy && invite.redeemedBy !== currentUser) return Promise.reject({ message: 'That code has already been used.' });
-                    tx.update(ref, { redeemedBy: currentUser, redeemedAt: new Date().toISOString() });
-                    return invite.ownerUid;
+            showPrompt('Enter your partner\'s invite code:', function(raw) {
+                if (!raw) return;
+                const code = raw.trim().toUpperCase();
+                if (!code) return;
+                fbDB.runTransaction(function(tx) {
+                    const ref = fbDB.collection('invites').doc(code);
+                    return tx.get(ref).then(function(doc) {
+                        if (!doc.exists) return Promise.reject({ message: 'That code doesn\'t match an active invite. Double check with your partner.' });
+                        const invite = doc.data();
+                        if (invite.ownerUid === currentUser) return Promise.reject({ message: 'That\'s your own invite code — have your partner enter it, not you.' });
+                        if (invite.redeemedBy && invite.redeemedBy !== currentUser) return Promise.reject({ message: 'That code has already been used.' });
+                        tx.update(ref, { redeemedBy: currentUser, redeemedAt: new Date().toISOString() });
+                        return invite.ownerUid;
+                    });
+                }).then(function(ownerUid) {
+                    data[currentUser].partnerUid = ownerUid;
+                    data[currentUser].lastModified = Date.now();
+                    try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+                    cloudSaveSilent();
+                    alert('🔗 Paired! Once your partner\'s app syncs, you\'ll both see each other\'s progress in Together and Spectate.');
+                }).catch(function(err) {
+                    alert(err && err.message ? err.message : 'Could not redeem that code.');
                 });
-            }).then(function(ownerUid) {
-                data[currentUser].partnerUid = ownerUid;
-                data[currentUser].lastModified = Date.now();
-                try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
-                cloudSaveSilent();
-                alert('🔗 Paired! Once your partner\'s app syncs, you\'ll both see each other\'s progress in Together and Spectate.');
-            }).catch(function(err) {
-                alert(err && err.message ? err.message : 'Could not redeem that code.');
             });
         }
 
@@ -5763,13 +6055,14 @@
             if (!currentUser || !data[currentUser]) return;
             if (!data[currentUser].partnerUid) { alert('You\'re not paired with anyone yet.'); return; }
             const partnerName = nameFor(data[currentUser].partnerUid);
-            if (!confirm('Unpair from ' + partnerName + '?\n\nThey\'ll stop appearing in your Together/Spectate view. This only unpairs your side — you can pair again anytime with a new invite code.')) return;
-            data[currentUser].partnerUid = null;
-            data[currentUser].inviteCode = null;
-            data[currentUser].lastModified = Date.now();
-            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
-            cloudSaveSilent();
-            alert('Unpaired from ' + partnerName + '.');
+            showConfirm('Unpair from ' + partnerName + '?\n\nThey\'ll stop appearing in your Together/Spectate view. This only unpairs your side — you can pair again anytime with a new invite code.', function() {
+                data[currentUser].partnerUid = null;
+                data[currentUser].inviteCode = null;
+                data[currentUser].lastModified = Date.now();
+                try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+                cloudSaveSilent();
+                alert('Unpaired from ' + partnerName + '.');
+            }, { danger: true, confirmLabel: 'Unpair' });
         }
 
         function showCheckin() {
@@ -5838,12 +6131,13 @@
         }
 
         function deleteCheckin() {
-            if (!confirm('Delete your check-in for this day?')) return;
-            const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
-            const dateKey = getDateKey(activeOffset);
-            if (data[currentUser].checkins) delete data[currentUser].checkins[dateKey];
-            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
-            render();
+            showConfirm('Delete your check-in for this day?', function() {
+                const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
+                const dateKey = getDateKey(activeOffset);
+                if (data[currentUser].checkins) delete data[currentUser].checkins[dateKey];
+                try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+                render();
+            }, { danger: true, confirmLabel: 'Delete' });
         }
 
         function switchTab(tab, btnEl) {
@@ -6247,9 +6541,12 @@
             if (!a) { alert('That archived journey could not be found.'); return; }
 
             // Safety: archive the CURRENT (post-reset) journey first, so nothing is lost either way
-            const proceed = confirm('Restore this archived journey?\n\nThis will bring back the days, notes, photos, emotions, and check-ins from that journey, and set them as your current one. Your present journey will be safely archived first, so nothing is lost. Continue?');
-            if (!proceed) return;
+            showConfirm('Restore this archived journey?\n\nThis will bring back the days, notes, photos, emotions, and check-ins from that journey, and set them as your current one. Your present journey will be safely archived first, so nothing is lost. Continue?', function() {
+                doRestoreJourney(i, a, archives);
+            }, { confirmLabel: 'Restore' });
+        }
 
+        function doRestoreJourney(i, a, archives) {
             const u = data[currentUser];
             const today = new Date();
             const todayStr = formatDateKey(today);
@@ -7099,9 +7396,10 @@
         }
 
         function enableDayEdit() {
-            if (!confirm('Edit this past day?\n\nThis lets you change what was logged. Only do this if you genuinely need to correct it — your past days are meant to stay honest.')) return;
-            editingDay = true;
-            loadToday();
+            showConfirm('Edit this past day?\n\nThis lets you change what was logged. Only do this if you genuinely need to correct it — your past days are meant to stay honest.', function() {
+                editingDay = true;
+                loadToday();
+            }, { confirmLabel: 'Edit Day' });
         }
 
         function finishDayEdit() {
@@ -7708,33 +8006,36 @@
             const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
             const nextOffset = activeOffset + 1;
             if (nextOffset > 74) { closeSaveModal(); return; }
-            if (!confirm('Move to Day ' + (nextOffset + 1) + '?')) return;
-            viewingOffset = (nextOffset === getTodayOffset()) ? null : nextOffset;
-            closeSaveModal();
-            render();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showConfirm('Move to Day ' + (nextOffset + 1) + '?', function() {
+                viewingOffset = (nextOffset === getTodayOffset()) ? null : nextOffset;
+                closeSaveModal();
+                render();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, { confirmLabel: 'Move' });
         }
 
         function goNextDay() {
             const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
             const nextOffset = activeOffset + 1;
             if (nextOffset > 74) { alert('You\'re on the last day of your journey (Day 75)!'); return; }
-            if (!confirm('Move to Day ' + (nextOffset + 1) + '? Your current day will be saved first.')) return;
-            save();
-            viewingOffset = (nextOffset === getTodayOffset()) ? null : nextOffset;
-            render();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showConfirm('Move to Day ' + (nextOffset + 1) + '? Your current day will be saved first.', function() {
+                save();
+                viewingOffset = (nextOffset === getTodayOffset()) ? null : nextOffset;
+                render();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, { confirmLabel: 'Move' });
         }
 
         function prevDay() {
             const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
             const prevOffset = activeOffset - 1;
             if (prevOffset < 0) { alert('You\'re on Day 1 — the beginning of your journey!'); return; }
-            if (!confirm('Move back to Day ' + (prevOffset + 1) + '? Your current day will be saved first.')) return;
-            save();
-            viewingOffset = (prevOffset === getTodayOffset()) ? null : prevOffset;
-            render();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showConfirm('Move back to Day ' + (prevOffset + 1) + '? Your current day will be saved first.', function() {
+                save();
+                viewingOffset = (prevOffset === getTodayOffset()) ? null : prevOffset;
+                render();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, { confirmLabel: 'Move' });
         }
 
         // ===== EXPORT =====
@@ -8110,6 +8411,14 @@
             render();
         }
 
+        // Brief satisfying pulse when an item gets checked off.
+        function pulseItem(wrap) {
+            wrap.classList.remove('item-check-pulse');
+            void wrap.offsetWidth; // restart the animation if the item was just re-checked
+            wrap.classList.add('item-check-pulse');
+            setTimeout(function() { wrap.classList.remove('item-check-pulse'); }, 450);
+        }
+
         function tryCheck(itemKey) {
             const checkbox = document.getElementById(itemKey);
             if (!checkbox) return;
@@ -8134,7 +8443,7 @@
                         alert('Log at least one cup of water before checking this off.');
                         return;
                     }
-                    if (wrap) wrap.classList.add('item-collapsed');
+                    if (wrap) { wrap.classList.add('item-collapsed'); pulseItem(wrap); }
                     lastActivePillar = itemKey.split('-')[0];
                     updateStats();
                     renderJumpMenu();
@@ -8144,7 +8453,7 @@
 
                 // Notes are OPTIONAL now — checking off just marks it done and collapses it to one line.
                 lockGoalField(itemKey, true);
-                if (wrap) wrap.classList.add('item-collapsed');
+                if (wrap) { wrap.classList.add('item-collapsed'); pulseItem(wrap); }
             } else {
                 // Unchecked — expand and unlock for editing
                 lockGoalField(itemKey, false);
@@ -8402,13 +8711,14 @@
         }
 
         function deleteEmotion() {
-            if (!confirm('Delete your check-in for this day and start fresh?')) return;
-            const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
-            const dateKey = getDateKey(activeOffset);
-            if (data[currentUser].emotions) delete data[currentUser].emotions[dateKey];
-            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
-            selectedEmotion = null;
-            renderEmotions();
+            showConfirm('Delete your check-in for this day and start fresh?', function() {
+                const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
+                const dateKey = getDateKey(activeOffset);
+                if (data[currentUser].emotions) delete data[currentUser].emotions[dateKey];
+                try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+                selectedEmotion = null;
+                renderEmotions();
+            }, { danger: true, confirmLabel: 'Delete' });
         }
 
         function pickEmotion(emotion) {
@@ -8813,43 +9123,47 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
+                let imported;
                 try {
-                    const imported = JSON.parse(e.target.result);
-                    if (!imported || typeof imported !== 'object' || Object.keys(imported).length === 0) {
-                        alert('That doesn\'t look like a valid backup file.');
-                        return;
-                    }
-                    if (confirm('Restore this backup?\n\nThis replaces BOTH accounts\' data with the saved version, and (if connected) pushes it to the cloud so both devices get it.')) {
-                        data = imported;
-                        // Re-run migration to ensure all keys exist on every account in the
-                        // backup, and stamp as freshly authoritative so it wins the next sync.
-                        const now = Date.now();
-                        Object.keys(data).forEach(function(u) {
-                            if (!data[u]) data[u] = {};
-                            ensureUserKeys(u);
-                            data[u].lastModified = now;
-                        });
-                        // Never leave the currently signed-in account without a record, even if
-                        // this backup predates their account.
-                        if (currentUser && !data[currentUser]) {
-                            data[currentUser] = {};
-                            ensureUserKeys(currentUser);
-                            data[currentUser].lastModified = now;
-                        }
-                        localStorage.setItem('75data', JSON.stringify(data));
-                        // Push every restored account up to the cloud so the restore reaches every device
-                        pushBothToCloud(function(pushed) {
-                            if (pushed) {
-                                alert('✅ Backup restored — and synced to the cloud for both accounts.\n\nOn the other device, open the app (or tap ☁️ Load from Cloud) to pull it down.');
-                            } else {
-                                alert('✅ Backup restored on this device.\n\n(Cloud wasn\'t connected, so it didn\'t sync — when you\'re online, your changes will push up automatically.)');
-                            }
-                        });
-                        if (currentUser) { applyThemeMode(); render(); }
-                    }
+                    imported = JSON.parse(e.target.result);
                 } catch (err) {
                     alert('Could not read that file. Make sure it\'s a valid backup.');
+                    event.target.value = '';
+                    return;
                 }
+                if (!imported || typeof imported !== 'object' || Object.keys(imported).length === 0) {
+                    alert('That doesn\'t look like a valid backup file.');
+                    event.target.value = '';
+                    return;
+                }
+                showConfirm('Restore this backup?\n\nThis replaces BOTH accounts\' data with the saved version, and (if connected) pushes it to the cloud so both devices get it.', function() {
+                    data = imported;
+                    // Re-run migration to ensure all keys exist on every account in the
+                    // backup, and stamp as freshly authoritative so it wins the next sync.
+                    const now = Date.now();
+                    Object.keys(data).forEach(function(u) {
+                        if (!data[u]) data[u] = {};
+                        ensureUserKeys(u);
+                        data[u].lastModified = now;
+                    });
+                    // Never leave the currently signed-in account without a record, even if
+                    // this backup predates their account.
+                    if (currentUser && !data[currentUser]) {
+                        data[currentUser] = {};
+                        ensureUserKeys(currentUser);
+                        data[currentUser].lastModified = now;
+                    }
+                    localStorage.setItem('75data', JSON.stringify(data));
+                    // Push every restored account up to the cloud so the restore reaches every device
+                    pushBothToCloud(function(pushed) {
+                        if (pushed) {
+                            alert('✅ Backup restored — and synced to the cloud for both accounts.\n\nOn the other device, open the app (or tap ☁️ Load from Cloud) to pull it down.');
+                        } else {
+                            alert('✅ Backup restored on this device.\n\n(Cloud wasn\'t connected, so it didn\'t sync — when you\'re online, your changes will push up automatically.)');
+                        }
+                    });
+                    if (currentUser) { applyThemeMode(); render(); }
+                }, { confirmLabel: 'Restore' });
                 event.target.value = '';
             };
             reader.readAsText(file);
@@ -8884,52 +9198,53 @@
         function cloudLoad() {
             if (!fbReady || !fbDB) { alert('Cloud isn\'t connected. Check your internet and try again.'); return; }
             if (!currentUser) { alert('Log in first, then load from cloud.'); return; }
-            if (!confirm('Load your cloud-saved data?\n\nThis replaces this device\'s checkmarks, notes, emotions, and check-ins with the latest cloud version. (Photos on this device stay as they are.)')) return;
-            // Pause auto-save while we load, so this device can't immediately push its OLD data
-            // back up and overwrite the very thing we just pulled down.
-            cloudAutoSaveOn = false;
-            if (cloudAutoSaveTimer) { clearTimeout(cloudAutoSaveTimer); cloudAutoSaveTimer = null; }
-            fbDB.collection('journeys').doc(currentUser).get().then(function(doc) {
-                if (!doc.exists) { alert('No cloud save found yet. Tap "Save to Cloud" on your other device first.'); cloudAutoSaveOn = true; return; }
-                const d = doc.data();
-                const cloud = JSON.parse(d.payload);
-                // Preserve this device's local photos
-                const localPhotos = data[currentUser].photos || {};
-                data[currentUser] = cloud;
-                data[currentUser].photos = localPhotos;
-                // Re-run migration to ensure all keys exist
-                const u = currentUser;
-                if (!data[u].days) data[u].days = {};
-                if (!data[u].goals) data[u].goals = {};
-                if (!data[u].photos) data[u].photos = {};
-                if (!data[u].startDate) data[u].startDate = '2026-06-26';
-                if (!data[u].resets) data[u].resets = [];
-                if (!data[u].themeMode) data[u].themeMode = 'auto';
-                if (!data[u].emotions) data[u].emotions = {};
-                if (!data[u].checkins) data[u].checkins = {};
-                if (!data[u].archives) data[u].archives = [];
-                if (!data[u].weekFlags) data[u].weekFlags = {};
-                if (!data[u].entries) data[u].entries = {};
-                if (!data[u].wheel) data[u].wheel = {};
-                if (!data[u].bible) data[u].bible = {};
-                if (!data[u].locked) data[u].locked = {};
-            if (!data[u].layout) data[u].layout = { order: [], hidden: [] };
-            if (!data[u].sectionLocks) data[u].sectionLocks = {};
-                // Mark this device as caught up to the cloud write we just applied,
-                // so the live listener and auto-save don't immediately re-fire or clobber it.
-                lastAppliedTs = d.writeTs || Date.now();
-                // Adopt the cloud's modified time so a manual load is treated as authoritative
-                data[u].lastModified = d.writeTs || Date.now();
-                localStorage.setItem('75data', JSON.stringify(data));
-                pillarsInitialized = false;
-                applyThemeMode();
-                render();
-                cloudAutoSaveOn = true;
-                alert('☁️ Loaded from cloud! Your latest progress is now on this device.');
-            }).catch(function(err) {
-                cloudAutoSaveOn = true;
-                alert('Cloud load failed: ' + err.message);
-            });
+            showConfirm('Load your cloud-saved data?\n\nThis replaces this device\'s checkmarks, notes, emotions, and check-ins with the latest cloud version. (Photos on this device stay as they are.)', function() {
+                // Pause auto-save while we load, so this device can't immediately push its OLD
+                // data back up and overwrite the very thing we just pulled down.
+                cloudAutoSaveOn = false;
+                if (cloudAutoSaveTimer) { clearTimeout(cloudAutoSaveTimer); cloudAutoSaveTimer = null; }
+                fbDB.collection('journeys').doc(currentUser).get().then(function(doc) {
+                    if (!doc.exists) { alert('No cloud save found yet. Tap "Save to Cloud" on your other device first.'); cloudAutoSaveOn = true; return; }
+                    const d = doc.data();
+                    const cloud = JSON.parse(d.payload);
+                    // Preserve this device's local photos
+                    const localPhotos = data[currentUser].photos || {};
+                    data[currentUser] = cloud;
+                    data[currentUser].photos = localPhotos;
+                    // Re-run migration to ensure all keys exist
+                    const u = currentUser;
+                    if (!data[u].days) data[u].days = {};
+                    if (!data[u].goals) data[u].goals = {};
+                    if (!data[u].photos) data[u].photos = {};
+                    if (!data[u].startDate) data[u].startDate = '2026-06-26';
+                    if (!data[u].resets) data[u].resets = [];
+                    if (!data[u].themeMode) data[u].themeMode = 'auto';
+                    if (!data[u].emotions) data[u].emotions = {};
+                    if (!data[u].checkins) data[u].checkins = {};
+                    if (!data[u].archives) data[u].archives = [];
+                    if (!data[u].weekFlags) data[u].weekFlags = {};
+                    if (!data[u].entries) data[u].entries = {};
+                    if (!data[u].wheel) data[u].wheel = {};
+                    if (!data[u].bible) data[u].bible = {};
+                    if (!data[u].locked) data[u].locked = {};
+                    if (!data[u].layout) data[u].layout = { order: [], hidden: [] };
+                    if (!data[u].sectionLocks) data[u].sectionLocks = {};
+                    // Mark this device as caught up to the cloud write we just applied,
+                    // so the live listener and auto-save don't immediately re-fire or clobber it.
+                    lastAppliedTs = d.writeTs || Date.now();
+                    // Adopt the cloud's modified time so a manual load is treated as authoritative
+                    data[u].lastModified = d.writeTs || Date.now();
+                    localStorage.setItem('75data', JSON.stringify(data));
+                    pillarsInitialized = false;
+                    applyThemeMode();
+                    render();
+                    cloudAutoSaveOn = true;
+                    alert('☁️ Loaded from cloud! Your latest progress is now on this device.');
+                }).catch(function(err) {
+                    cloudAutoSaveOn = true;
+                    alert('Cloud load failed: ' + err.message);
+                });
+            }, { confirmLabel: 'Load' });
         }
 
         function resetData() {
@@ -8943,13 +9258,13 @@
                 ? '\n\n🤝 Team Mode is ON — once your partner\'s device sees this, their journey resets too.'
                 : '';
 
-            if (confirm('Start a brand-new journey?\n\nToday (' + readableDate + ') becomes Day 1, running through ' + endStr + '.\n\nThis FULLY clears your current journey — checkmarks, goals, photos, emotions, and check-ins all wiped clean.\n\nDon\'t worry: your current journey is saved to "Past Journeys" so you can always look back. This cannot be undone.' + teamNote)) {
+            showConfirm('Start a brand-new journey?\n\nToday (' + readableDate + ') becomes Day 1, running through ' + endStr + '.\n\nThis FULLY clears your current journey — checkmarks, goals, photos, emotions, and check-ins all wiped clean.\n\nDon\'t worry: your current journey is saved to "Past Journeys" so you can always look back. This cannot be undone.' + teamNote, function() {
                 if (!performReset('manual')) {
                     alert('Storage is full — your old photos may be too large to archive. Back up first, then try again.');
                     return;
                 }
                 alert('Fresh start! Today is Day 1 of your new 75-day journey.\n\nYour previous journey is saved under Progress → Past Journeys. Let\'s go. 🔥');
-            }
+            }, { danger: true, confirmLabel: 'Start Fresh' });
         }
 
         function initFirebase() {
