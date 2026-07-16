@@ -378,6 +378,10 @@
             background: linear-gradient(90deg, transparent, #e6b8c2, transparent);
         }
 
+        body.default-theme.light-mode .header::before {
+            background: linear-gradient(90deg, transparent, #4a5aa0, transparent);
+        }
+
         .header-top {
             display: flex;
             justify-content: space-between;
@@ -1099,6 +1103,9 @@
         body.light-mode .pillar-header {
             border-bottom: 1px solid #2d7a4a;
         }
+
+        body.default-theme .pillar-header { border-bottom-color: #3a4470; }
+        body.default-theme.light-mode .pillar-header { border-bottom-color: #4a5aa0; }
 
         .pillar-head-right {
             display: flex;
@@ -2104,6 +2111,7 @@
         }
 
         body.lashawn-theme .emotion-chip { border-color: #7d5260; }
+        body.default-theme .emotion-chip { border-color: #3a4470; }
 
         .emotion-chip:hover {
             border-color: #d4af37;
@@ -2701,6 +2709,9 @@
             border-bottom: 1px solid #2d7a4a;
         }
 
+        body.default-theme .summary-title { border-bottom-color: #3a4470; }
+        body.default-theme.light-mode .summary-title { border-bottom-color: #4a5aa0; }
+
         .summary-stat {
             display: flex;
             justify-content: space-between;
@@ -2735,6 +2746,9 @@
             border-bottom: 1px solid #2d7a4a;
         }
 
+        body.default-theme .stat-def { border-bottom-color: #3a4470; }
+        body.default-theme.light-mode .stat-def { color: #d6dcf5; border-bottom-color: #4a5aa0; }
+
         .summary-stat-block:last-child .stat-def {
             border-bottom: none;
         }
@@ -2750,6 +2764,9 @@
             border: 1px solid #2d7a4a;
             background: rgba(255, 255, 255, 0.05);
         }
+
+        body.default-theme .search-box { border-color: #3a4470; }
+        body.default-theme.light-mode .search-box { border-color: #4a5aa0; }
 
         .search-box input {
             width: 100%;
@@ -2811,6 +2828,9 @@
             border: 1px solid #2d7a4a;
             background: rgba(255, 255, 255, 0.05);
         }
+
+        body.default-theme .day-card { border-color: #3a4470; }
+        body.default-theme.light-mode .day-card { border-color: #4a5aa0; }
 
         .day-card:hover {
             border-color: #d4af37;
@@ -3973,6 +3993,9 @@
             const isLight = document.body.classList.contains('light-mode');
             if (currentProfileType === 'lashawn') {
                 return isLight ? '#7d5260' : '#2e1a2e'; // dusty rose-mauve / deep plum
+            }
+            if (currentProfileType !== 'mahdi') {
+                return isLight ? '#33407a' : '#1a2140'; // Midnight Dawn — dusk indigo / midnight indigo
             }
             return isLight ? '#1b4d2f' : '#5a1f1f'; // regal green / blood red
         }
@@ -5482,8 +5505,13 @@
             document.body.classList.remove('login-light');
             if (currentProfileType === 'lashawn') {
                 document.body.classList.add('lashawn-theme');
+                document.body.classList.remove('default-theme');
+            } else if (currentProfileType !== 'mahdi') {
+                document.body.classList.remove('lashawn-theme');
+                document.body.classList.add('default-theme');
             } else {
                 document.body.classList.remove('lashawn-theme');
+                document.body.classList.remove('default-theme');
             }
             const authScreen = document.getElementById('authScreen');
             if (authScreen) authScreen.style.display = 'none';
@@ -5697,6 +5725,7 @@
             authHandledUid = null;
             viewingOffset = null;
             document.body.classList.remove('lashawn-theme');
+            document.body.classList.remove('default-theme');
             document.body.classList.remove('light-mode');
             document.body.style.background = '';
             if (fbReady && typeof firebase !== 'undefined') {
@@ -6213,6 +6242,7 @@
             document.getElementById('spectatorScreen').style.display = 'block';
             // Neutral theme for spectator (use a calm dark base)
             document.body.classList.remove('lashawn-theme');
+            document.body.classList.remove('default-theme');
             document.body.classList.remove('login-light');
             refreshSlotUids(function() { renderSpectator(); });
             // Pull the latest of BOTH journeys from the cloud, then refresh the view
