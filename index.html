@@ -149,6 +149,19 @@
             text-transform: uppercase;
         }
 
+        #authScreen .login-subtitle { margin-bottom: 28px; }
+
+        .auth-question {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            opacity: 0.85;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        body.login-light .auth-question { color: #4a3820; }
+
         .login-buttons {
             display: flex;
             flex-direction: column;
@@ -296,6 +309,68 @@
             text-align: left;
         }
 
+        .auth-claim-toggle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            text-align: left;
+            padding: 2px 2px 0;
+        }
+
+        .auth-claim-toggle:hover { color: rgba(255, 255, 255, 0.8); }
+
+        body.login-light .auth-claim-toggle { color: rgba(0, 0, 0, 0.4); }
+        body.login-light .auth-claim-toggle:hover { color: rgba(0, 0, 0, 0.65); }
+
+        .onboarding-content { max-width: 460px; }
+
+        .onboarding-section { margin: 32px 0 18px; text-align: left; }
+
+        .onboarding-color-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .onboarding-color-option {
+            flex: 1 1 120px;
+            border: 2px solid transparent;
+            border-radius: 14px;
+            padding: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .onboarding-color-option:hover { transform: translateY(-2px); }
+
+        .onboarding-color-option.selected {
+            border-color: #d4af37;
+        }
+
+        .onboarding-color-swatch {
+            height: 56px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+        }
+
+        .onboarding-color-name {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+
+        .onboarding-hint {
+            font-size: 11px;
+            opacity: 0.6;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
         .auth-profile-picker {
             display: flex;
             flex-direction: column;
@@ -378,8 +453,17 @@
             background: linear-gradient(90deg, transparent, #e6b8c2, transparent);
         }
 
-        body.default-theme.light-mode .header::before {
+        body.default-theme.color-midnight.light-mode .header::before {
             background: linear-gradient(90deg, transparent, #4a5aa0, transparent);
+        }
+        body.default-theme.color-emerald.light-mode .header::before {
+            background: linear-gradient(90deg, transparent, #4a9683, transparent);
+        }
+        body.default-theme.color-slate.light-mode .header::before {
+            background: linear-gradient(90deg, transparent, #6b7686, transparent);
+        }
+        body.default-theme.color-rose.light-mode .header::before {
+            background: linear-gradient(90deg, transparent, #c084a0, transparent);
         }
 
         .header-top {
@@ -1104,8 +1188,14 @@
             border-bottom: 1px solid #2d7a4a;
         }
 
-        body.default-theme .pillar-header { border-bottom-color: #3a4470; }
-        body.default-theme.light-mode .pillar-header { border-bottom-color: #4a5aa0; }
+        body.default-theme.color-midnight .pillar-header { border-bottom-color: #3a4470; }
+        body.default-theme.color-midnight.light-mode .pillar-header { border-bottom-color: #4a5aa0; }
+        body.default-theme.color-emerald .pillar-header { border-bottom-color: #2f6e5e; }
+        body.default-theme.color-emerald.light-mode .pillar-header { border-bottom-color: #4a9683; }
+        body.default-theme.color-slate .pillar-header { border-bottom-color: #3d434c; }
+        body.default-theme.color-slate.light-mode .pillar-header { border-bottom-color: #6b7686; }
+        body.default-theme.color-rose .pillar-header { border-bottom-color: #6b3550; }
+        body.default-theme.color-rose.light-mode .pillar-header { border-bottom-color: #c084a0; }
 
         .pillar-head-right {
             display: flex;
@@ -2111,7 +2201,10 @@
         }
 
         body.lashawn-theme .emotion-chip { border-color: #7d5260; }
-        body.default-theme .emotion-chip { border-color: #3a4470; }
+        body.default-theme.color-midnight .emotion-chip { border-color: #3a4470; }
+        body.default-theme.color-emerald .emotion-chip { border-color: #2f6e5e; }
+        body.default-theme.color-slate .emotion-chip { border-color: #3d434c; }
+        body.default-theme.color-rose .emotion-chip { border-color: #6b3550; }
 
         .emotion-chip:hover {
             border-color: #d4af37;
@@ -2709,8 +2802,14 @@
             border-bottom: 1px solid #2d7a4a;
         }
 
-        body.default-theme .summary-title { border-bottom-color: #3a4470; }
-        body.default-theme.light-mode .summary-title { border-bottom-color: #4a5aa0; }
+        body.default-theme.color-midnight .summary-title { border-bottom-color: #3a4470; }
+        body.default-theme.color-midnight.light-mode .summary-title { border-bottom-color: #4a5aa0; }
+        body.default-theme.color-emerald .summary-title { border-bottom-color: #2f6e5e; }
+        body.default-theme.color-emerald.light-mode .summary-title { border-bottom-color: #4a9683; }
+        body.default-theme.color-slate .summary-title { border-bottom-color: #3d434c; }
+        body.default-theme.color-slate.light-mode .summary-title { border-bottom-color: #6b7686; }
+        body.default-theme.color-rose .summary-title { border-bottom-color: #6b3550; }
+        body.default-theme.color-rose.light-mode .summary-title { border-bottom-color: #c084a0; }
 
         .summary-stat {
             display: flex;
@@ -2746,8 +2845,14 @@
             border-bottom: 1px solid #2d7a4a;
         }
 
-        body.default-theme .stat-def { border-bottom-color: #3a4470; }
-        body.default-theme.light-mode .stat-def { color: #d6dcf5; border-bottom-color: #4a5aa0; }
+        body.default-theme.color-midnight .stat-def { border-bottom-color: #3a4470; }
+        body.default-theme.color-midnight.light-mode .stat-def { color: #d6dcf5; border-bottom-color: #4a5aa0; }
+        body.default-theme.color-emerald .stat-def { border-bottom-color: #2f6e5e; }
+        body.default-theme.color-emerald.light-mode .stat-def { color: #d7ede6; border-bottom-color: #4a9683; }
+        body.default-theme.color-slate .stat-def { border-bottom-color: #3d434c; }
+        body.default-theme.color-slate.light-mode .stat-def { color: #e2e5e9; border-bottom-color: #6b7686; }
+        body.default-theme.color-rose .stat-def { border-bottom-color: #6b3550; }
+        body.default-theme.color-rose.light-mode .stat-def { color: #f5e2ea; border-bottom-color: #c084a0; }
 
         .summary-stat-block:last-child .stat-def {
             border-bottom: none;
@@ -2765,8 +2870,14 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        body.default-theme .search-box { border-color: #3a4470; }
-        body.default-theme.light-mode .search-box { border-color: #4a5aa0; }
+        body.default-theme.color-midnight .search-box { border-color: #3a4470; }
+        body.default-theme.color-midnight.light-mode .search-box { border-color: #4a5aa0; }
+        body.default-theme.color-emerald .search-box { border-color: #2f6e5e; }
+        body.default-theme.color-emerald.light-mode .search-box { border-color: #4a9683; }
+        body.default-theme.color-slate .search-box { border-color: #3d434c; }
+        body.default-theme.color-slate.light-mode .search-box { border-color: #6b7686; }
+        body.default-theme.color-rose .search-box { border-color: #6b3550; }
+        body.default-theme.color-rose.light-mode .search-box { border-color: #c084a0; }
 
         .search-box input {
             width: 100%;
@@ -2829,8 +2940,14 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        body.default-theme .day-card { border-color: #3a4470; }
-        body.default-theme.light-mode .day-card { border-color: #4a5aa0; }
+        body.default-theme.color-midnight .day-card { border-color: #3a4470; }
+        body.default-theme.color-midnight.light-mode .day-card { border-color: #4a5aa0; }
+        body.default-theme.color-emerald .day-card { border-color: #2f6e5e; }
+        body.default-theme.color-emerald.light-mode .day-card { border-color: #4a9683; }
+        body.default-theme.color-slate .day-card { border-color: #3d434c; }
+        body.default-theme.color-slate.light-mode .day-card { border-color: #6b7686; }
+        body.default-theme.color-rose .day-card { border-color: #6b3550; }
+        body.default-theme.color-rose.light-mode .day-card { border-color: #c084a0; }
 
         .day-card:hover {
             border-color: #d4af37;
@@ -3582,9 +3699,10 @@
         <div class="login-content">
             <div class="login-title">Elevated</div>
             <div class="login-subtitle">75 Days of Transformation</div>
+            <div class="auth-question">Are you new here, or do you already have an account?</div>
             <div class="auth-tabs">
-                <button type="button" class="auth-tab active" id="authTabLogin" onclick="setAuthMode('login')">Log In</button>
-                <button type="button" class="auth-tab" id="authTabSignup" onclick="setAuthMode('signup')">Sign Up</button>
+                <button type="button" class="auth-tab active" id="authTabLogin" onclick="setAuthMode('login')">I Have an Account</button>
+                <button type="button" class="auth-tab" id="authTabSignup" onclick="setAuthMode('signup')">I'm New Here</button>
             </div>
             <form class="auth-form" onsubmit="event.preventDefault(); submitAuthForm();">
                 <input type="email" id="authEmail" class="auth-input" placeholder="Email" autocomplete="username" required>
@@ -3593,6 +3711,7 @@
                     <input type="password" id="authPassword" class="auth-input" placeholder="Password" autocomplete="current-password" required>
                     <button type="button" class="auth-eye-btn" id="authEyeBtn" onclick="toggleAuthPasswordVisibility()" aria-label="Show password">👁</button>
                 </div>
+                <div class="auth-claim-toggle" id="authClaimToggle" style="display:none;" onclick="revealAuthProfilePicker()">Are you Mahdi or Lashawn? <u>Claim your journey</u></div>
                 <div class="auth-profile-picker" id="authProfilePicker" style="display:none;">
                     <div class="auth-profile-label">Whose journey is this?</div>
                     <label class="auth-profile-option"><input type="radio" name="authProfileType" value="mahdi"> Mahdi's journey</label>
@@ -3603,6 +3722,36 @@
                 <button type="submit" class="login-btn" id="authSubmitBtn">Log In</button>
             </form>
             <button class="login-theme-btn" onclick="toggleLoginTheme()">🌙 Dark</button>
+        </div>
+    </div>
+
+    <div id="onboardingScreen" class="login-screen" style="display:none;">
+        <div class="login-content onboarding-content">
+            <div class="login-title" style="font-size:36px;">Welcome<span id="onboardingName"></span>!</div>
+            <div class="login-subtitle">Let's set up your journey</div>
+            <div class="onboarding-section">
+                <div class="auth-profile-label">Choose your colors</div>
+                <div class="onboarding-color-grid">
+                    <div class="onboarding-color-option selected" id="onboardingColor-midnight" onclick="selectOnboardingColor('midnight')">
+                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#1a2140,#d4af37);"></div>
+                        <div class="onboarding-color-name">Midnight Dawn</div>
+                    </div>
+                    <div class="onboarding-color-option" id="onboardingColor-emerald" onclick="selectOnboardingColor('emerald')">
+                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#123832,#d4af37);"></div>
+                        <div class="onboarding-color-name">Emerald Ascent</div>
+                    </div>
+                    <div class="onboarding-color-option" id="onboardingColor-slate" onclick="selectOnboardingColor('slate')">
+                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#22272e,#d4af37);"></div>
+                        <div class="onboarding-color-name">Slate & Gold</div>
+                    </div>
+                    <div class="onboarding-color-option" id="onboardingColor-rose" onclick="selectOnboardingColor('rose')">
+                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#4a1f35,#d4af37);"></div>
+                        <div class="onboarding-color-name">Rose Quartz</div>
+                    </div>
+                </div>
+            </div>
+            <div class="onboarding-hint">You can change this anytime from ⚙ More → Personalize. Section categories tailored further to your life are coming soon too.</div>
+            <button class="login-btn" onclick="completeOnboarding()">Continue →</button>
         </div>
     </div>
 
@@ -3637,6 +3786,7 @@
                                 <button class="more-item" id="teamModeMenuItem" onclick="toggleTeamMode(); closeMoreMenu();">🤝 Team Mode: Off</button>
 
                                 <div class="more-section-label">Personalize</div>
+                                <button class="more-item" onclick="openColorThemeModal(); closeMoreMenu();">🎨 Change Color Theme</button>
                                 <button class="more-item" onclick="openCustomizeLayout(); closeMoreMenu();">⚙️ Customize Layout</button>
                                 <button class="more-item" onclick="setStartDate(); closeMoreMenu();">📅 Set Start Date</button>
 
@@ -3835,6 +3985,33 @@
         </div>
     </div>
 
+    <div id="colorThemeModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box" style="max-width:460px;">
+            <div class="modal-title">🎨 Choose Your Colors</div>
+            <div class="onboarding-color-grid">
+                <div class="onboarding-color-option" id="ctmColor-midnight" onclick="selectColorThemeModalOption('midnight')">
+                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#1a2140,#d4af37);"></div>
+                    <div class="onboarding-color-name">Midnight Dawn</div>
+                </div>
+                <div class="onboarding-color-option" id="ctmColor-emerald" onclick="selectColorThemeModalOption('emerald')">
+                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#123832,#d4af37);"></div>
+                    <div class="onboarding-color-name">Emerald Ascent</div>
+                </div>
+                <div class="onboarding-color-option" id="ctmColor-slate" onclick="selectColorThemeModalOption('slate')">
+                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#22272e,#d4af37);"></div>
+                    <div class="onboarding-color-name">Slate & Gold</div>
+                </div>
+                <div class="onboarding-color-option" id="ctmColor-rose" onclick="selectColorThemeModalOption('rose')">
+                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#4a1f35,#d4af37);"></div>
+                    <div class="onboarding-color-name">Rose Quartz</div>
+                </div>
+            </div>
+            <div class="modal-buttons" style="margin-top:20px;">
+                <button type="button" class="modal-btn modal-btn-ghost" onclick="document.getElementById('colorThemeModal').style.display='none';">Close</button>
+            </div>
+        </div>
+    </div>
+
     <div id="jobTrackerModal" class="modal-overlay" style="display:none;">
         <div class="modal-box job-tracker-box">
             <div class="modal-title">📋 Job Application Tracker</div>
@@ -3989,13 +4166,114 @@
         let spouseTipIndex = null; // manual index for clicking through Time with Lashawn ideas
 
         // Per-user color themes. Mahdi: blood red / regal green. Lashawn: aubergine / dusty rose.
+        // Any other account picks (and can later change) one of these color themes at sign-up.
+        const DEFAULT_COLOR_THEMES = {
+            midnight: { name: 'Midnight Dawn', dark: '#1a2140', light: '#33407a', divider: '#3a4470', dividerLight: '#4a5aa0' },
+            emerald: { name: 'Emerald Ascent', dark: '#123832', light: '#2f6e5e', divider: '#2f6e5e', dividerLight: '#4a9683' },
+            slate: { name: 'Slate & Gold', dark: '#22272e', light: '#4a5568', divider: '#3d434c', dividerLight: '#6b7686' },
+            rose: { name: 'Rose Quartz', dark: '#4a1f35', light: '#a3617a', divider: '#6b3550', dividerLight: '#c084a0' }
+        };
+        function colorThemeFor(uid) {
+            const key = (uid && data[uid] && data[uid].colorTheme) || 'midnight';
+            return DEFAULT_COLOR_THEMES[key] || DEFAULT_COLOR_THEMES.midnight;
+        }
+        // Keeps the body's color-<key> class in sync with this account's chosen theme.
+        // Only meaningful for non-Mahdi/Lashawn accounts — their look is fixed.
+        function applyColorThemeClass(uid) {
+            document.body.classList.remove('color-midnight', 'color-emerald', 'color-slate', 'color-rose');
+            const pt = profileTypeFor(uid);
+            if (pt !== 'mahdi' && pt !== 'lashawn') {
+                const key = (data[uid] && data[uid].colorTheme && DEFAULT_COLOR_THEMES[data[uid].colorTheme]) ? data[uid].colorTheme : 'midnight';
+                document.body.classList.add('color-' + key);
+            }
+        }
+        // Every post-auth path (fresh sign-up, log in, persisted session restore) funnels
+        // through here — Mahdi/Lashawn's claimed accounts go straight into their journey since
+        // there's nothing to tailor; any other account that hasn't finished onboarding yet sees
+        // the welcome/color-theme screen first instead of the app.
+        function routeAfterAuth(uid) {
+            const pt = profileTypeFor(uid);
+            if (pt !== 'mahdi' && pt !== 'lashawn' && data[uid] && !data[uid].onboarded) {
+                showOnboarding(uid);
+            } else {
+                login(uid);
+            }
+        }
+
+        // ===== ONBOARDING (first-time welcome + color choice for any non-Mahdi/Lashawn account) =====
+        let onboardingUid = null;
+        let onboardingSelectedColor = 'midnight';
+
+        function showOnboarding(uid) {
+            onboardingUid = uid;
+            onboardingSelectedColor = (data[uid] && data[uid].colorTheme) || 'midnight';
+            document.querySelectorAll('.onboarding-color-option').forEach(function(el) {
+                el.classList.toggle('selected', el.id === 'onboardingColor-' + onboardingSelectedColor);
+            });
+            const name = (data[uid] && data[uid].displayName) ? ', ' + data[uid].displayName : '';
+            document.getElementById('onboardingName').textContent = name;
+            const authScreen = document.getElementById('authScreen');
+            if (authScreen) authScreen.style.display = 'none';
+            document.getElementById('onboardingScreen').style.display = 'flex';
+            applyLoginTheme();
+        }
+
+        function selectOnboardingColor(key) {
+            onboardingSelectedColor = key;
+            document.querySelectorAll('.onboarding-color-option').forEach(function(el) {
+                el.classList.toggle('selected', el.id === 'onboardingColor-' + key);
+            });
+        }
+
+        function completeOnboarding() {
+            const uid = onboardingUid;
+            if (!uid) return;
+            if (!data[uid]) data[uid] = {};
+            data[uid].colorTheme = onboardingSelectedColor;
+            data[uid].onboarded = true;
+            data[uid].lastModified = Date.now();
+            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+            document.getElementById('onboardingScreen').style.display = 'none';
+            onboardingUid = null;
+            login(uid);
+        }
+
+        // Change your color theme anytime after onboarding (⚙ More → Personalize).
+        function openColorThemeModal() {
+            if (!currentUser || !data[currentUser]) return;
+            if (profileTypeFor(currentUser) === 'mahdi' || profileTypeFor(currentUser) === 'lashawn') {
+                alert('Your colors are already set as part of your journey.');
+                return;
+            }
+            const current = data[currentUser].colorTheme || 'midnight';
+            document.querySelectorAll('#colorThemeModal .onboarding-color-option').forEach(function(el) {
+                el.classList.toggle('selected', el.id === 'ctmColor-' + current);
+            });
+            document.getElementById('colorThemeModal').style.display = 'flex';
+        }
+
+        function selectColorThemeModalOption(key) {
+            data[currentUser].colorTheme = key;
+            data[currentUser].lastModified = Date.now();
+            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+            scheduleCloudAutoSave();
+            document.querySelectorAll('#colorThemeModal .onboarding-color-option').forEach(function(el) {
+                el.classList.toggle('selected', el.id === 'ctmColor-' + key);
+            });
+            applyColorThemeClass(currentUser);
+            applyThemeMode();
+            setTimeout(function() {
+                document.getElementById('colorThemeModal').style.display = 'none';
+            }, 350);
+        }
         function getThemeColors() {
             const isLight = document.body.classList.contains('light-mode');
             if (currentProfileType === 'lashawn') {
                 return isLight ? '#7d5260' : '#2e1a2e'; // dusty rose-mauve / deep plum
             }
             if (currentProfileType !== 'mahdi') {
-                return isLight ? '#33407a' : '#1a2140'; // Midnight Dawn — dusk indigo / midnight indigo
+                const theme = colorThemeFor(currentUser);
+                return isLight ? theme.light : theme.dark;
             }
             return isLight ? '#1b4d2f' : '#5a1f1f'; // regal green / blood red
         }
@@ -5498,21 +5776,30 @@
             if (wrap && !wrap.contains(e.target)) closeMoreMenu();
         });
 
-        function login(user) {
-            currentUser = user;
-            currentProfileType = profileTypeFor(user);
-            viewingOffset = null;
-            document.body.classList.remove('login-light');
-            if (currentProfileType === 'lashawn') {
+        // Toggles the theme-identity body classes (lashawn-theme / default-theme / color-*) for
+        // whichever account is given — the one place this logic lives, so any screen that
+        // strips these classes (e.g. Spectate's neutral backdrop) can cleanly restore them too.
+        function applyAccountThemeClasses(uid) {
+            const pt = profileTypeFor(uid);
+            if (pt === 'lashawn') {
                 document.body.classList.add('lashawn-theme');
                 document.body.classList.remove('default-theme');
-            } else if (currentProfileType !== 'mahdi') {
+            } else if (pt !== 'mahdi') {
                 document.body.classList.remove('lashawn-theme');
                 document.body.classList.add('default-theme');
             } else {
                 document.body.classList.remove('lashawn-theme');
                 document.body.classList.remove('default-theme');
             }
+            applyColorThemeClass(uid);
+        }
+
+        function login(user) {
+            currentUser = user;
+            currentProfileType = profileTypeFor(user);
+            viewingOffset = null;
+            document.body.classList.remove('login-light');
+            applyAccountThemeClasses(user);
             const authScreen = document.getElementById('authScreen');
             if (authScreen) authScreen.style.display = 'none';
             const appScreen = document.getElementById('appScreen');
@@ -5555,10 +5842,24 @@
             if (submitBtn) submitBtn.textContent = (mode === 'login') ? 'Log In' : 'Create Account';
             const pwField = document.getElementById('authPassword');
             if (pwField) pwField.setAttribute('autocomplete', (mode === 'login') ? 'current-password' : 'new-password');
+            // The Mahdi/Lashawn picker stays hidden behind the "claim your journey" toggle —
+            // a random new sign-up shouldn't see whose accounts already exist. Reset both back
+            // to their hidden state whenever the mode changes.
             const picker = document.getElementById('authProfilePicker');
-            if (picker) picker.style.display = (mode === 'signup') ? 'flex' : 'none';
+            if (picker) picker.style.display = 'none';
+            const claimToggle = document.getElementById('authClaimToggle');
+            if (claimToggle) claimToggle.style.display = (mode === 'signup') ? 'block' : 'none';
+            const defaultRadio = document.querySelector('input[name="authProfileType"][value="default"]');
+            if (defaultRadio) defaultRadio.checked = true;
             const nameField = document.getElementById('authDisplayName');
             if (nameField) nameField.style.display = (mode === 'signup') ? 'block' : 'none';
+        }
+
+        function revealAuthProfilePicker() {
+            const claimToggle = document.getElementById('authClaimToggle');
+            if (claimToggle) claimToggle.style.display = 'none';
+            const picker = document.getElementById('authProfilePicker');
+            if (picker) picker.style.display = 'flex';
         }
 
         function showAuthError(msg) {
@@ -5642,7 +5943,7 @@
                                       // 'default' account uses the name they just typed in.
                                       if (finalType === 'default') data[uid].displayName = chosenName;
                                       authHandledUid = uid;
-                                      login(uid);
+                                      routeAfterAuth(uid);
                                   });
                             })
                             .catch(function(err) {
@@ -5665,7 +5966,7 @@
                             if (doc.exists && doc.data().displayName) data[uid].displayName = doc.data().displayName;
                             ensureUserKeys(uid);
                             authHandledUid = uid;
-                            login(uid);
+                            routeAfterAuth(uid);
                         });
                     })
                     .catch(function(err) {
@@ -5726,6 +6027,7 @@
             viewingOffset = null;
             document.body.classList.remove('lashawn-theme');
             document.body.classList.remove('default-theme');
+            document.body.classList.remove('color-midnight', 'color-emerald', 'color-slate', 'color-rose');
             document.body.classList.remove('light-mode');
             document.body.style.background = '';
             if (fbReady && typeof firebase !== 'undefined') {
@@ -5923,6 +6225,8 @@
             const keepProfileType = u.profileType || 'default';
             const keepTeamMode = !!u.teamMode;
             const keepSeen = u.lastSeenPartnerResetAt || 0;
+            const keepColorTheme = u.colorTheme || 'midnight';
+            const keepOnboarded = !!u.onboarded;
 
             // Full wipe — fresh start. contentSeed is deliberately omitted so ensureUserKeys
             // rerolls it below — a new journey gets a different rotation of verses/quotes/
@@ -5931,7 +6235,7 @@
                 days: {}, goals: {}, photos: {}, startDate: todayStr,
                 resets: previousResets, archives: archives,
                 themeMode: keepTheme, profileType: keepProfileType, teamMode: keepTeamMode,
-                lastSeenPartnerResetAt: keepSeen,
+                lastSeenPartnerResetAt: keepSeen, colorTheme: keepColorTheme, onboarded: keepOnboarded,
                 emotions: {}, checkins: {}, weekFlags: {}
             };
             ensureUserKeys(currentUser);
@@ -6262,6 +6566,7 @@
             document.getElementById('spectatorScreen').style.display = 'none';
             document.getElementById('spectatorContent').innerHTML = '';
             document.getElementById('appScreen').style.display = 'block';
+            applyAccountThemeClasses(currentUser);
             applyThemeMode();
         }
 
@@ -7778,6 +8083,10 @@
             // one and is waiting for a partner to redeem it).
             if (typeof data[u].partnerUid === 'undefined') data[u].partnerUid = null;
             if (typeof data[u].inviteCode === 'undefined') data[u].inviteCode = null;
+            // Which color theme a non-Mahdi/Lashawn account chose at onboarding (or since).
+            if (!data[u].colorTheme) data[u].colorTheme = 'midnight';
+            // Has this account completed the post-sign-up onboarding (name/theme) yet?
+            if (typeof data[u].onboarded === 'undefined') data[u].onboarded = false;
             // Running job-application list (Job Apps item) — persists across the whole
             // journey, not tied to any single day, so applying to a company sticks around
             // until its status changes or it's removed.
@@ -9332,7 +9641,7 @@
                                 data[user.uid].profileType = profileType;
                                 if (doc.exists && doc.data().displayName) data[user.uid].displayName = doc.data().displayName;
                                 ensureUserKeys(user.uid);
-                                login(user.uid);
+                                routeAfterAuth(user.uid);
                             }).catch(function(e) {
                                 console.warn('Profile lookup failed on session restore:', e);
                                 authHandledUid = null;
