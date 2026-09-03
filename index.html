@@ -927,16 +927,16 @@
 
         /* Hybrid layout: slim, always-open section boxes (lighter than the original heavy boxes) */
         .pillar-slim {
-            padding: 18px 20px !important;
+            padding: 16px 18px !important;
             border: 1px solid rgba(212, 175, 55, 0.22);
             border-radius: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             background: linear-gradient(160deg, rgba(212,175,55,0.07), rgba(212,175,55,0.015) 60%);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.10);
             transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
         }
         .pillar-slim:hover {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.24);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.16);
             border-color: rgba(212, 175, 55, 0.4);
         }
         body.light-mode .pillar-slim {
@@ -1469,6 +1469,11 @@
             margin-top: 0;
             margin-bottom: 0;
         }
+
+        /* Note-add row starts hidden behind "+ Add a note" (see toggleNoteRow()) — independent
+           of .row-collapsed, which instead reflects the item's checked/locked state. */
+        .entry-add-row.note-hidden { display: none; }
+        .note-toggle-link { display: inline-block; margin-top: 2px; }
 
         .entry-input {
             flex: 1;
@@ -2139,7 +2144,7 @@
         .wheel-stage {
             position: relative;
             width: 100%;
-            max-width: 300px;
+            max-width: 190px;
             margin: 0 auto;
         }
         .wheel-svg {
@@ -7434,10 +7439,13 @@
                     }
 
                     // Stacking entries: saved notes that build up under each item, plus an input to add more
-                    // (Water is just a counter — no notes needed)
+                    // (Water is just a counter — no notes needed). The add-note row starts
+                    // hidden behind a tap so an unwritten note isn't a full textarea taking up
+                    // space on every single item by default — tap "+ Add a note" to open it.
                     if (item !== 'Water') {
                         html += '<div class="entries-wrap" id="entries-' + itemKey + '"></div>';
-                        html += '<div class="entry-add-row">';
+                        html += '<span class="greeting-cta note-toggle-link" id="notetoggle-' + itemKey + '" onclick="toggleNoteRow(\'' + itemKey + '\')">+ Add a note</span>';
+                        html += '<div class="entry-add-row note-hidden" id="entryaddrow-' + itemKey + '">';
                         html += '<textarea placeholder="Write a note for ' + item + '... (start a line with - for bullets, or 1. for a numbered list)" id="goal-' + itemKey + '" class="entry-input" style="min-height: 44px;"></textarea>';
                         html += '<button type="button" class="entry-add-btn" onclick="addEntry(\'' + itemKey + '\')">+ Add</button>';
                         html += '</div>';
@@ -8846,6 +8854,21 @@
             // Collapse the (now-unusable) add-note row once a task is checked, so it doesn't
             // leave a tall block of empty/locked space behind on completed tasks.
             if (addRow) addRow.classList.toggle('row-collapsed', !!locked);
+        }
+
+        // Reveals the add-note textarea for an item, hidden by default (see render()) so an
+        // unwritten note isn't a full textarea+button on every single item at once.
+        function toggleNoteRow(itemKey) {
+            const row = document.getElementById('entryaddrow-' + itemKey);
+            const link = document.getElementById('notetoggle-' + itemKey);
+            if (!row) return;
+            const opening = row.classList.contains('note-hidden');
+            row.classList.toggle('note-hidden');
+            if (link) link.style.display = opening ? 'none' : '';
+            if (opening) {
+                const ta = document.getElementById('goal-' + itemKey);
+                if (ta) ta.focus();
+            }
         }
 
         // Refresh a single pillar's "X/Y" count badge live, without re-rendering the whole page
