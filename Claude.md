@@ -7,16 +7,21 @@ Guidance for Claude Code (or any AI/dev) working on this project.
 ## 1. What this project is
 
 A **single self-contained HTML file** that is a faith-centered daily habit tracker
-for a married couple over a 75-day journey.
+over a 75-day journey. Originally built for one married couple (Mahdi & Lashawn),
+now a multi-tenant app anyone can sign up for, with optional partner pairing.
 
-- **Main file:** `index.html` (identical copy kept as `75-days-luxury-tracker.html`)
-- **Size:** ~8,050 lines / ~421 KB. All CSS, JavaScript, SVG avatars, and Firebase
-  config live INSIDE this one file. There are no build steps, no bundler, no
-  external source files it depends on.
+- **Main file:** `index.html` (identical copy kept as `75-days-luxury-tracker.html`,
+  which is now stale relative to `index.html` — update both together or drop it).
+- **Size:** ~9,700 lines. All CSS, JavaScript, SVG avatars, and Firebase config
+  live INSIDE this one file. There are no build steps, no bundler, no external
+  source files it depends on.
 - **The two `.png` files** are avatar previews for reference only — the app does
   not load them.
-- **Hosting:** Netlify (drag-and-drop to the same URL preserves the live URL).
-- **Users:** two accounts — `mahdi` and `lashawn` (a married couple).
+- **Hosting:** Netlify, connected to GitHub — pushes/merges to `main` auto-deploy.
+- **Users:** originally just `mahdi` and `lashawn` (a married couple); the app now
+  has **real multi-account sign-up via Firebase Auth** — anyone can create an
+  account. Mahdi and Lashawn are just the first two accounts, distinguished
+  internally by `profileType` (see §3/§6) rather than being hardcoded identities.
 
 ## 2. How to run / test locally
 
@@ -26,28 +31,69 @@ for a married couple over a 75-day journey.
 
 ## 3. Data & persistence model
 
-- One global `data` object holds BOTH users: `data.mahdi` and `data.lashawn`.
+- One global `data` object, now keyed **by Firebase Auth UID** (`data[uid]`), not
+  by a hardcoded name. `currentUser` holds the signed-in account's UID.
 - Persisted to browser `localStorage` under the key **`75data`**.
-- Each user object contains: `days` (dateKey -> {itemKey: bool, _water: n}),
-  `goals`, `entries` (notes, keyed `dateKey|itemKey` -> [{text,time}]), `photos`
-  (on-device only), `emotions`, `checkins`, `archives`, `weekFlags`, `wheel`,
-  `bible` (dateKey -> {book,chapter,verse}), `locked` (dateKey -> true, whole-day
-  lock), `sectionLocks` (`dateKey|Section` -> true, per-section lock), `layout`
-  ({order:[], hidden:[]}, custom section order + hide), `startDate`, `themeMode`,
-  and `lastModified` (timestamp — critical for sync, see §5).
+- Each account object contains everything from the original model — `days`
+  (dateKey -> {itemKey: bool, _water: n}), `goals`, `entries` (notes, keyed
+  `dateKey|itemKey` -> [{text,time}]), `photos` (on-device only), `emotions`,
+  `checkins`, `archives`, `weekFlags`, `wheel`, `bible` (dateKey ->
+  {book,chapter,verse}), `locked`, `sectionLocks`, `layout` ({order:[], hidden:[]}),
+  `startDate`, `themeMode`, `lastModified` (critical for sync, see §5) — **plus**
+  keys added for multi-account support:
+  - `profileType`: `'mahdi'` | `'lashawn'` | `'default'`, claimed once at sign-up
+    (see §6). Drives which pillar set, companion avatar, and journey title an
+    account gets — **never index `pillars`/`COMPANIONS` by a raw UID**, always go
+    through `profileTypeFor(uid)` / `pillarsFor(uid)` / `companionFor(uid)`.
+  - `colorTheme`: chosen at onboarding (non-Mahdi/Lashawn accounts), e.g. `'midnight'`.
+  - `onboarded`: whether the post-sign-up name/theme flow has been completed.
+  - `teamMode`, `lastTeamResetAt`, `lastSeenPartnerResetAt`: mutual opt-in linked
+    resets between paired partners (see §6).
+  - `partnerUid`, `inviteCode`: invite-code pairing state.
+  - `jobApplications`: running list for the Job Application Tracker, persists
+    across the whole journey (not tied to a single day).
+  - `contentSeed`: randomizes which day's content (verse/quote/etc.) shows first;
+    stable within a journey, rerolled only on Reset Journey.
+  - All of the above are initialized in `ensureUserKeys(u)` — that function is now
+    the single source of truth for "what keys does every account need," see §8.
 - **Checkbox id / data key format:** `` `${pillarName}-${itemName}` `` e.g.
   `Faith-Prayer`, `Nourish-Water`. Water key is `Nourish-Water`.
 
-## 4. Cloud sync (Firebase / Firestore)
+## 4. Cloud sync & auth (Firebase / Firestore)
 
-- Firebase project **`elevated-75-tracker`**; compat SDK v10.12.2 loaded in the head.
-- Collection **`journeys`**, two docs: `journeys/mahdi` and `journeys/lashawn`.
-  Each doc = `{ payload: JSON(data[user] WITHOUT photos), writeTs, fromDevice, updated }`.
+- Firebase project **`elevated-75-tracker`**; compat SDK v10.12.2 (app, auth,
+  firestore) loaded in the head.
+- **Auth**: real email/password sign-up and sign-in (`firebase.auth()`).
+  `onAuthStateChanged` (registered inside `initFirebase()`) is the single source
+  of truth for routing — signed in → straight into that account's own journey;
+  signed out → the auth screen. Session persistence is explicitly set to LOCAL.
+- **Firestore collections:**
+  - `journeys/<uid>` — one doc per account: `{ payload: JSON(data[uid] WITHOUT
+    photos), writeTs, fromDevice, updated }`. This replaced the old
+    `journeys/mahdi` / `journeys/lashawn` name-keyed docs.
+  - `users/<uid>` — `{ profileType, displayName }`, looked up on sign-in/session
+    restore to know which pillar set etc. to load.
+  - `slots/mahdi` and `slots/lashawn` — claimed exactly once, at sign-up, by
+    whichever account first claims that `profileType` (see §6). Prevents a new
+    public sign-up from accidentally taking the Mahdi/Lashawn identity.
+  - `invites/<code>` — invite-code pairing docs (see §6).
+- **`migrateLegacyIdentity(uid, profileType)`**: one-time copy of the old
+  name-keyed `data.mahdi`/`data.lashawn` (local) and `journeys/mahdi`/`journeys/lashawn`
+  (cloud) into the new UID-keyed record, so the original two accounts' history
+  wasn't lost in the migration to real auth.
 - `initFirebase()` runs on `window.onload` (must NOT run in <head> — load-order).
 - **Photos are never cloud-synced** — they stay on each device.
-- **Live auto-pull listener is intentionally DISABLED** (`startCloudListener()` is a
-  no-op; body kept as `startCloudListener_DISABLED`) — it caused disruptive
-  re-renders. Sync is done via explicit pulls instead (`cloudSyncAll`).
+- **No live/real-time listener** (`startCloudListener()` is intentionally a
+  no-op; the old implementation is kept as `startCloudListener_DISABLED()` for
+  reference — it caused disruptive re-renders mid-typing and raced with manual
+  saves). Instead: `cloudSaveSilent()` auto-pushes on a debounce after local
+  changes, and `pullOnReturnToApp()` auto-pulls (via `cloudSyncAll()`) whenever
+  the tab/app regains focus or visibility — so a device picks up changes without
+  a disruptive live subscription. Manual "☁️ Load from Cloud" still exists too.
+  ⚠️ `startCloudListener_DISABLED()`'s inline key-migration block is a separate,
+  older copy of what `ensureUserKeys()` does and has drifted out of sync (missing
+  `teamMode`, `partnerUid`, `colorTheme`, etc.) — if it's ever re-enabled, replace
+  that block with a call to `ensureUserKeys()` instead of hand-copying keys again.
 
 ## 5. The sync "golden rule" (do NOT break this)
 
@@ -66,13 +112,38 @@ The fix, which MUST be preserved:
 Render order (top to bottom): verse/wisdom of day (static) → **Nourish** (compact
 pinned widget) → **Spiritual Spin** wheel card → **Faith** → rest of sections.
 
-Sections ("pillars") per user, in `pillars` object:
-- **Mahdi:** Nourish [Water, Healthy Choices] · Faith [Prayer, Faith and Mind,
+Sections ("pillars") are keyed by **`profileType`** in the `pillars` object, not by
+UID or literal name — resolve with `pillarsFor(uid)`:
+- **`mahdi`:** Nourish [Water, Healthy Choices] · Faith [Prayer, Faith and Mind,
   Journal, Church] · Physical [Physical Activity] · Professional [Job Apps,
   Prof Dev] · Creativity [Music Work, Brand Work] · Love [Love and Connection]
-- **Lashawn:** Nourish · Faith · Physical · Professional [Career Growth, Prof Dev]
+- **`lashawn`:** Nourish · Faith · Physical · Professional [Career Growth, Prof Dev]
   · Content [Content, Engagement] · Wellness [Me Time, Self-Care, Boundaries,
   Inner Beauty] · Love [Love and Connection]
+- **`default`** (every other sign-up): Nourish [Water, Healthy Choices] · Faith
+  [Prayer, Faith and Mind, Journal] · Physical [Physical Activity] ·
+  Professional [Prof Dev] · Love [Love and Connection] — a generic, shorter
+  starter set. New accounts also pick a `colorTheme` (e.g. "Midnight Dawn") at
+  onboarding, since the app no longer defaults everyone into Mahdi/Lashawn's look.
+
+**Identity claiming**: `profileType` is set once at sign-up via
+`claimProfileSlot(uid, profileType)`, which atomically claims `slots/mahdi` or
+`slots/lashawn` in Firestore (first come, first served) — everyone else gets
+`'default'`. This is how the app tells "the real Mahdi/Lashawn accounts" apart
+from any other public sign-up while still using one shared codebase and auth
+system.
+
+**Partner pairing & Team Mode**: any two accounts can link via an invite code
+(⚙ More → 🔗 Get Invite Code / Enter Partner's Code → `partnerUid`/`inviteCode`
+on `data[uid]`, docs in the `invites` collection) — not just Mahdi/Lashawn.
+Once paired, both can opt into **Team Mode**: mutual opt-in only, and once both
+sides have it on, a reset (manual or from missing the 70% weekly goal twice) on
+either account resets both — `lastTeamResetAt`/`lastSeenPartnerResetAt` dedupe
+so a partner's device only honors each reset event once.
+
+**Job Application Tracker**: a standalone running list (`data[user].jobApplications`,
+opened via a button inside the Job Apps item) — separate from the daily
+checkbox, persists across the whole journey.
 
 Behaviors:
 - Sections are slim, always-open boxes; **auto-collapse when all items complete**;
@@ -111,23 +182,39 @@ console.log('divs',o===c?'BALANCED':'MISMATCH '+o+'/'+c);
 
 ## 8. Adding a new data key (migration gotcha)
 
-New per-user keys must be initialized in ALL of these spots or they'll be undefined
-somewhere: the main load migration, the cloud-listener migration, `cloudLoad()`,
-`importData()`, and `ensureUserKeys()`. Grep for an existing key like
-`data[u].bible` to find every spot (there are ~5–6).
+`ensureUserKeys(u)` is now the single canonical place new per-account keys get
+initialized — call it, don't hand-roll another `if (!data[u].x) data[u].x = ...`
+elsewhere. Still check these other spots when adding a key, since they can run
+before `ensureUserKeys()` does or bypass it: the main load migration, `cloudLoad()`,
+`importData()`, and `pushBothToCloud()`. The disabled `startCloudListener_DISABLED()`
+has its own OLD hardcoded key list (see §4 warning) — do not add new keys there,
+it's out of date and only kept for reference. Grep for an existing key like
+`data[u].bible` or `data[u].teamMode` to find every live spot.
 
 ## 9. Key functions (where to look)
 
 - `render()` — builds the daily view; uses `getOrderedPillars(currentUser)`.
 - `loadToday()` — hydrates checkboxes/notes, applies collapse + lock states.
+- `initFirebase()` / `onAuthStateChanged` — auth bootstrap and screen routing.
+- `profileTypeFor(uid)` / `pillarsFor(uid)` / `companionFor(uid)` — resolve an
+  account's identity-dependent data; always go through these, never index
+  `pillars`/`COMPANIONS` by a raw UID.
+- `claimProfileSlot(uid, profileType)` — one-time `mahdi`/`lashawn` identity claim.
+- `migrateLegacyIdentity(uid, profileType)` — copies old name-keyed local/cloud
+  data into a newly-authenticated Mahdi/Lashawn UID.
+- `ensureUserKeys(u)` — canonical per-account key initialization (§8).
 - `cloudSyncAll(cb)` / `cloudSaveSilent()` / `pushBothToCloud(cb)` — sync.
+- `pullOnReturnToApp()` — auto-pull on tab focus/visibility (§4).
 - `save()` — writes local + stamps lastModified + schedules cloud save.
 - `renderBibleStudy()` / `bibleCommentary()` / `blbUrl()` — Bible tool.
-- `companionAvatarSVG(user,size)` — returns inline SVG for Eli/Nia.
+- `companionAvatarSVG(profileType, size)` — returns inline SVG for Eli/Nia.
 - `getOrderedPillars(u)` / `getLayoutPref(u)` — custom layout.
 - `saveSection/unlockSection/toggleSection/applySectionStates` — per-section save.
 - `lockDayReview/unlockDay/applyDayLockReview` — whole-day lock.
-- `exportData/importData` — combined backup (both accounts in one file).
+- `toggleTeamMode()` / `applyTeamModeToggle()` — linked-partner reset opt-in.
+- `openJobTracker()` and the `jobApplications` handlers — Job Application Tracker.
+- `exportData/importData` — combined backup (currently exports every account
+  present in local `data`, not hardcoded to two).
 
 ## 10. Known dead / legacy code (safe to clean up, currently harmless)
 
@@ -141,10 +228,17 @@ somewhere: the main load migration, the cloud-listener migration, `cloudLoad()`,
 
 ## 11. Release checklist (tell the user every time)
 
-1. In the live app: ⚙ More → **⬇ Backup** first (combined file, both accounts).
-2. Re-upload to the **same Netlify URL**.
-3. Update **all devices** (both phones + computer) to the same version.
-4. Photos are NOT in backups/cloud — they live per-device.
+1. In the live app: ⚙ More → **⬇ Backup** first (exports every account present
+   in local `data`, not just two).
+2. Deploys now happen automatically via Netlify's GitHub connection — merging to
+   `main` is the release; there's no manual drag-and-drop step anymore, but a
+   push to `main` (direct or merged) is instantly live, so treat merging to
+   `main` with the same care as a manual deploy used to require.
+3. Photos are NOT in backups/cloud — they live per-device.
+4. This is now a public-facing multi-tenant app — a change that touches auth,
+   the `journeys`/`users`/`slots`/`invites` collections, or `ensureUserKeys()`
+   can affect every signed-up account, not just Mahdi/Lashawn. Treat those
+   changes with correspondingly more caution than a purely cosmetic edit.
 
 ## 12. Git / version-control discipline (do NOT skip)
 
