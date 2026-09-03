@@ -1064,6 +1064,28 @@
             line-height: 1.5;
         }
 
+        /* Today's Focus card — reuses .wheel-daily-card/.wheel-daily-title/.wheel-daily-sub
+           (already theme-safe) for the container; these rules just handle its own layout. */
+        .focus-card { text-align: left; }
+        .focus-card-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px !important;
+        }
+        .focus-list { display: flex; flex-direction: column; gap: 2px; }
+        .focus-item-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 2px;
+            cursor: pointer;
+        }
+        .focus-item-row input[type="checkbox"] { flex-shrink: 0; }
+        .focus-item-text { font-size: 13px; font-weight: 600; flex: 1; }
+        .focus-item-pillar { font-size: 10px; opacity: 0.55; text-transform: uppercase; letter-spacing: 0.5px; }
+        .focus-customize-row { text-align: center; margin-top: 8px; }
+
         .pillar-pinned {
             border: 2px dashed #4fc3f7;
             background: linear-gradient(135deg, rgba(79,195,247,0.10), rgba(124,179,66,0.10));
@@ -1780,6 +1802,16 @@
             cursor: pointer;
             white-space: nowrap;
         }
+
+        .customize-focus-pillar-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            margin-top: 10px;
+        }
+        .customize-focus-pillar-label:first-child { margin-top: 0; }
 
         .job-tracker-box { max-width: 560px; text-align: left; }
         .job-tracker-open-btn {
@@ -3788,6 +3820,7 @@
                                 <div class="more-section-label">Personalize</div>
                                 <button class="more-item" onclick="openColorThemeModal(); closeMoreMenu();">🎨 Change Color Theme</button>
                                 <button class="more-item" onclick="openCustomizeLayout(); closeMoreMenu();">⚙️ Customize Layout</button>
+                                <button class="more-item" onclick="openCustomizeFocus(); closeMoreMenu();">🎯 Customize Focus</button>
                                 <button class="more-item" onclick="setStartDate(); closeMoreMenu();">📅 Set Start Date</button>
 
                                 <div class="more-section-label">Data</div>
@@ -3956,6 +3989,19 @@
                 <button class="modal-btn modal-btn-primary" onclick="saveCustomizeLayout()">Save Layout</button>
                 <button class="modal-btn modal-btn-ghost" onclick="resetCustomizeLayout()">Reset to Default</button>
                 <button class="modal-btn modal-btn-ghost" onclick="closeCustomizeLayout()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customizeFocusModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box customize-box">
+            <div class="modal-title">🎯 Customize Focus</div>
+            <div class="customize-hint">Pick the items that make up your achievable daily bar — shown together at the top of each day, and what your weekly accountability goal is based on. Everything else stays available below, just not required. (Items in a hidden section won't appear here until it's shown again.)</div>
+            <div id="customizeFocusList" class="customize-list"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" onclick="saveCustomizeFocus()">Save Focus</button>
+                <button class="modal-btn modal-btn-ghost" onclick="resetCustomizeFocus()">Reset to Default</button>
+                <button class="modal-btn modal-btn-ghost" onclick="closeCustomizeFocus()">Cancel</button>
             </div>
         </div>
     </div>
@@ -5525,6 +5571,62 @@
             _customizeWorking = null;
         }
 
+        // ===== CUSTOMIZE FOCUS MODAL (Today's Focus card, see render()/weekCompletion()) =====
+        let _focusWorking = null; // temp working Set of focus item keys while editing
+
+        function openCustomizeFocus() {
+            if (!currentUser) { alert('Log in first.'); return; }
+            _focusWorking = new Set(data[currentUser].focusItems || []);
+            renderCustomizeFocusList();
+            document.getElementById('customizeFocusModal').style.display = 'flex';
+        }
+
+        function renderCustomizeFocusList() {
+            const el = document.getElementById('customizeFocusList');
+            if (!el || !_focusWorking) return;
+            let html = '';
+            pillarsFor(currentUser).forEach(function(p) {
+                html += '<div class="customize-focus-pillar-label">' + p.icon + ' ' + p.name + '</div>';
+                p.items.forEach(function(item) {
+                    const key = p.name + '-' + item;
+                    const on = _focusWorking.has(key);
+                    html += '<div class="customize-row">';
+                    html += '<span class="customize-name">' + item + '</span>';
+                    html += '<button type="button" class="customize-toggle" onclick="toggleCustomizeFocusItem(\'' + key + '\')">' + (on ? '🎯 In Focus' : '➕ Add') + '</button>';
+                    html += '</div>';
+                });
+            });
+            el.innerHTML = html;
+        }
+
+        function toggleCustomizeFocusItem(key) {
+            if (_focusWorking.has(key)) _focusWorking.delete(key); else _focusWorking.add(key);
+            renderCustomizeFocusList();
+        }
+
+        function saveCustomizeFocus() {
+            if (!_focusWorking) return;
+            data[currentUser].focusItems = Array.from(_focusWorking);
+            data[currentUser].lastModified = Date.now();
+            try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
+            scheduleCloudAutoSave();
+            closeCustomizeFocus();
+            render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetCustomizeFocus() {
+            showConfirm('Reset to the default focus items (one per section)?', function() {
+                _focusWorking = new Set(pillarsFor(currentUser).map(function(p) { return p.name + '-' + p.items[0]; }));
+                renderCustomizeFocusList();
+            });
+        }
+
+        function closeCustomizeFocus() {
+            document.getElementById('customizeFocusModal').style.display = 'none';
+            _focusWorking = null;
+        }
+
         // ===== JOB APPLICATION TRACKER (Job Apps item) =====
         // A running list, not tied to any single day — applying to a company sticks around
         // until its status changes or it's removed.
@@ -6105,10 +6207,17 @@
 
         function weekCompletion(user, weekIndex) {
             // weekIndex 0 = days 1-7, etc. Returns {pct, complete} for that week if fully elapsed.
+            // Counts only the account's Today's Focus items (see ensureUserKeys), not every
+            // checkbox across every pillar — the 70% threshold is meant to be a realistic bar,
+            // not one that requires finishing the entire daily list every day. Falls back to
+            // every item only if an account somehow has no focus items set.
             const startStr = data[user].startDate || '2026-06-26';
             const sp = startStr.split('-');
             const start = new Date(parseInt(sp[0],10), parseInt(sp[1],10)-1, parseInt(sp[2],10));
             const today = new Date(); today.setHours(0,0,0,0);
+            const focusKeys = (data[user].focusItems && data[user].focusItems.length)
+                ? data[user].focusItems
+                : pillarsFor(user).reduce(function(keys, p) { return keys.concat(p.items.map(function(item) { return p.name + '-' + item; })); }, []);
             let count = 0, total = 0, elapsedDays = 0;
             for (let d = 0; d < 7; d++) {
                 const dayOffset = weekIndex * 7 + d;
@@ -6118,10 +6227,10 @@
                 elapsedDays++;
                 const dk = formatDateKey(dd);
                 const dayData = data[user].days[dk];
-                pillarsFor(user).forEach(p => p.items.forEach(item => {
+                focusKeys.forEach(function(key) {
                     total++;
-                    if (dayData && dayData[p.name + '-' + item]) count++;
-                }));
+                    if (dayData && dayData[key]) count++;
+                });
             }
             const fullyElapsed = (elapsedDays === 7) || (weekIndex * 7 + 6 >= 74 && elapsedDays > 0);
             return { pct: total > 0 ? count/total : 0, fullyElapsed: fullyElapsed, elapsedDays: elapsedDays };
@@ -7011,6 +7120,42 @@
 
             // Use the user's custom section order + show/hide for the daily view
             const orderedPillars = getOrderedPillars(currentUser);
+
+            // ===== TODAY'S FOCUS — the achievable daily bar (see ensureUserKeys, weekCompletion) =====
+            // Only items whose pillar is actually visible today get a working checkbox here
+            // (their real checkbox — the source of truth — only exists in the DOM for visible
+            // pillars), so build the list from orderedPillars, not the raw pillar set.
+            const focusSet = new Set(data[currentUser].focusItems || []);
+            const focusList = [];
+            orderedPillars.forEach(function(p) {
+                p.items.forEach(function(it) {
+                    const key = p.name + '-' + it;
+                    if (focusSet.has(key)) focusList.push({ pillar: p, item: it, key: key });
+                });
+            });
+            const dayDataForFocus = data[currentUser].days[todayKey] || {};
+            const focusCard = document.createElement('div');
+            focusCard.className = 'wheel-daily-card focus-card';
+            let focusHtml = '<div class="wheel-daily-title focus-card-title-row"><span>🎯 Today\'s Focus</span>';
+            focusHtml += '<span class="pillar-count" id="focusCount">' + focusList.filter(function(f) { return dayDataForFocus[f.key]; }).length + ' of ' + focusList.length + ' done</span></div>';
+            if (focusList.length === 0) {
+                focusHtml += '<div class="wheel-daily-sub">No focus items selected yet. <span class="greeting-cta" onclick="openCustomizeFocus()">Choose your focus →</span></div>';
+            } else {
+                focusHtml += '<div class="wheel-daily-sub">Your essentials for today — everything else is below, whenever you\'re ready for more.</div>';
+                focusHtml += '<div class="focus-list">';
+                focusList.forEach(function(f) {
+                    focusHtml += '<label class="focus-item-row">';
+                    focusHtml += '<input type="checkbox" id="focus-' + f.key + '" onchange="tryCheckFocus(\'' + f.key + '\')">';
+                    focusHtml += '<span class="focus-item-text">' + f.pillar.icon + ' ' + f.item + '</span>';
+                    focusHtml += '<span class="focus-item-pillar">' + f.pillar.name + '</span>';
+                    focusHtml += '</label>';
+                });
+                focusHtml += '</div>';
+                focusHtml += '<div class="focus-customize-row"><span class="greeting-cta" onclick="openCustomizeFocus()">⚙️ Customize Focus</span></div>';
+            }
+            focusCard.innerHTML = focusHtml;
+            content.appendChild(focusCard);
+
             // The Spiritual Spin normally sits just above Faith. If Faith is hidden/first, we
             // fall back to showing the wheel before the first visible section.
             const faithVisible = orderedPillars.some(function(p) { return p.name === 'Faith'; });
@@ -7666,6 +7811,13 @@
                     }
                 });
             });
+            // Hydrate the Today's Focus card's checkboxes (separate DOM elements from the
+            // real pillar checkboxes, see syncFocusCheckbox/tryCheckFocus) from the same dayData.
+            (data[currentUser].focusItems || []).forEach(function(key) {
+                const fb = document.getElementById('focus-' + key);
+                if (fb) { fb.checked = dayData[key] || false; fb.disabled = !editable; }
+            });
+            updateFocusCount();
             foldGuidance();
             applyDayLockUI(isToday, isPast, isFuture, editable);
             applyDayLockReview();
@@ -8096,6 +8248,14 @@
             // journey, not tied to any single day, so applying to a company sticks around
             // until its status changes or it's removed.
             if (!Array.isArray(data[u].jobApplications)) data[u].jobApplications = [];
+            // Today's Focus: a small subset of item keys ("Pillar-Item") that make up the
+            // achievable daily bar — shown in their own card at the top of the day, and the
+            // ONLY items weekCompletion() counts toward the weekly accountability threshold
+            // (see WEEK_THRESHOLD). Defaults to one item per pillar. Customizable via
+            // openCustomizeFocus() (⚙ More menu), same pattern as layout customization.
+            if (!Array.isArray(data[u].focusItems)) {
+                data[u].focusItems = pillarsFor(u).map(function(p) { return p.name + '-' + p.items[0]; });
+            }
         }
 
         // Picks a stable-but-randomized index into a day-rotating content array: same offset
@@ -8779,6 +8939,7 @@
                     const cups = dayData._water || 0;
                     if (cups <= 0) {
                         checkbox.checked = false;
+                        syncFocusCheckbox(itemKey);
                         const tracker = document.getElementById('watertracker-' + itemKey) || document.getElementById('cups-' + itemKey);
                         if (tracker) {
                             tracker.style.outline = '2px solid #ff6b6b';
@@ -8790,6 +8951,7 @@
                     if (wrap) { wrap.classList.add('item-collapsed'); pulseItem(wrap); }
                     lastActivePillar = itemKey.split('-')[0];
                     updateStats();
+                    syncFocusCheckbox(itemKey);
                     renderJumpMenu();
                     updatePillarCount(itemKey.split('-')[0]);
                     return;
@@ -8806,8 +8968,41 @@
             const pillarName = itemKey.split('-')[0];
             lastActivePillar = pillarName;
             updateStats();
+            syncFocusCheckbox(itemKey);
             renderJumpMenu();
             updatePillarCount(pillarName);
+        }
+
+        // Keeps the Today's Focus card's checkbox (if this item is a focus item) mirrored to
+        // the real pillar checkbox's actual (possibly validation-corrected) checked state.
+        function syncFocusCheckbox(itemKey) {
+            const realBox = document.getElementById(itemKey);
+            const focusBox = document.getElementById('focus-' + itemKey);
+            if (realBox && focusBox) focusBox.checked = realBox.checked;
+            updateFocusCount();
+        }
+
+        // Entry point for checkboxes inside the Today's Focus card — they're separate DOM
+        // elements from the real pillar checkboxes (an item's real id is already taken), so
+        // this mirrors the tap onto the real checkbox and routes through the normal tryCheck()
+        // logic (water validation, collapse, save, sync) rather than duplicating it.
+        function tryCheckFocus(itemKey) {
+            const focusBox = document.getElementById('focus-' + itemKey);
+            const realBox = document.getElementById(itemKey);
+            if (!focusBox || !realBox) return;
+            realBox.checked = focusBox.checked;
+            tryCheck(itemKey);
+        }
+
+        // Updates the "X of Y done" count shown in the Today's Focus card header, if present.
+        function updateFocusCount() {
+            const el = document.getElementById('focusCount');
+            if (!el || !currentUser || !data[currentUser]) return;
+            const focusItems = data[currentUser].focusItems || [];
+            const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
+            const dayData = data[currentUser].days[getDateKey(activeOffset)] || {};
+            const done = focusItems.filter(function(k) { return dayData[k]; }).length;
+            el.textContent = done + ' of ' + focusItems.length + ' done';
         }
 
         // Tapping a collapsed (done) item's label reopens just that item so you can add a note.
