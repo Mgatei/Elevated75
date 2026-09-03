@@ -7916,7 +7916,7 @@
                     if (!data[uid].days) data[uid].days = {};
                     if (!data[uid].goals) data[uid].goals = {};
                     if (!data[uid].photos) data[uid].photos = {};
-                    if (!data[uid].startDate) data[uid].startDate = '2026-06-26';
+                    if (!data[uid].startDate) data[uid].startDate = formatDateKey(new Date());
                     if (!data[uid].resets) data[uid].resets = [];
                     if (!data[uid].themeMode) data[uid].themeMode = 'auto';
                     if (!data[uid].emotions) data[uid].emotions = {};
@@ -8053,7 +8053,12 @@
             if (!data[u].days) data[u].days = {};
             if (!data[u].goals) data[u].goals = {};
             if (!data[u].photos) data[u].photos = {};
-            if (!data[u].startDate) data[u].startDate = '2026-06-26';
+            // A brand-new account (no startDate yet) starts its 75-day journey TODAY.
+            // Mahdi/Lashawn's real historical start date is copied in by
+            // migrateLegacyIdentity() before this runs, so this fallback only fires for
+            // genuinely new sign-ups — it must never be a fixed past date, or every new
+            // account launches already partway through (and failing) their journey.
+            if (!data[u].startDate) data[u].startDate = formatDateKey(new Date());
             if (!data[u].resets) data[u].resets = [];
             if (!data[u].themeMode) data[u].themeMode = 'auto';
             if (!data[u].emotions) data[u].emotions = {};
@@ -9555,7 +9560,7 @@
                     if (!data[u].days) data[u].days = {};
                     if (!data[u].goals) data[u].goals = {};
                     if (!data[u].photos) data[u].photos = {};
-                    if (!data[u].startDate) data[u].startDate = '2026-06-26';
+                    if (!data[u].startDate) data[u].startDate = formatDateKey(new Date());
                     if (!data[u].resets) data[u].resets = [];
                     if (!data[u].themeMode) data[u].themeMode = 'auto';
                     if (!data[u].emotions) data[u].emotions = {};
