@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>75 Days: Elevated</title>
+    <title>77 Days: Elevated</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -2786,13 +2786,9 @@
             font-family: 'Playfair Display', serif;
             font-size: 20px;
             font-style: italic;
-            color: #ffffff;
+            color: var(--ink);
             line-height: 1.6;
             margin-bottom: 12px;
-        }
-
-        body.light-mode .verse-text {
-            color: #ffffff;
         }
 
         .verse-ref {
@@ -2801,6 +2797,26 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+
+        /* Daily Meditation commentary — sits under the verse quote/ref, plain (not
+           italic-serif like the quote itself) since it's explanatory, not scripture. */
+        .med-meaning {
+            font-family: 'Inter', sans-serif;
+            font-style: normal;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--ink-soft);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line);
+        }
+        .med-meaning strong { color: var(--accent); }
+        .verse-text.med-carry {
+            font-family: 'Inter', sans-serif;
+            font-style: normal;
+            font-size: 15px;
+            font-weight: 600;
         }
 
         .peace-hint strong {
@@ -3806,7 +3822,7 @@
     <div id="authScreen" class="login-screen">
         <div class="login-content">
             <div class="login-title">Elevated</div>
-            <div class="login-subtitle">75 Days of Transformation</div>
+            <div class="login-subtitle">77 Days of Transformation</div>
             <div class="auth-question">Are you new here, or do you already have an account?</div>
             <div class="auth-tabs">
                 <button type="button" class="auth-tab active" id="authTabLogin" onclick="setAuthMode('login')">I Have an Account</button>
@@ -3869,7 +3885,7 @@
                 <div class="header-top">
                     <div>
                         <div class="title">Elevated</div>
-                        <div class="subtitle" id="subtitle">75-Day Journey</div>
+                        <div class="subtitle" id="subtitle">77-Day Journey</div>
                         <div class="today-date" id="todayDate" style="font-size: 13px; color: #d4af37; margin-top: 6px; font-weight: 700;"></div>
                         <div style="margin-top: 10px;">
                             <label style="font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px;">Log a different day: </label>
@@ -3912,7 +3928,7 @@
                 </div>
                 <div class="stats">
                     <div class="stat-box">
-                        <div class="stat-number" id="daysLeft">75</div>
+                        <div class="stat-number" id="daysLeft">77</div>
                         <div class="stat-label">Days Left</div>
                     </div>
                     <div class="stat-box">
@@ -3988,7 +4004,7 @@
                     <div id="searchResults" style="margin-top: 20px; display: none;"></div>
                 </div>
                 <div class="summary-box">
-                    <div class="summary-title">75-Day Calendar</div>
+                    <div class="summary-title">77-Day Calendar</div>
                     <div style="font-size: 12px; opacity: 0.75; margin-bottom: 10px;">Tap any day to see what was logged — checkmarks, notes, and photos. Today is highlighted.</div>
                     <div class="calendar-grid" id="calendar"></div>
                 </div>
@@ -4026,7 +4042,7 @@
             <div id="together" class="tab-content">
                 <div class="summary-box">
                     <div class="summary-title">💑 Together — Both Journeys</div>
-                    <div style="font-size:13px; opacity:0.85; margin-bottom:6px;">A shared view of how you and your partner are both moving through the 75 days. Encourage each other.</div>
+                    <div style="font-size:13px; opacity:0.85; margin-bottom:6px;">A shared view of how you and your partner are both moving through the 77 days. Encourage each other.</div>
                     <div id="togetherContent"></div>
                 </div>
             </div>
@@ -4981,7 +4997,91 @@
             { t: "The lion does not turn around when a small dog barks.", r: "African Proverb" }
         ];
 
-        // CSB verses — rotates by day of the 75-day journey
+        // Daily Meditations (see FORMATION-CONTENT plan) — a verse for each day of
+        // the 77-day journey, keyed by day number, with faithful commentary and a way to
+        // carry it. Used by render() as the primary daily verse/reflection; VERSES/
+        // WISDOM_QUOTES below are now only a fallback for any day outside 1-77.
+        const MEDITATIONS = {
+            1: { day: 1, week: 1, verse: { text: "See what great love the Father has lavished on us, that we should be called children of God! And that is what we are.", ref: "1 John 3:1" }, meaning: "The word for \u201clavished\u201d means love poured out extravagantly, far beyond what's deserved. And notice the title \u2014 not servants, not followers, but children. To be called someone's child in that world meant you shared their name, their inheritance, their belonging. John adds a line that lands like a quiet shout: \u201cAnd that is what we are.\u201d Not what we're becoming. What we already are.", carry: "Before you do anything today to prove you're \u201cenough,\u201d let it be already settled: you are a loved child, named and claimed. Carry that identity into your day instead of trying to earn it from your day." },
+            2: { day: 2, week: 1, verse: { text: "I praise you, for I am fearfully and wonderfully made. Wonderful are your works; my soul knows it very well.", ref: "Psalm 139:14" }, meaning: "David isn't admiring himself here \u2014 he's in awe of the God who made him. \u201cFearfully\u201d carries the sense of reverence and wonder; \u201cwonderfully\u201d means set apart, distinct. You were not mass-produced or accidental. The same careful attention God gave the stars, He gave to the making of you.", carry: "When the critical voice starts today \u2014 too much, not enough, wrong \u2014 gently answer it with this: I am God's own handiwork, made with care. Let that quiet the self-judgment for even one moment." },
+            3: { day: 3, week: 1, verse: { text: "But you are a chosen people, a royal priesthood, a holy nation, God's special possession.", ref: "1 Peter 2:9" }, meaning: "Peter stacks up four identities, each one astonishing: chosen (not overlooked), royal (dignity you didn't earn), holy (set apart for good), and God's own possession (you belong to Someone). He's writing to ordinary, scattered, struggling believers \u2014 and calling them royalty. Identity in Scripture is never about performance; it's about whose you are.", carry: "Walk through one ordinary moment today \u2014 a commute, a chore \u2014 remembering you carry a royal, chosen identity even there. Dignity isn't in the task; it's in whose you are while you do it." },
+            4: { day: 4, week: 1, verse: { text: "The LORD your God is with you, the Mighty Warrior who saves. He will take great delight in you... he will rejoice over you with singing.", ref: "Zephaniah 3:17" }, meaning: "This is one of the tenderest pictures of God in all of Scripture. He's not merely tolerating you or keeping score \u2014 He delights in you, and the image is of God singing over His people like a parent over a child they adore. The same God strong enough to save is soft enough to sing.", carry: "Sit for thirty seconds and imagine God genuinely delighting in you \u2014 not because of what you did, but because you're His. Let that be true before the day asks anything of you." },
+            5: { day: 5, week: 1, verse: { text: "So God created mankind in his own image, in the image of God he created them.", ref: "Genesis 1:27" }, meaning: "Before any rule, any fall, any effort \u2014 the very first thing said about humanity is that we bear God's image. It's the ground floor of all human dignity: your worth isn't assigned by your productivity, your appearance, or others' opinions. It's stamped into you by creation itself, and it can't be un-stamped.", carry: "Today, see the image of God in one person you'd normally overlook or rush past \u2014 and remember it's stamped on you, too. Treat both accordingly." },
+            6: { day: 6, week: 1, verse: { text: "I have summoned you by name; you are mine.", ref: "Isaiah 43:1" }, meaning: "God speaks this to a people who felt forgotten and afraid. To be summoned \u201cby name\u201d means you are known specifically \u2014 not a face in a crowd, not a number. And \u201cyou are mine\u201d is the language of covenant belonging. This isn't earned closeness; it's declared closeness.", carry: "When you feel unseen today, return to these three words: You are mine. You are known by name by the One who matters most, even when no one else seems to notice." },
+            7: { day: 7, week: 1, verse: { text: "Therefore, there is now no condemnation for those who are in Christ Jesus.", ref: "Romans 8:1" }, meaning: "\u201cNo condemnation\u201d \u2014 not reduced, not probationary, but none. Paul writes this after honestly admitting his own inner struggle in the previous chapter. The verdict over your life isn't \u201ctry harder\u201d or \u201cnot good enough.\u201d In Christ, the verdict is already settled: accepted. That's the foundation everything else in these days stands on.", carry: "Name one thing you've been quietly condemning yourself for. Today, practice setting it down under this truth: in Christ, there is no condemnation left for you to carry." },
+            8: { day: 8, week: 2, verse: { text: "Cast all your anxiety on him because he cares for you.", ref: "1 Peter 5:7" }, meaning: "\u201cCast\u201d is a strong, deliberate word \u2014 like heaving a heavy load off your shoulders onto someone able to bear it. And the reason given isn't a vague \u201cit'll be fine\u201d \u2014 it's because he cares for you. Your anxieties aren't a bother to God; they're an invitation into His care.", carry: "Name the one worry sitting heaviest on you right now. Picture physically handing it over, and say: \u201cThis is Yours to carry, not mine alone.\u201d" },
+            9: { day: 9, week: 2, verse: { text: "Trust in the LORD with all your heart and lean not on your own understanding.", ref: "Proverbs 3:5" }, meaning: "The call isn't to stop thinking \u2014 it's to stop leaning your whole weight on your own limited view. We see a sliver; God sees the whole. Surrender here means trusting that His understanding holds even when yours runs out, especially about the things you can't figure out or control.", carry: "Pick one situation you've been trying to think your way out of. Today, loosen your grip on needing to understand it fully, and trust God with the part you can't see." },
+            10: { day: 10, week: 2, verse: { text: "Not my will, but yours be done.", ref: "Luke 22:42" }, meaning: "These are Jesus' words in the garden, hours before the cross, in genuine anguish. Surrender wasn't easy even for Him \u2014 notice He first honestly asks for another way. But He lands on trust: aligning His will with the Father's. This is the truest, hardest prayer, and it's prayed through tears, not pretending.", carry: "Bring God something you desperately want a certain way. Hold it honestly \u2014 then offer, as best you can today: \u201cNot my will, but Yours.\u201d Even a trembling surrender counts." },
+            11: { day: 11, week: 2, verse: { text: "Come to me, all you who are weary and burdened, and I will give you rest.", ref: "Matthew 11:28" }, meaning: "Jesus doesn't say \u201ccome to me when you've pulled it together.\u201d He calls the weary and burdened \u2014 exactly as they are. The rest He offers isn't just a nap; it's the deep relief of handing your load to Someone strong enough for it. Surrender and rest are the same motion.", carry: "Stop striving for just a moment today. Come to Jesus tired and unfinished, and let yourself receive rest you didn't earn." },
+            12: { day: 12, week: 2, verse: { text: "Be still, and know that I am God.", ref: "Psalm 46:10" }, meaning: "The surrounding verses describe chaos \u2014 nations raging, mountains falling. Right in the middle, God says be still. The stillness isn't denial of the storm; it's trust that He is God in the storm. \u201cKnow\u201d here means settle into, rest in \u2014 not just acknowledge with your head.", carry: "When things feel out of control today, pause for three slow breaths and say: \u201cBe still. He is God. I am not \u2014 and that's a relief.\u201d" },
+            13: { day: 13, week: 2, verse: { text: "Humble yourselves... casting all your care upon him, for he careth for you.", ref: "1 Peter 5:6-7 (KJV)" }, meaning: "Surrender and humility are linked. To cast your cares on God is to admit you're not the one holding the universe together \u2014 a humbling, freeing truth. Gripping control is often pride in disguise; letting go is trust that Someone greater is at work.", carry: "Notice one place today where you're gripping out of fear of losing control. Practice the humble release: \u201cI don't have to hold this. He does.\u201d" },
+            14: { day: 14, week: 2, verse: { text: "He must become greater; I must become less.", ref: "John 3:30" }, meaning: "John the Baptist says this joyfully, not grudgingly, as his followers drift toward Jesus. It's the heart of surrender: not self-erasure, but reordering \u2014 letting God take His rightful central place so you can stop straining to be the center. Less striving to be everything; more room for Him to be.", carry: "In one moment today where you'd normally push to be right, seen, or in control \u2014 practice stepping back and letting God be greater. Feel the lightness of not having to be everything." },
+            15: { day: 15, week: 3, verse: { text: "Surely the LORD is in this place, and I was not aware of it.", ref: "Genesis 28:16" }, meaning: "Jacob says this waking from a dream, in the middle of nowhere, running from his mistakes. God was right there the whole time \u2014 he just hadn't noticed. The holy ground wasn't somewhere special; it was wherever Jacob already stood. Presence is less about God arriving and more about us waking up to the One already here.", carry: "Pause once today in an ordinary place \u2014 your car, your kitchen \u2014 and say: \u201cSurely God is in this place.\u201d Let the ordinary become holy ground." },
+            16: { day: 16, week: 3, verse: { text: "You will seek me and find me when you seek me with all your heart.", ref: "Jeremiah 29:13" }, meaning: "God isn't hiding \u2014 He promises to be found. But the seeking is wholehearted, not distracted or halfway. Presence grows when we actually show up looking, rather than expecting God to interrupt a divided, hurried attention.", carry: "Give God five truly undistracted minutes today \u2014 no phone, no multitasking. Seek Him with your whole, undivided attention, and trust the promise that He'll be found." },
+            17: { day: 17, week: 3, verse: { text: "Draw near to God, and he will draw near to you.", ref: "James 4:8" }, meaning: "It's a two-way movement, and God's response is promised. You don't have to climb to reach Him or earn His nearness \u2014 one honest step toward Him is met by His step toward you. Presence is a relationship, not a performance.", carry: "Take one small step toward God today \u2014 a whispered prayer, an open Bible, a moment of attention \u2014 trusting He's already moving toward you." },
+            18: { day: 18, week: 3, verse: { text: "I have set the LORD always before me. Because he is at my right hand, I will not be shaken.", ref: "Psalm 16:8" }, meaning: "\u201cAlways before me\u201d is a practice \u2014 David deliberately keeps God in view through his day. The result is stability: not that hard things stop, but that he's not shaken by them, because God is near (\u201cat my right hand\u201d meant a trusted helper close by). Awareness of God's presence steadies us.", carry: "Set a quiet reminder today to \u201cset the Lord before you\u201d \u2014 a mental glance toward God in the middle of whatever you're doing. Notice if it steadies you." },
+            19: { day: 19, week: 3, verse: { text: "Where can I go from your Spirit? Where can I flee from your presence?", ref: "Psalm 139:7" }, meaning: "David marvels that there's nowhere God isn't \u2014 not the heights, not the depths, not the dark. This is comfort, not surveillance: you are never, ever alone. Even in the places you feel most lost or least worthy, God's presence is already there with you.", carry: "Think of the place or feeling where you most often feel alone. Today, remember: God is already there. You cannot go anywhere outside His nearness." },
+            20: { day: 20, week: 3, verse: { text: "In your presence there is fullness of joy.", ref: "Psalm 16:11" }, meaning: "Not just a little joy, but fullness \u2014 and it's located in God's presence itself, not in better circumstances. The deepest joy isn't something God gives from a distance; it's found in nearness to Him. Presence is the point, and joy is what grows there.", carry: "Instead of chasing something today to make you feel better, try turning toward God's presence first \u2014 even for a minute \u2014 and see what rises there." },
+            21: { day: 21, week: 3, verse: { text: "And surely I am with you always, to the very end of the age.", ref: "Matthew 28:20" }, meaning: "These are Jesus' final recorded words in Matthew \u2014 the promise He chose to leave ringing. \u201cAlways\u201d and \u201cto the very end\u201d leave no gap, no expiration. Whatever comes, the one constant is His presence with you. You are accompanied, every single day.", carry: "Whatever today holds \u2014 hard or ordinary \u2014 carry this as your anchor: I am with you always. You never face a single moment of it alone." },
+            22: { day: 22, week: 4, verse: { text: "Whatever you do, work at it with all your heart, as working for the Lord, not for human masters.", ref: "Colossians 3:23" }, meaning: "Paul was writing partly to servants doing unglamorous, unseen labor \u2014 and he dignifies all of it by reframing who it's for. When the audience becomes God rather than people, ordinary effort turns into worship. The work doesn't change; the heart behind it does.", carry: "Pick one ordinary task today and do it \u201cfor the Lord\u201d \u2014 with care, as an offering. Notice how aiming it at God changes the way it feels." },
+            23: { day: 23, week: 4, verse: { text: "Do you not know that in a race all the runners run, but only one gets the prize? Run in such a way as to get the prize.", ref: "1 Corinthians 9:24" }, meaning: "Paul uses the athlete on purpose \u2014 disciplined training isn't drudgery to them; it's devotion to something they love. He's not saying earn your salvation by effort; he's saying give yourself fully, the way a runner trains with purpose. Discipline is love taking a committed shape.", carry: "Bring intentional, wholehearted effort to one thing today \u2014 not to prove yourself, but as an athlete trains for love of the goal. Give it your real yes." },
+            24: { day: 24, week: 4, verse: { text: "I discipline my body and keep it under control.", ref: "1 Corinthians 9:27" }, meaning: "Paul speaks of training his body like an athlete so his life matches his message. This isn't punishment or self-hatred \u2014 it's a loving mastery, where the appetites serve the person rather than ruling them. Discipline here is freedom: being governed by what you most deeply value, not every passing impulse.", carry: "In one small choice today \u2014 food, phone, time, a word \u2014 practice loving self-mastery. Not harshness; just choosing your deeper yes over your momentary want." },
+            25: { day: 25, week: 4, verse: { text: "No discipline seems pleasant at the time, but painful. Later on, however, it produces a harvest of righteousness and peace.", ref: "Hebrews 12:11" }, meaning: "The writer is honest \u2014 discipline doesn't feel good in the moment, and pretending otherwise is a lie. But there's a harvest coming: righteousness and peace. The hard thing now is planting; the peace later is the fruit. This reframes today's effort as seed, not suffering.", carry: "When something feels hard and unrewarding today, whisper: \u201cThis is seed, not waste.\u201d Trust the harvest of peace you can't see yet." },
+            26: { day: 26, week: 4, verse: { text: "Therefore, I urge you... to offer your bodies as a living sacrifice, holy and pleasing to God \u2014 this is your true and proper worship.", ref: "Romans 12:1" }, meaning: "Paul redefines worship. It's not only singing or church \u2014 it's offering your whole ordinary life, your body and your days, to God. A \u201cliving sacrifice\u201d is one that stays on the altar: a continual, daily giving. Your discipline, your work, your care for yourself \u2014 all of it can be worship.", carry: "Offer your body today \u2014 its energy, its effort, its care \u2014 as worship. Before a workout or a task, simply say: \u201cThis is for You.\u201d" },
+            27: { day: 27, week: 4, verse: { text: "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.", ref: "Galatians 6:9" }, meaning: "Even good effort gets tiring \u2014 Paul names \u201cweary in doing good\u201d as a real thing. The promise isn't instant reward; it's a harvest \u201cat the proper time,\u201d God's time. The one condition is simply not quitting. Faithfulness over feelings, consistency over intensity.", carry: "On the thing you're tempted to abandon because it's tiring and slow \u2014 show up once more today. Don't give up. The harvest is tied to not quitting." },
+            28: { day: 28, week: 4, verse: { text: "Commit to the LORD whatever you do, and he will establish your plans.", ref: "Proverbs 16:3" }, meaning: "To \u201ccommit\u201d your work to God is to hand both the effort and the outcome to Him \u2014 you do your part faithfully, He secures what lasts. It takes the crushing weight of results off your shoulders. Your job is faithful effort; His job is the harvest.", carry: "Before your main effort today, commit it to God out loud: \u201cI'll do my part faithfully; the results are Yours.\u201d Then work freely, released from carrying the outcome." },
+            29: { day: 29, week: 5, verse: { text: "By the seventh day God had finished his work... and he rested. Then God blessed the seventh day and made it holy.", ref: "Genesis 2:2-3" }, meaning: "The God who never tires chose to rest \u2014 not from exhaustion, but to establish a rhythm and bless it. Rest was woven into creation as good and holy before any command about it. If God, who needs nothing, built rest into the week, how much more do we need it.", carry: "Give yourself permission to stop today without guilt. Rest isn't laziness; it's holy, built into the design of things by God Himself." },
+            30: { day: 30, week: 5, verse: { text: "Come to me, all you who are weary and burdened, and I will give you rest.", ref: "Matthew 11:28" }, meaning: "This is Jesus' open invitation to the exhausted. Notice the direction: rest comes from coming to Him, not just from stopping activity. The deepest rest isn't the absence of work \u2014 it's the presence of the One who carries what we cannot.", carry: "When you feel depleted today, don't just push through or numb out. Come to Jesus with the tiredness itself, and ask Him for rest that's deeper than sleep." },
+            31: { day: 31, week: 5, verse: { text: "In vain you rise early and stay up late, toiling for food to eat \u2014 for he grants sleep to those he loves.", ref: "Psalm 127:2" }, meaning: "The psalmist gently confronts our frantic overwork \u2014 rising early, staying up late, striving as if everything depends on us. The quiet rebuke: God \u201cgrants sleep to those he loves.\u201d Rest is a gift of love, and trusting Him enough to stop is its own act of faith.", carry: "Where are you toiling \u201cearly and late\u201d as if it all depends on you? Today, trust God enough to stop at a reasonable point \u2014 and receive rest as a gift of love." },
+            32: { day: 32, week: 5, verse: { text: "The Sabbath was made for man, not man for the Sabbath.", ref: "Mark 2:27" }, meaning: "Jesus rescues rest from legalism. Sabbath isn't a burdensome rule you serve \u2014 it's a gift made for you, for your flourishing. God isn't looking for rigid rule-keeping; He's offering a rhythm that restores you. Rest is for your good.", carry: "Take one real pocket of rest today purely because it's good for you \u2014 not earned, not productive. Receive it as the gift it was made to be." },
+            33: { day: 33, week: 5, verse: { text: "He makes me lie down in green pastures, he leads me beside quiet waters, he refreshes my soul.", ref: "Psalm 23:2-3" }, meaning: "Notice the Shepherd \u201cmakes\u201d the sheep lie down \u2014 sometimes we need to be led into rest we wouldn't choose on our own. The images are all gentleness: green pastures, quiet waters, a refreshed soul. God's care includes leading us toward the stillness our souls actually need.", carry: "Let God lead you to one \u201cquiet water\u201d today \u2014 a walk, a pause, a slow coffee. Trust that being led into rest is part of being cared for." },
+            34: { day: 34, week: 5, verse: { text: "Return to your rest, my soul, for the LORD has been good to you.", ref: "Psalm 116:7" }, meaning: "The psalmist speaks to his own soul, calling it back to rest after distress \u2014 and the anchor is remembering God's goodness. Rest is tied to gratitude: when we recall how God has already come through, our souls can settle. Peace grows from remembering His faithfulness.", carry: "Name one way God has been good to you lately. Let that memory call your soul back to rest today: \u201cHe's been good to me. I can settle.\u201d" },
+            35: { day: 35, week: 5, verse: { text: "For we who have believed enter that rest.", ref: "Hebrews 4:3" }, meaning: "The deepest rest here isn't a day off \u2014 it's a settledness of soul that comes from trusting God's finished work rather than striving to secure ourselves. It's rest from the exhausting project of earning our worth. We enter it by believing, not achieving.", carry: "Lay down, for today, the inner striving to prove or secure yourself. Rest in what God has already done. You can stop earning what you've already been freely given." },
+            36: { day: 36, week: 6, verse: { text: "Bear with each other and forgive one another if any of you has a grievance against someone. Forgive as the Lord forgave you.", ref: "Colossians 3:13" }, meaning: "The measure given is staggering: forgive as the Lord forgave you \u2014 fully, undeservedly, at great cost. Paul assumes grievances will happen (\u201cif any of you has\u201d really means \u201cwhen\u201d). Forgiveness isn't pretending the wrong didn't happen; it's choosing to release the debt the way you've been released.", carry: "Bring to mind one grievance you're holding. Today, take one small step toward releasing it \u2014 remembering how much you yourself have been forgiven." },
+            37: { day: 37, week: 6, verse: { text: "Then Peter came to Jesus and asked, 'Lord, how many times shall I forgive...? Up to seven times?' Jesus answered, 'Not seven times, but seventy-seven times.'", ref: "Matthew 18:21-22" }, meaning: "Peter thought seven was generous. Jesus' \u201cseventy-seven\u201d (or seventy times seven) isn't a new limit to count to \u2014 it means stop counting. Forgiveness isn't a transaction you ration; it's a posture of the heart, offered again and again, the way God offers it to us.", carry: "Is there someone you've \u201crun out of\u201d forgiveness for? Today, practice offering it one more time \u2014 releasing the tally you've been keeping." },
+            38: { day: 38, week: 6, verse: { text: "Be kind and compassionate to one another, forgiving each other, just as in Christ God forgave you.", ref: "Ephesians 4:32" }, meaning: "Forgiveness here is paired with kindness and compassion \u2014 it's not cold or merely transactional. And again the pattern is God's forgiveness of us. We forgive not because the other person has earned it, but because we're imitating the grace we've received.", carry: "Replace one grudge-driven reaction today with a small act of kindness or compassion \u2014 letting God's grace to you flow through you to someone else." },
+            39: { day: 39, week: 6, verse: { text: "Father, forgive them, for they do not know what they are doing.", ref: "Luke 23:34" }, meaning: "Jesus prays this from the cross, for the very people killing Him \u2014 the hardest forgiveness imaginable, offered in the moment of deepest wound. It shows forgiveness isn't about the offender deserving it or even asking for it; it's a release the wounded one chooses. And notice the compassion: \u201cthey do not know.\u201d", carry: "For the person who hurt you most, try praying \u2014 even haltingly \u2014 \u201cFather, forgive them.\u201d You don't have to feel it fully; the choosing is the beginning." },
+            40: { day: 40, week: 6, verse: { text: "If we confess our sins, he is faithful and just and will forgive us our sins and purify us from all unrighteousness.", ref: "1 John 1:9" }, meaning: "This is about receiving forgiveness, including from yourself. God's response to honest confession is certain \u2014 \u201cfaithful and just,\u201d not reluctant or grudging. \u201cAll unrighteousness\u201d leaves nothing out. Often the hardest person to forgive is ourselves, but God has already cleared the account.", carry: "Name one thing you've been punishing yourself for. Bring it honestly to God and receive His sure forgiveness \u2014 then practice extending that same mercy to yourself." },
+            41: { day: 41, week: 6, verse: { text: "As far as the east is from the west, so far has he removed our transgressions from us.", ref: "Psalm 103:12" }, meaning: "East and west never meet \u2014 you can travel west forever and never hit east. That's the picture of how completely God removes forgiven sin: infinitely, irretrievably far. He doesn't file it away to bring up later. What He forgives, He truly puts away.", carry: "When an old guilt resurfaces today, picture it carried off \u201cas far as the east is from the west.\u201d God isn't holding it against you \u2014 so you can stop holding it against yourself." },
+            42: { day: 42, week: 6, verse: { text: "See to it that no one falls short of the grace of God and that no bitter root grows up to cause trouble and defile many.", ref: "Hebrews 12:15" }, meaning: "Unforgiveness is pictured as a \u201cbitter root\u201d \u2014 something that, left unchecked, grows down deep and spreads, poisoning not just us but the people around us. The warning is tender, not harsh: tend your heart, because held bitterness quietly costs you and others. Forgiveness is soul-care.", carry: "Check your heart today for a \u201cbitter root\u201d you've let grow. Name it to God, and ask Him to help you dig it up before it spreads further." },
+            43: { day: 43, week: 7, verse: { text: "Each of you should use whatever gift you have received to serve others, as faithful stewards of God's grace in its various forms.", ref: "1 Peter 4:10" }, meaning: "A steward manages what belongs to someone else. Peter says our gifts aren't personal possessions to hoard or bury \u2014 they're entrusted to us to serve others. And the gifts come \u201cin various forms,\u201d meaning yours is needed; no one else carries exactly your combination. Faithfulness is using what you've been given.", carry: "Name one gift or strength you have. Today, use it to serve one person \u2014 stewarding it the way it was meant to be used." },
+            44: { day: 44, week: 7, verse: { text: "His master replied, 'Well done, good and faithful servant! You have been faithful with a few things; I will put you in charge of many things.'", ref: "Matthew 25:21" }, meaning: "In the parable, the reward isn't for being the most gifted servant \u2014 it's for being faithful with whatever was given, even \u201ca few things.\u201d God's measure isn't the size of what you steward but the faithfulness with which you tend it. Small, faithful care matters deeply to Him.", carry: "Tend one \u201csmall thing\u201d with real faithfulness today \u2014 a task, a dollar, a relationship. Faithfulness in little is what God honors." },
+            45: { day: 45, week: 7, verse: { text: "Do you not know that your bodies are temples of the Holy Spirit... You are not your own; you were bought at a price. Therefore honor God with your bodies.", ref: "1 Corinthians 6:19-20" }, meaning: "Your body isn't just yours to use up or neglect \u2014 it's a dwelling place of God's Spirit, treated with the reverence you'd give a temple. \u201cBought at a price\u201d recalls the costly love of the cross. Caring for your body \u2014 rest, movement, nourishment \u2014 becomes a way of honoring God.", carry: "Make one choice today that honors your body as God's temple \u2014 a good meal, real rest, movement, water. Steward it with reverence, not neglect or harshness." },
+            46: { day: 46, week: 7, verse: { text: "The earth is the LORD's, and everything in it, the world, and all who live in it.", ref: "Psalm 24:1" }, meaning: "Nothing we \u201cown\u201d is ultimately ours \u2014 it's all God's, and we're caretakers for a while. This reframes money, possessions, time, even the planet: we don't own, we steward. It's freeing (the pressure of ownership lifts) and sobering (we'll give an account of how we tended it).", carry: "Hold one thing you call \u201cmine\u201d today \u2014 money, time, a possession \u2014 with an open hand, as God's entrusted to you. Ask: am I tending this the way the true Owner would want?" },
+            47: { day: 47, week: 7, verse: { text: "Where your treasure is, there your heart will be also.", ref: "Matthew 6:21" }, meaning: "Jesus reveals a spiritual law: your heart follows your investments. Where you put your money, time, and attention is where your affection will travel. It's diagnostic \u2014 look at your calendar and spending, and you'll see what your heart actually treasures. Stewardship shapes the soul.", carry: "Look honestly at where your time and money went this week. Ask: is my heart being pulled toward what truly matters? Redirect one small investment toward it today." },
+            48: { day: 48, week: 7, verse: { text: "Honor the LORD with your wealth, with the firstfruits of all your crops.", ref: "Proverbs 3:9" }, meaning: "\u201cFirstfruits\u201d means giving God the first and best, not the leftovers \u2014 a tangible way of saying You come first, and I trust You to provide the rest. It's less about the amount and more about the order of our priorities. Generosity is stewardship that honors the Giver.", carry: "Give something \u201cfirst and best\u201d today \u2014 the first of your attention in prayer, a generous gift, your best effort \u2014 as a way of honoring God before yourself." },
+            49: { day: 49, week: 7, verse: { text: "Teach us to number our days, that we may gain a heart of wisdom.", ref: "Psalm 90:12" }, meaning: "Our days are finite and we often forget it, drifting through time as if it's endless. \u201cNumbering\u201d our days \u2014 remembering life is limited \u2014 isn't morbid; it's what produces wisdom. When we grasp that time is a trust, we start spending it on what actually matters.", carry: "Live today as if time is the gift it actually is. Ask once: given that my days are numbered, is this worth my now? Then steward this day well." },
+            50: { day: 50, week: 8, verse: { text: "As iron sharpens iron, so one person sharpens another.", ref: "Proverbs 27:17" }, meaning: "Iron sharpening iron involves friction, sparks, contact \u2014 it's not always comfortable. The image says we're shaped by each other, including through the hard edges and honest challenges. We can't become our fullest selves in isolation; God often uses other people as the file that shapes us.", carry: "Welcome one bit of \u201cfriction\u201d today \u2014 honest feedback, a different perspective \u2014 as God's tool to sharpen you, rather than something to defend against." },
+            51: { day: 51, week: 8, verse: { text: "Two are better than one... If either of them falls down, one can help the other up. But pity anyone who falls and has no one to help them up.", ref: "Ecclesiastes 4:9-10" }, meaning: "The Teacher is clear-eyed about human need: we fall, and we need someone there when we do. Independence is overrated; \u201ctwo are better than one\u201d is simply wiser. Letting others help you up \u2014 and being there to lift them \u2014 is how we're meant to live.", carry: "Let someone help you with something today instead of doing it all alone \u2014 or be the one who helps another up. Practice needing and being needed." },
+            52: { day: 52, week: 8, verse: { text: "Above all, love each other deeply, because love covers over a multitude of sins.", ref: "1 Peter 4:8" }, meaning: "\u201cCovers over\u201d doesn't mean ignoring real wrong \u2014 it means love chooses not to expose, exploit, or keep score of every fault. In close relationships, especially marriage, we see each other's worst; deep love keeps extending grace rather than cataloging failures. Love is patient with imperfection.", carry: "With the person closest to you, let one small fault go uncatalogued today. Cover it with love instead of pointing it out." },
+            53: { day: 53, week: 8, verse: { text: "Therefore what God has joined together, let no one separate.", ref: "Mark 10:9" }, meaning: "Jesus speaks of marriage as something God joins \u2014 a sacred union, not merely a human arrangement. \u201cLet no one separate\u201d is a call to protect and prioritize that bond against the many forces that pull at it. For the married, it's a reminder that your covenant is holy and worth guarding.", carry: "Do one thing today to protect and strengthen your closest covenant relationship \u2014 guard it against neglect, distraction, or drift. (If unmarried, invest in a key relationship God has given you.)" },
+            54: { day: 54, week: 8, verse: { text: "Carry each other's burdens, and in this way you will fulfill the law of Christ.", ref: "Galatians 6:2" }, meaning: "\u201cThe law of Christ\u201d is love \u2014 and here love looks like shouldering what's weighing someone else down. We're not meant to carry our burdens alone, and we're called to help carry others'. This mutual burden-bearing is one of the clearest marks of real Christian community.", carry: "Ask one person today, \u201cHow can I help carry what you're carrying?\u201d \u2014 and actually show up for them. Let someone do the same for you." },
+            55: { day: 55, week: 8, verse: { text: "Love is patient, love is kind. It does not envy, it does not boast, it is not proud... It always protects, always trusts, always hopes, always perseveres.", ref: "1 Corinthians 13:4-7" }, meaning: "Paul's famous description makes love active, not sentimental \u2014 a list of behaviors, not feelings. Read slowly, it's also a mirror: put your own name in place of \u201clove\u201d and see where you fall short. This is the love we're growing into, by grace, especially with those closest to us.", carry: "Pick one phrase \u2014 patient, kind, not proud, protects \u2014 and practice just that one, deliberately, with someone you love today." },
+            56: { day: 56, week: 8, verse: { text: "How good and pleasant it is when God's people live together in unity!", ref: "Psalm 133:1" }, meaning: "Unity is called \u201cgood and pleasant\u201d \u2014 it's something to be enjoyed and pursued, not taken for granted. The psalm goes on to compare it to precious oil and refreshing dew: unity is a blessing that flows down over everyone it touches. Peace between people is a gift worth tending.", carry: "Be a peacemaker in one relationship today \u2014 mend a small rift, choose unity over being right, or simply bring a calming presence into a tense moment." },
+            57: { day: 57, week: 9, verse: { text: "Let us run with perseverance the race marked out for us, fixing our eyes on Jesus, the pioneer and perfecter of faith.", ref: "Hebrews 12:1-2" }, meaning: "Life is pictured as a long-distance race, not a sprint \u2014 perseverance is the key quality. And the secret to endurance isn't gritting harder; it's where you look: \u201cfixing our eyes on Jesus.\u201d We keep going not by staring at the difficulty but by keeping our gaze on Him.", carry: "When today gets hard, shift your focus off the struggle and onto Jesus. Run this stretch by looking at Him, not at how far you have left." },
+            58: { day: 58, week: 9, verse: { text: "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.", ref: "Galatians 6:9" }, meaning: "This promise is worth meeting twice on the journey. By now the newness has worn off and weariness is real \u2014 Paul names it honestly. But the harvest is tied to a single condition: not giving up. Faithfulness in the tired middle is exactly where the breakthrough is being planted.", carry: "On the thing you most want to quit right now \u2014 show up one more time today. You're closer to the harvest than it feels. Don't give up." },
+            59: { day: 59, week: 9, verse: { text: "Consider it pure joy, my brothers and sisters, whenever you face trials of many kinds, because you know that the testing of your faith produces perseverance.", ref: "James 1:2-3" }, meaning: "James makes a startling claim: trials can be met with joy \u2014 not because they're fun, but because of what they produce. Hardship is the gym where perseverance gets built; the difficulty isn't pointless. There's a strength being formed in you that only resistance can forge.", carry: "Reframe one hard thing today as training, not just trouble: \u201cThis is building endurance in me.\u201d Let that turn a sliver of the struggle into something you can almost welcome." },
+            60: { day: 60, week: 9, verse: { text: "But those who hope in the LORD will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.", ref: "Isaiah 40:31" }, meaning: "The strength promised isn't self-generated \u2014 it comes to those who \u201chope in\u201d (wait on, trust) the Lord. When our own strength runs dry, His becomes available. Notice the honest range: soaring, running, and just walking \u2014 sometimes endurance looks like simply not fainting, and that counts.", carry: "If you're running on empty today, stop trying to manufacture strength. Turn to God and ask Him to renew it. Even walking without fainting is victory right now." },
+            61: { day: 61, week: 9, verse: { text: "Blessed is the one who perseveres under trial because, having stood the test, that person will receive the crown of life that the Lord has promised to those who love him.", ref: "James 1:12" }, meaning: "There's a blessing specifically for the one who stays under pressure. Perseverance here is tied to love for God \u2014 we endure not just by willpower but out of relationship. And the \u201ccrown of life\u201d reminds us the struggle is seen, counted, and ultimately rewarded by God Himself.", carry: "Remember today that your perseverance is seen by God and not wasted. Endure this stretch as an act of love toward the One who's promised it matters." },
+            62: { day: 62, week: 9, verse: { text: "We are hard pressed on every side, but not crushed; perplexed, but not in despair; persecuted, but not abandoned; struck down, but not destroyed.", ref: "2 Corinthians 4:8-9" }, meaning: "Paul doesn't pretend the pressure isn't real \u2014 hard pressed, perplexed, struck down. But every clause has a \u201cbut\u201d: the pressure doesn't get the final word. This is honest, resilient faith \u2014 not denial of hardship, but confidence that God sustains us through it so it never fully breaks us.", carry: "Name your current \u201chard pressed.\u201d Then speak the \u201cbut not\u201d over it: pressed but not crushed, down but not destroyed. God is holding you through it." },
+            63: { day: 63, week: 9, verse: { text: "And let us run with endurance the race that is set before us.", ref: "Hebrews 12:1" }, meaning: "The race is \u201cset before us\u201d \u2014 it's your particular course, not someone else's, and you're meant to run your stretch. Endurance isn't about speed or comparison; it's about faithfully continuing on the path marked for you. You don't have to run anyone else's race \u2014 just keep running yours.", carry: "Stop comparing your journey to anyone else's today. Run your own race, your own pace, with endurance. Faithful continuing is the whole assignment." },
+            64: { day: 64, week: 10, verse: { text: "For we are God's handiwork, created in Christ Jesus to do good works, which God prepared in advance for us to do.", ref: "Ephesians 2:10" }, meaning: "You are God's \u201chandiwork\u201d \u2014 the word suggests a work of art, a poem, something crafted with intention. And there are good works \u201cprepared in advance\u201d specifically for you \u2014 a calling shaped to your making. You're not here by accident, and there's good only you are positioned to do.", carry: "Ask God today: what good work have You prepared for me? Then watch for it \u2014 and when you see it, step into it as the thing you were made for." },
+            65: { day: 65, week: 10, verse: { text: "Before I formed you in the womb I knew you, before you were born I set you apart.", ref: "Jeremiah 1:5" }, meaning: "God speaks this to Jeremiah when he feels too young and unqualified. The point: your calling predates your performance \u2014 God knew and set you apart before you'd done anything. Your qualifications don't create your calling; God's purpose does. Inadequacy isn't disqualification.", carry: "When you feel unqualified for what God's nudging you toward, remember He set you apart before you could prove anything. Take one small step anyway, trusting His call over your doubt." },
+            66: { day: 66, week: 10, verse: { text: "Here am I. Send me!", ref: "Isaiah 6:8" }, meaning: "When Isaiah hears God asking \u201cWhom shall I send?\u201d, he responds with open-handed availability \u2014 not \u201cI'm qualified\u201d but simply \u201cHere I am, send me.\u201d Calling often begins not with a detailed plan but with willingness. God tends to use the available more than the impressive.", carry: "Offer God your availability today: \u201cHere I am \u2014 send me.\u201d Stay alert for one way He wants to love someone through you, and say yes to it." },
+            67: { day: 67, week: 10, verse: { text: "You did not choose me, but I chose you and appointed you so that you might go and bear fruit \u2014 fruit that will last.", ref: "John 15:16" }, meaning: "Jesus flips the usual order: He chose you, not the reverse. Your calling isn't something you earned or initiated \u2014 it's a response to being chosen. And the purpose is fruit \u201cthat will last\u201d \u2014 a life that leaves something good and enduring. You're chosen for something.", carry: "Do one thing today that could bear lasting fruit \u2014 plant a seed of encouragement, faithfulness, or love that outlives the moment. You were chosen for exactly this." },
+            68: { day: 68, week: 10, verse: { text: "In their hearts humans plan their course, but the LORD establishes their steps.", ref: "Proverbs 16:9" }, meaning: "We make plans \u2014 that's good and wise. But God directs the actual path, often in ways we didn't script. This frees us from needing the whole map: we take our next faithful step, and trust God to establish where it leads. Calling unfolds as we walk, not all at once.", carry: "Make your plans today, but hold them loosely. Take your next faithful step and trust God to direct the path, even if you can't see where it's going." },
+            69: { day: 69, week: 10, verse: { text: "Whatever you do, do it all for the glory of God.", ref: "1 Corinthians 10:31" }, meaning: "Calling isn't only \u201cbig\u201d or \u201cspiritual\u201d tasks \u2014 whatever you do, even eating and drinking (the verse's original context), can glorify God. This dignifies every corner of your life: your job, your parenting, your creativity, your rest. All of it can be an offering. Your whole ordinary life is the canvas of your calling.", carry: "Take the most ordinary thing you'll do today and do it \u201cfor the glory of God\u201d \u2014 with excellence, gratitude, and love. Let your calling show up right there." },
+            70: { day: 70, week: 10, verse: { text: "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.", ref: "Romans 8:28" }, meaning: "This isn't a promise that everything is good, but that God works in all things \u2014 even the hard and broken \u2014 toward good, for those in His purpose. Your calling includes your whole story: your gifts, yes, but also your wounds and detours, which God weaves into something meaningful.", carry: "Offer God one painful or confusing part of your story today, trusting He can weave even that into your calling. Nothing in your life is wasted in His hands." },
+            71: { day: 71, week: 11, verse: { text: "Being confident of this, that he who began a good work in you will carry it on to completion until the day of Christ Jesus.", ref: "Philippians 1:6" }, meaning: "The good work in you isn't yours to finish by willpower \u2014 God began it and God will complete it. This takes the pressure off these final days feeling like a finish line you have to nail. The transformation is His ongoing project, and He doesn't abandon what He starts.", carry: "Release any pressure to have \u201carrived\u201d by the end. Trust that God will keep completing His work in you long after this. Rest in His faithfulness, not your finishing." },
+            72: { day: 72, week: 11, verse: { text: "Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!", ref: "2 Corinthians 5:17" }, meaning: "Transformation isn't just improved behavior \u2014 it's a new identity. \u201cNew creation\u201d is a completely fresh start, God's doing, not a self-improvement project. Look back over these weeks and notice: the change wasn't mainly you trying harder; it was God making something new in you.", carry: "Name one way you're genuinely \u201cnew\u201d compared to day 1. Thank God for it \u2014 this was His work in you, and it's meant to last." },
+            73: { day: 73, week: 11, verse: { text: "I have fought the good fight, I have finished the race, I have kept the faith.", ref: "2 Timothy 4:7" }, meaning: "Paul writes this near the end of his life \u2014 not boasting, but at peace. Notice what he celebrates: not that he was perfect or successful, but that he stayed in the fight, finished, and kept faith. That's the measure of a life well-lived. Faithfulness, not flawlessness, is the goal.", carry: "You're nearly through. Let these be words over your own journey: you fought, you ran, you kept faith. Celebrate the finishing \u2014 faithfully, not perfectly." },
+            74: { day: 74, week: 11, verse: { text: "Do not merely listen to the word, and so deceive yourselves. Do what it says.", ref: "James 1:22" }, meaning: "James warns against a subtle self-deception: thinking that hearing truth is the same as living it. All the reflection of these weeks only becomes transformation when it's walked out. The point was never to collect insights \u2014 it was to become someone who does them.", carry: "Take one thing God has shown you over this journey and do it today \u2014 concretely. Let it move from your journal into your actual life." },
+            75: { day: 75, week: 11, verse: { text: "Let us hold unswervingly to the hope we profess, for he who promised is faithful. And let us consider how we may spur one another on toward love and good deeds.", ref: "Hebrews 10:23-24" }, meaning: "As the formal journey nears its end, the call is to keep holding on \u2014 because the ground of our hope is God's faithfulness, not our consistency. And it's not meant to be done alone: we \u201cspur one another on.\u201d What continues is a life of faith held in community, carried forward together.", carry: "Decide one practice from these weeks you'll carry forward for life \u2014 and tell one person, so you can spur each other on. This ending is really a beginning." },
+            76: { day: 76, week: 11, verse: { text: "But grow in the grace and knowledge of our Lord and Savior Jesus Christ.", ref: "2 Peter 3:18" }, meaning: "The Christian life is growth, not arrival \u2014 a continual deepening in grace (God's unearned favor) and knowledge of Jesus. There's no graduation; there's always more of His love to know and live in. These days weren't the whole journey \u2014 they were training for a lifetime of growing.", carry: "Ask yourself: how will I keep growing after today? Pick the next simple rhythm \u2014 a daily verse, prayer, the examen \u2014 that will keep you growing in grace beyond this." },
+            77: { day: 77, week: 11, verse: { text: "Now to him who is able to do immeasurably more than all we ask or imagine, according to his power that is at work within us, to him be glory.", ref: "Ephesians 3:20-21" }, meaning: "The journey closes with a doxology \u2014 eyes lifted off ourselves and onto God. He can do \u201cimmeasurably more\u201d than we've asked or imagined, and the power is already \u201cat work within us.\u201d Whatever He's begun in these days, He's able to grow into far more than you can picture. The best is ahead, and it's His to do.", carry: "Look forward with hope. Hand God your \u201cwhat now?\u201d and trust Him to do immeasurably more than you can imagine. Step into what's next \u2014 carried, chosen, and loved. You were never doing this alone." },
+        };
+
+        // CSB verses — rotates by day of the 77-day journey (fallback only, see MEDITATIONS)
         const VERSES = [
             { t: "Trust in the Lord with all your heart, and do not rely on your own understanding; in all your ways know him, and he will make your paths straight.", r: "Proverbs 3:5-6" },
             { t: "I can do all things through him who strengthens me.", r: "Philippians 4:13" },
@@ -5477,9 +5577,9 @@
             return COMPANIONS[profileTypeFor(uid)] || COMPANIONS.default;
         }
         function journeySubtitle(pt) {
-            if (pt === 'mahdi') return "Mahdi's 75-Day Journey";
-            if (pt === 'lashawn') return "Lashawn's 75-Day Journey";
-            return 'Your 75-Day Journey';
+            if (pt === 'mahdi') return "Mahdi's 77-Day Journey";
+            if (pt === 'lashawn') return "Lashawn's 77-Day Journey";
+            return 'Your 77-Day Journey';
         }
         function displayNameFor(pt) {
             if (pt === 'mahdi') return 'Mahdi';
@@ -5852,7 +5952,7 @@
             today.setHours(0, 0, 0, 0);
             const start = getStartDate();
             const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-            return Math.max(0, Math.min(diff, 74));
+            return Math.max(0, Math.min(diff, 76));
         }
 
         // Login screen theme — fully independent, own saved setting.
@@ -6296,7 +6396,7 @@
             let count = 0, total = 0, elapsedDays = 0;
             for (let d = 0; d < 7; d++) {
                 const dayOffset = weekIndex * 7 + d;
-                if (dayOffset > 74) break;
+                if (dayOffset > 76) break;
                 const dd = new Date(start); dd.setDate(dd.getDate() + dayOffset);
                 if (dd > today) continue; // not yet happened
                 elapsedDays++;
@@ -6307,7 +6407,7 @@
                     if (dayData && dayData[key]) count++;
                 });
             }
-            const fullyElapsed = (elapsedDays === 7) || (weekIndex * 7 + 6 >= 74 && elapsedDays > 0);
+            const fullyElapsed = (elapsedDays === 7) || (weekIndex * 7 + 6 >= 76 && elapsedDays > 0);
             return { pct: total > 0 ? count/total : 0, fullyElapsed: fullyElapsed, elapsedDays: elapsedDays };
         }
 
@@ -6380,7 +6480,7 @@
             const startStr = u.startDate || todayStr;
             const sp = startStr.split('-');
             const archStart = new Date(parseInt(sp[0],10), parseInt(sp[1],10)-1, parseInt(sp[2],10));
-            for (let i = 0; i < 75; i++) {
+            for (let i = 0; i < 77; i++) {
                 const dd = new Date(archStart); dd.setDate(dd.getDate() + i);
                 const dk = formatDateKey(dd);
                 const day = u.days[dk];
@@ -6685,12 +6785,12 @@
             const parts = startStr.split('-');
             const start = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
             const today = new Date(); today.setHours(0,0,0,0);
-            const dayOffset = Math.max(0, Math.min(Math.floor((today - start)/(1000*60*60*24)), 74));
+            const dayOffset = Math.max(0, Math.min(Math.floor((today - start)/(1000*60*60*24)), 76));
             const dayNum = dayOffset + 1;
 
             let completedDays = 0, totalChecks = 0, strongStreak = 0, tempStreak = 0;
             let todayPct = 0;
-            for (let i = 0; i < 75; i++) {
+            for (let i = 0; i < 77; i++) {
                 const d = new Date(start); d.setDate(d.getDate() + i);
                 const dk = formatDateKey(d);
                 const dd = data[user].days[dk];
@@ -6761,15 +6861,15 @@
             const comp = companionFor(user);
             if (!s) return '<div class="spec-card"><div class="spec-name">' + name + '</div><div style="opacity:0.7;">No data yet.</div></div>';
 
-            // Build a mini 75-day grid (read-only)
+            // Build a mini 77-day grid (read-only)
             const startStr = data[user].startDate || '2026-06-26';
             const sp = startStr.split('-');
             const start = new Date(parseInt(sp[0],10), parseInt(sp[1],10)-1, parseInt(sp[2],10));
             const today = new Date(); today.setHours(0,0,0,0);
-            const todayOffset = Math.max(0, Math.min(Math.floor((today - start)/(1000*60*60*24)), 74));
+            const todayOffset = Math.max(0, Math.min(Math.floor((today - start)/(1000*60*60*24)), 76));
 
             let grid = '<div class="spec-grid">';
-            for (let i = 0; i < 75; i++) {
+            for (let i = 0; i < 77; i++) {
                 const d = new Date(start); d.setDate(d.getDate() + i);
                 const dk = formatDateKey(d);
                 const dd = data[user].days[dk];
@@ -6787,7 +6887,7 @@
 
             let h = '<div class="spec-card" style="border-top:3px solid ' + accent + ';">';
             h += '<div class="spec-name" style="color:' + accent + ';">' + companionAvatarSVG(profileTypeFor(user), 22) + ' ' + name + '</div>';
-            h += '<div class="spec-day">Day ' + s.dayNum + ' of 75 · ' + s.todayPct + '% today</div>';
+            h += '<div class="spec-day">Day ' + s.dayNum + ' of 77 · ' + s.todayPct + '% today</div>';
             h += grid;
             h += '<div class="spec-metrics">';
             h += '<div><span class="spec-num" style="color:' + accent + '">' + s.strongStreak + '</span><span class="spec-lab">Streak</span></div>';
@@ -6852,7 +6952,7 @@
                 if (!s) return '<div class="together-card">No data yet for ' + name + '.</div>';
                 let h = '<div class="together-card" style="border-top:3px solid ' + accent + ';">';
                 h += '<div class="together-name" style="color:' + accent + ';">' + emoji + ' ' + name + '</div>';
-                h += '<div class="together-day">Day ' + s.dayNum + ' of 75</div>';
+                h += '<div class="together-day">Day ' + s.dayNum + ' of 77</div>';
                 // progress ring bar
                 h += '<div class="together-bar-label">Today: ' + s.todayPct + '%</div>';
                 h += '<div class="together-bar"><div class="together-bar-fill" style="width:' + s.todayPct + '%; background:' + accent + ';"></div></div>';
@@ -6906,13 +7006,13 @@
             const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const startStr = monthNames[start.getMonth()] + ' ' + start.getDate() + ', ' + start.getFullYear();
             const endD = new Date(start);
-            endD.setDate(endD.getDate() + 74);
+            endD.setDate(endD.getDate() + 76);
             const endStr = monthNames[endD.getMonth()] + ' ' + endD.getDate() + ', ' + endD.getFullYear();
 
             // Count completed days and total checks
             let completedDays = 0;
             let totalChecks = 0;
-            for (let i = 0; i < 75; i++) {
+            for (let i = 0; i < 77; i++) {
                 const dk = getDateKey(i);
                 const dd = data[currentUser].days[dk];
                 if (!dd) continue;
@@ -6929,16 +7029,16 @@
             let html = '';
             html += '<div class="summary-stat-block">';
             html += '<div class="summary-stat"><span>Current Start Date</span><span class="summary-value">' + startStr + '</span></div>';
-            html += '<div class="stat-def">The day your current 75-day journey began. If you reset, this updates to your new Day 1.</div>';
+            html += '<div class="stat-def">The day your current 77-day journey began. If you reset, this updates to your new Day 1.</div>';
             html += '</div>';
 
             html += '<div class="summary-stat-block">';
             html += '<div class="summary-stat"><span>Target End Date</span><span class="summary-value">' + endStr + '</span></div>';
-            html += '<div class="stat-def">The finish line — exactly 75 days from your start date. Stay consistent and this is your completion day.</div>';
+            html += '<div class="stat-def">The finish line — exactly 77 days from your start date. Stay consistent and this is your completion day.</div>';
             html += '</div>';
 
             html += '<div class="summary-stat-block">';
-            html += '<div class="summary-stat"><span>Day You\'re On</span><span class="summary-value">Day ' + (getTodayOffset() + 1) + ' of 75</span></div>';
+            html += '<div class="summary-stat"><span>Day You\'re On</span><span class="summary-value">Day ' + (getTodayOffset() + 1) + ' of 77</span></div>';
             html += '<div class="stat-def">Where you are right now in the journey, counted from your start date to today.</div>';
             html += '</div>';
 
@@ -6954,7 +7054,7 @@
 
             html += '<div class="summary-stat-block">';
             html += '<div class="summary-stat"><span>Total Resets</span><span class="summary-value">' + resets.length + '</span></div>';
-            html += '<div class="stat-def">How many times you\'ve restarted the 75 days. Not a scoreboard of failure — a record of refusing to quit.</div>';
+            html += '<div class="stat-def">How many times you\'ve restarted the 77 days. Not a scoreboard of failure — a record of refusing to quit.</div>';
             html += '</div>';
 
             document.getElementById('summaryContent').innerHTML = html;
@@ -6987,7 +7087,7 @@
                 const wc = weekCompletion(currentUser, w);
                 const pct = Math.round(wc.pct * 100);
                 const startDay = w * 7 + 1;
-                const endDay = Math.min(w * 7 + 7, 75);
+                const endDay = Math.min(w * 7 + 7, 77);
                 let status, color, statusText;
                 if (w === currentWeek && !wc.fullyElapsed) {
                     status = 'in-progress'; color = '#9e9e9e';
@@ -7032,7 +7132,7 @@
                 html += '<span class="pj-toggle" id="pjToggle-' + (num-1) + '">▾</span>';
                 html += '</div>';
                 html += '<div class="past-journey-body" id="pjBody-' + (num-1) + '" style="display:none;">';
-                html += '<div class="pj-stat">Reached: <strong>Day ' + a.reachedDay + ' of 75</strong></div>';
+                html += '<div class="pj-stat">Reached: <strong>Day ' + a.reachedDay + ' of 77</strong></div>';
                 html += '<div class="pj-stat">Strong days (75%+): <strong>' + (a.completedDays || 0) + '</strong></div>';
                 html += '<div class="pj-stat">Total tasks completed: <strong>' + (a.totalChecks || 0) + '</strong></div>';
                 html += '<div class="pj-stat">Mood check-ins logged: <strong>' + emoCount + '</strong></div>';
@@ -7077,7 +7177,7 @@
             const curStartStr = u.startDate || todayStr;
             const csp = curStartStr.split('-');
             const curStart = new Date(parseInt(csp[0],10), parseInt(csp[1],10)-1, parseInt(csp[2],10));
-            for (let d = 0; d < 75; d++) {
+            for (let d = 0; d < 77; d++) {
                 const dd = new Date(curStart); dd.setDate(dd.getDate() + d);
                 const dk = formatDateKey(dd);
                 const day = u.days[dk];
@@ -7130,7 +7230,7 @@
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             const dateStr = dayNames[td.getDay()] + ', ' + monthNames[td.getMonth()] + ' ' + td.getDate() + ', ' + td.getFullYear();
             const isToday = (activeOffset === getTodayOffset());
-            document.getElementById('todayDate').innerHTML = '📅 ' + dateStr + '  •  Day ' + (activeOffset + 1) + ' of 75' + (isToday ? '  •  TODAY' : '') + '<span id="liveClock" style="display:block; font-size: 12px; color: #888; margin-top: 4px; font-weight: 600;"></span>';
+            document.getElementById('todayDate').innerHTML = '📅 ' + dateStr + '  •  Day ' + (activeOffset + 1) + ' of 77' + (isToday ? '  •  TODAY' : '') + '<span id="liveClock" style="display:block; font-size: 12px; color: #888; margin-top: 4px; font-weight: 600;"></span>';
             startClock();
 
             // Populate date picker
@@ -7164,22 +7264,40 @@
                 greetEl.innerHTML = gHtml;
             }
 
-            // Verse of the day
-            const verse = VERSES[seededIndex(activeOffset, VERSES.length)];
-            document.getElementById('verseOfDay').innerHTML =
-                '<div class="verse-label">✝ Verse of the Day (CSB)</div>' +
-                '<div class="verse-text">"' + verse.t + '"</div>' +
-                '<div class="verse-ref">' + verse.r + '</div>';
-
-            // Wisdom quote of the day (both users, different collections)
+            // Daily Meditation (see MEDITATIONS) — a verse for the day with faithful
+            // commentary, replacing the old randomly-seeded verse/wisdom-quote boxes.
+            // Keyed by actual day number (1-77), not randomized, so it progresses with
+            // the journey and lines up with each week's formation theme.
+            const dayNum = activeOffset + 1;
+            const med = MEDITATIONS[dayNum];
+            const verseEl = document.getElementById('verseOfDay');
             const quoteEl = document.getElementById('quoteOfDay');
-            const quoteSet = (currentProfileType === 'mahdi') ? WISDOM_QUOTES : WISDOM_QUOTES_HER;
-            const q = quoteSet[seededIndex(activeOffset, quoteSet.length)];
-            quoteEl.style.display = 'block';
-            quoteEl.innerHTML =
-                '<div class="verse-label">' + (currentProfileType === 'mahdi' ? '✊🏾' : '👑') + ' Wisdom of the Day</div>' +
-                '<div class="verse-text">"' + q.t + '"</div>' +
-                '<div class="verse-ref">— ' + q.r + '</div>';
+            if (med) {
+                verseEl.innerHTML =
+                    '<div class="verse-label">✝ Day ' + dayNum + ' Meditation (Week ' + med.week + ')</div>' +
+                    '<div class="verse-text">"' + med.verse.text + '"</div>' +
+                    '<div class="verse-ref">' + med.verse.ref + '</div>' +
+                    '<div class="med-meaning"><strong>What it means:</strong> ' + med.meaning + '</div>';
+                quoteEl.style.display = 'block';
+                quoteEl.innerHTML =
+                    '<div class="verse-label">🧭 How to Carry It Today</div>' +
+                    '<div class="verse-text med-carry">' + med.carry + '</div>';
+            } else {
+                // Fallback for any day outside 1-77 (shouldn't normally happen on a 77-day
+                // journey, but covers edge cases like a mid-journey start-date change).
+                const verse = VERSES[seededIndex(activeOffset, VERSES.length)];
+                verseEl.innerHTML =
+                    '<div class="verse-label">✝ Verse of the Day (CSB)</div>' +
+                    '<div class="verse-text">"' + verse.t + '"</div>' +
+                    '<div class="verse-ref">' + verse.r + '</div>';
+                const quoteSet = (currentProfileType === 'mahdi') ? WISDOM_QUOTES : WISDOM_QUOTES_HER;
+                const q = quoteSet[seededIndex(activeOffset, quoteSet.length)];
+                quoteEl.style.display = 'block';
+                quoteEl.innerHTML =
+                    '<div class="verse-label">' + (currentProfileType === 'mahdi' ? '✊🏾' : '👑') + ' Wisdom of the Day</div>' +
+                    '<div class="verse-text">"' + q.t + '"</div>' +
+                    '<div class="verse-ref">— ' + q.r + '</div>';
+            }
 
             if (!data[currentUser].days[todayKey]) {
                 data[currentUser].days[todayKey] = {};
@@ -7819,7 +7937,7 @@
             const monthShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const todayOff = getTodayOffset();
             let opts = '';
-            for (let i = 0; i < 75; i++) {
+            for (let i = 0; i < 77; i++) {
                 const d = parseDateKey(getDateKey(i));
                 const label = 'Day ' + (i + 1) + ' — ' + monthShort[d.getMonth()] + ' ' + d.getDate() + (i === todayOff ? ' (Today)' : '');
                 opts += '<option value="' + i + '"' + (i === activeOffset ? ' selected' : '') + '>' + label + '</option>';
@@ -8283,7 +8401,7 @@
             if (!data[u].days) data[u].days = {};
             if (!data[u].goals) data[u].goals = {};
             if (!data[u].photos) data[u].photos = {};
-            // A brand-new account (no startDate yet) starts its 75-day journey TODAY.
+            // A brand-new account (no startDate yet) starts its 77-day journey TODAY.
             // Mahdi/Lashawn's real historical start date is copied in by
             // migrateLegacyIdentity() before this runs, so this fallback only fires for
             // genuinely new sign-ups — it must never be a fixed past date, or every new
@@ -8526,7 +8644,7 @@
             // Only show the manual "next day" option when reviewing a PAST day, not today
             const nextBtn = document.getElementById('modalNextBtn');
             if (nextBtn) {
-                nextBtn.style.display = (!isToday && activeOffset < 74) ? 'block' : 'none';
+                nextBtn.style.display = (!isToday && activeOffset < 76) ? 'block' : 'none';
             }
 
             document.getElementById('saveModal').style.display = 'flex';
@@ -8592,7 +8710,7 @@
         function modalNextDay() {
             const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
             const nextOffset = activeOffset + 1;
-            if (nextOffset > 74) { closeSaveModal(); return; }
+            if (nextOffset > 76) { closeSaveModal(); return; }
             showConfirm('Move to Day ' + (nextOffset + 1) + '?', function() {
                 viewingOffset = (nextOffset === getTodayOffset()) ? null : nextOffset;
                 closeSaveModal();
@@ -8604,7 +8722,7 @@
         function goNextDay() {
             const activeOffset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
             const nextOffset = activeOffset + 1;
-            if (nextOffset > 74) { alert('You\'re on the last day of your journey (Day 75)!'); return; }
+            if (nextOffset > 76) { alert('You\'re on the last day of your journey (Day 77)!'); return; }
             showConfirm('Move to Day ' + (nextOffset + 1) + '? Your current day will be saved first.', function() {
                 save();
                 viewingOffset = (nextOffset === getTodayOffset()) ? null : nextOffset;
@@ -8670,14 +8788,14 @@
             save();
             const userName = displayNameFor(currentProfileType);
             let allLines = [];
-            allLines.push({ title: userName + "'s 75-Day Journey" });
+            allLines.push({ title: userName + "'s 77-Day Journey" });
 
             if (scope === 'day') {
                 const offset = (viewingOffset === null) ? getTodayOffset() : viewingOffset;
                 allLines = allLines.concat(buildDayText(offset));
             } else {
                 // Whole journey — only days with any data
-                for (let i = 0; i < 75; i++) {
+                for (let i = 0; i < 77; i++) {
                     const dateKey = getDateKey(i);
                     const dd = data[currentUser].days[dateKey];
                     if (dd && Object.keys(dd).length > 0) {
@@ -8711,12 +8829,12 @@
             });
             html += '</body></html>';
             const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
-            downloadBlob(blob, '75-days-' + userName + '-' + scope + '.doc');
+            downloadBlob(blob, '77-days-' + userName + '-' + scope + '.doc');
         }
 
         function exportAsPDF(lines, userName, scope) {
             // Open a print-friendly window and trigger the browser's "Save as PDF"
-            let html = '<html><head><meta charset="utf-8"><title>75 Days — ' + escapeHtml(userName) + '</title>';
+            let html = '<html><head><meta charset="utf-8"><title>77 Days — ' + escapeHtml(userName) + '</title>';
             html += '<style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:0 20px;color:#222;}';
             html += 'h1{color:#8a6d3b;} h2{color:#8a6d3b;border-bottom:1px solid #ccc;padding-bottom:4px;margin-top:28px;}';
             html += '.pillar{font-weight:bold;margin:12px 0 4px 0;} .item{margin:2px 0 2px 16px;} .summary{font-weight:bold;margin-top:8px;}';
@@ -9150,7 +9268,7 @@
             if (sw) sw.checked = (count === total && total > 0);
             
             let streak = 0;
-            for (let i = 0; i < 75; i++) {
+            for (let i = 0; i < 77; i++) {
                 const dateKey = getDateKey(i);
                 const prevData = data[currentUser].days[dateKey] || {};
                 let prevCount = 0;
@@ -9164,7 +9282,7 @@
                 else break;
             }
             document.getElementById('streak').textContent = streak;
-            document.getElementById('daysLeft').textContent = Math.max(0, 75 - getTodayOffset() - 1);
+            document.getElementById('daysLeft').textContent = Math.max(0, 77 - getTodayOffset() - 1);
         }
 
         // Week-by-week milestones: level, focus, and changes you should start noticing.
@@ -9189,8 +9307,8 @@
               changes: ["Strong, capable, and resilient", "Emotional regulation much improved", "Clear progress toward career and creative goals", "Deep sense of self-respect and pride"] },
             { wk: "Week 10", days: "Days 64–70", level: "The Almost There", focus: "Final stretch — don't coast now.",
               changes: ["Peak energy and physical confidence", "Disciplined in nearly every area of life", "Faith, family, and goals all aligned", "You can feel the finish line"] },
-            { wk: "Week 11", days: "Days 71–75", level: "The Champion", focus: "Finishing what you started — a new baseline.",
-              changes: ["A fundamentally changed version of yourself", "Proof you can commit and follow through", "New habits that will outlast these 75 days", "Ready to set the next, bigger goal"] }
+            { wk: "Week 11", days: "Days 71–77", level: "The Champion", focus: "Finishing what you started — a new baseline.",
+              changes: ["A fundamentally changed version of yourself", "Proof you can commit and follow through", "New habits that will outlast these 77 days", "Ready to set the next, bigger goal"] }
         ];
 
         // ===== EMOTIONS =====
@@ -9589,10 +9707,10 @@
                 html += '<div style="padding: 6px 0; font-size: 13px;">✓ ' + c + '</div>';
             });
 
-            // Progress bar through the 75 days
-            const pctThrough = Math.round((dayNum / 75) * 100);
+            // Progress bar through the 77 days
+            const pctThrough = Math.round((dayNum / 77) * 100);
             html += '<div style="margin-top: 20px;">';
-            html += '<div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 6px;">Journey Progress: Day ' + dayNum + ' of 75 (' + pctThrough + '%)</div>';
+            html += '<div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 6px;">Journey Progress: Day ' + dayNum + ' of 77 (' + pctThrough + '%)</div>';
             html += '<div style="height: 8px; background: rgba(255,255,255,0.12); border-radius: 4px; overflow: hidden;"><div style="height: 100%; width: ' + pctThrough + '%;" class="milestone-bar"></div></div>';
             html += '</div>';
 
@@ -9615,7 +9733,7 @@
                 const weekHeader = document.createElement('div');
                 weekHeader.className = 'week-header';
                 const startDay = w * 7 + 1;
-                const endDay = Math.min(w * 7 + 7, 75);
+                const endDay = Math.min(w * 7 + 7, 77);
                 weekHeader.textContent = 'Week ' + (w + 1) + ' — Days ' + startDay + '–' + endDay;
                 cal.appendChild(weekHeader);
 
@@ -9625,7 +9743,7 @@
 
                 for (let dInWeek = 0; dInWeek < 7; dInWeek++) {
                     const i = w * 7 + dInWeek;
-                    if (i >= 75) break;
+                    if (i >= 77) break;
                     const dateKey = getDateKey(i);
                     const d = parseDateKey(dateKey);
                     const dayData = data[currentUser].days[dateKey] || {};
@@ -9704,7 +9822,7 @@
             }
             
             let results = [];
-            for (let i = 0; i < 75; i++) {
+            for (let i = 0; i < 77; i++) {
                 const dateKey = getDateKey(i);
                 const dayData = data[currentUser].days[dateKey];
                 pillarsFor(currentUser).forEach(p => {
@@ -9740,7 +9858,7 @@
                 const a = document.createElement('a');
                 const stamp = formatDateKey(new Date());
                 a.href = url;
-                a.download = '75-days-backup-' + stamp + '.json';
+                a.download = '77-days-backup-' + stamp + '.json';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -9889,7 +10007,7 @@
             const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const readableDate = monthNames[today.getMonth()] + ' ' + today.getDate() + ', ' + today.getFullYear();
             const endD = new Date(today);
-            endD.setDate(endD.getDate() + 74);
+            endD.setDate(endD.getDate() + 76);
             const endStr = monthNames[endD.getMonth()] + ' ' + endD.getDate() + ', ' + endD.getFullYear();
             const teamNote = (data[currentUser] && data[currentUser].teamMode)
                 ? '\n\n🤝 Team Mode is ON — once your partner\'s device sees this, their journey resets too.'
@@ -9900,7 +10018,7 @@
                     alert('Storage is full — your old photos may be too large to archive. Back up first, then try again.');
                     return;
                 }
-                alert('Fresh start! Today is Day 1 of your new 75-day journey.\n\nYour previous journey is saved under Progress → Past Journeys. Let\'s go. 🔥');
+                alert('Fresh start! Today is Day 1 of your new 77-day journey.\n\nYour previous journey is saved under Progress → Past Journeys. Let\'s go. 🔥');
             }, { danger: true, confirmLabel: 'Start Fresh' });
         }
 
