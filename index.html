@@ -12,16 +12,87 @@
             box-sizing: border-box;
         }
 
+        /* ===== THEME VARIABLES =====
+           :root holds the fallback (pre-JS / no data-palette set yet) values, equal to the
+           "Classic Gold" dark palette so first paint matches the app's original look.
+           Each palette is then a full override set on body[data-palette="X"], with a second
+           override on body[data-palette="X"].light-mode for its light variant — so the
+           existing light/dark toggle now switches between a palette's own light/dark
+           variants, instead of the old unrelated maroon<->green swap. --accent-rgb is the
+           comma-separated R,G,B triplet (no spaces) so it can compose into rgba(var(--accent-rgb), X)
+           wherever the stylesheet needs a translucent tint of the accent color. */
+        :root {
+            --bg: #5a1f1f;
+            --card: #33201f;
+            --card-2: #2a1717;
+            --ink: #ffffff;
+            --ink-soft: #cccccc;
+            --accent: #d4af37;
+            --accent-rgb: 212,175,55;
+            --accent-deep: #e8c76a;
+            --accent-bg: rgba(212,175,55,0.07);
+            --line: rgba(212,175,55,0.3);
+            --verse: #d4af37;
+        }
+
+        /* --- Classic Gold (the original default look, kept as an explicit choice) --- */
+        body[data-palette="gold"], body:not([data-palette]) {
+            --bg: #5a1f1f; --card: #33201f; --card-2: #2a1717; --ink: #ffffff; --ink-soft: #cccccc;
+            --accent: #d4af37; --accent-rgb: 212,175,55; --accent-deep: #e8c76a;
+            --accent-bg: rgba(212,175,55,0.07); --line: rgba(212,175,55,0.3); --verse: #d4af37;
+        }
+        body[data-palette="gold"].light-mode, body:not([data-palette]).light-mode {
+            --bg: #f5f1e8; --card: #fffdf7; --card-2: #fffdf7; --ink: #2e2a22; --ink-soft: #6b6355;
+            --accent: #c9a84a; --accent-rgb: 201,168,74; --accent-deep: #a8892f;
+            --accent-bg: #f2e9cf; --line: #e4dcc5; --verse: #a8892f;
+        }
+
+        /* --- Rose Gold (Lashawn's original theme, kept as an explicit choice) --- */
+        body[data-palette="rose"] {
+            --bg: #2e1a2e; --card: #38223a; --card-2: #2e1a2e; --ink: #f0e6ea; --ink-soft: #b3a4ad;
+            --accent: #e6b8c2; --accent-rgb: 230,184,194; --accent-deep: #f2cdd5;
+            --accent-bg: rgba(230,184,194,0.07); --line: rgba(230,184,194,0.3); --verse: #f2cdd5;
+        }
+        body[data-palette="rose"].light-mode {
+            --bg: #f7f0f1; --card: #fffafb; --card-2: #fffafb; --ink: #3a2e32; --ink-soft: #7a6b70;
+            --accent: #c99aa8; --accent-rgb: 201,154,168; --accent-deep: #a56d7d;
+            --accent-bg: #f2e2e6; --line: #e6d6da; --verse: #a56d7d;
+        }
+
+        /* --- Sage & Cream (new calming default for new sign-ups) --- */
+        body[data-palette="sage"] {
+            --bg: #232a25; --card: #2b332d; --card-2: #232a25; --ink: #e7ebe1; --ink-soft: #a9b3a4;
+            --accent: #9cbd96; --accent-rgb: 156,189,150; --accent-deep: #b6d0b0;
+            --accent-bg: #2f3a31; --line: #3a443c; --verse: #bcd4b5;
+        }
+        body[data-palette="sage"].light-mode {
+            --bg: #f4f1e8; --card: #faf8f1; --card-2: #faf8f1; --ink: #3a4038; --ink-soft: #6b7268;
+            --accent: #8ca888; --accent-rgb: 140,168,136; --accent-deep: #5f7a5c;
+            --accent-bg: #e6ece1; --line: #dcdccb; --verse: #5f7a5c;
+        }
+
+        /* --- Dusty Blue (calm, spacious) --- */
+        body[data-palette="blue"] {
+            --bg: #222a30; --card: #2b343b; --card-2: #222a30; --ink: #e4e9ed; --ink-soft: #a4b0b8;
+            --accent: #96b6d0; --accent-rgb: 150,182,208; --accent-deep: #b0ccdf;
+            --accent-bg: #2f3a42; --line: #3a454d; --verse: #b0ccdf;
+        }
+        body[data-palette="blue"].light-mode {
+            --bg: #eef1f4; --card: #fbfcfd; --card-2: #fbfcfd; --ink: #333a40; --ink-soft: #6b747c;
+            --accent: #8aa6bd; --accent-rgb: 138,166,189; --accent-deep: #5a7a94;
+            --accent-bg: #e0e8ef; --line: #d4dce2; --verse: #5a7a94;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background: #5a1f1f;
-            color: #ffffff;
+            background: var(--bg);
+            color: var(--ink);
             line-height: 1.6;
         }
 
         body.light-mode {
-            background: #1b4d2f;
-            color: #ffffff;
+            background: var(--bg);
+            color: var(--ink);
         }
 
         /* ===== LASHAWN THEME — rose-gold accents on plum/rose backgrounds ===== */
@@ -37,53 +108,53 @@
         body.lashawn-theme .tab-btn.active,
         body.lashawn-theme .peace-hint strong,
         body.lashawn-theme .peace-hint em {
-            color: #e6b8c2 !important; /* soft rose-gold */
+            color: var(--accent) !important; /* soft rose-gold */
         }
 
         body.lashawn-theme .btn-small,
         body.lashawn-theme .login-btn,
         body.lashawn-theme button,
         body.lashawn-theme .water-btn {
-            border-color: #e6b8c2 !important;
-            color: #e6b8c2 !important;
+            border-color: var(--accent) !important;
+            color: var(--accent) !important;
         }
 
         body.lashawn-theme .btn-primary {
-            background: linear-gradient(135deg, #f0cdd6, #e6b8c2 55%, #d49aa8) !important;
+            background: linear-gradient(135deg, #f0cdd6, var(--accent) 55%, #d49aa8) !important;
             color: #2e1a2e !important;
-            box-shadow: 0 4px 16px rgba(230,184,194,0.3);
+            box-shadow: 0 4px 16px rgba(var(--accent-rgb),0.3);
         }
 
         body.lashawn-theme .btn-primary:hover {
-            background: linear-gradient(135deg, #f5dde3, #e6b8c2 55%, #d49aa8) !important;
-            box-shadow: 0 10px 28px rgba(230,184,194,0.4);
+            background: linear-gradient(135deg, #f5dde3, var(--accent) 55%, #d49aa8) !important;
+            box-shadow: 0 10px 28px rgba(var(--accent-rgb),0.4);
         }
 
         body.lashawn-theme .btn-small:hover,
         body.lashawn-theme .login-btn:hover,
         body.lashawn-theme .btn-secondary:hover,
         body.lashawn-theme .water-btn:hover {
-            background: #e6b8c2 !important;
+            background: var(--accent) !important;
             color: #2e1a2e !important;
         }
 
         body.lashawn-theme .header {
-            border-top-color: #e6b8c2 !important;
+            border-top-color: var(--accent) !important;
         }
 
         body.lashawn-theme .pillar::before,
         body.lashawn-theme .summary-box::before {
-            background: #e6b8c2 !important;
+            background: var(--accent) !important;
         }
 
         body.lashawn-theme .tab-btn.active {
-            border-bottom-color: #e6b8c2 !important;
+            border-bottom-color: var(--accent) !important;
         }
 
         body.lashawn-theme .verse-box,
         body.lashawn-theme .quote-box {
-            border-color: #e6b8c2 !important;
-            background: rgba(230, 184, 194, 0.08) !important;
+            border-color: var(--accent) !important;
+            background: rgba(var(--accent-rgb), 0.08) !important;
         }
 
         body.lashawn-theme .cup.filled {
@@ -91,13 +162,13 @@
         }
 
         body.lashawn-theme .day-card.completed {
-            border-color: #e6b8c2 !important;
-            background: rgba(230, 184, 194, 0.15) !important;
+            border-color: var(--accent) !important;
+            background: rgba(var(--accent-rgb), 0.15) !important;
         }
 
         body.lashawn-theme .peace-hint {
-            border-left-color: #e6b8c2 !important;
-            background: rgba(230, 184, 194, 0.08) !important;
+            border-left-color: var(--accent) !important;
+            background: rgba(var(--accent-rgb), 0.08) !important;
         }
 
         body.lashawn-theme .water-tracker,
@@ -105,7 +176,7 @@
         body.lashawn-theme .item input[type="text"],
         body.lashawn-theme .item textarea,
         body.lashawn-theme .item input[type="file"] {
-            border-color: #e6b8c2 !important;
+            border-color: var(--accent) !important;
         }
 
         .container {
@@ -120,11 +191,11 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: #5a1f1f;
+            background: var(--bg);
         }
 
         body.light-mode .login-screen {
-            background: #1b4d2f;
+            background: var(--bg);
         }
 
         .login-content {
@@ -136,7 +207,7 @@
             font-family: 'Playfair Display', serif;
             font-size: 64px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 15px;
         }
 
@@ -170,9 +241,9 @@
 
         .login-btn {
             padding: 18px 40px;
-            border: 2px solid #d4af37;
+            border: 2px solid var(--accent);
             background: transparent;
-            color: #d4af37;
+            color: var(--accent);
             font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
@@ -182,16 +253,16 @@
         }
 
         .login-btn:hover {
-            background: #d4af37;
+            background: var(--accent);
             color: #5a1f1f;
         }
 
         .login-theme-btn {
             margin-top: 40px;
             padding: 10px 24px;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             background: transparent;
-            color: #d4af37;
+            color: var(--accent);
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
@@ -201,7 +272,7 @@
         }
 
         .login-theme-btn:hover {
-            background: #d4af37;
+            background: var(--accent);
             color: #5a1f1f;
         }
 
@@ -237,7 +308,7 @@
 
         .auth-tab {
             padding: 10px 22px;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             background: transparent;
             color: #888;
             font-size: 12px;
@@ -249,7 +320,7 @@
         }
 
         .auth-tab.active {
-            background: #d4af37;
+            background: var(--accent);
             color: #5a1f1f;
         }
 
@@ -261,7 +332,7 @@
 
         .auth-input {
             padding: 14px 16px;
-            border: 2px solid #d4af37;
+            border: 2px solid var(--accent);
             background: transparent;
             color: #fff;
             font-family: inherit;
@@ -346,7 +417,7 @@
         .onboarding-color-option:hover { transform: translateY(-2px); }
 
         .onboarding-color-option.selected {
-            border-color: #d4af37;
+            border-color: var(--accent);
         }
 
         .onboarding-color-swatch {
@@ -376,7 +447,7 @@
             flex-direction: column;
             gap: 8px;
             text-align: left;
-            border: 1px solid rgba(212, 175, 55, 0.4);
+            border: 1px solid rgba(var(--accent-rgb), 0.4);
             padding: 12px 14px;
         }
 
@@ -426,7 +497,7 @@
 
         .header {
             border-top: none;
-            border-bottom: 1px solid rgba(212,175,55,0.22);
+            border-bottom: 1px solid rgba(var(--accent-rgb),0.22);
             padding: 36px 0 32px;
             margin-bottom: 44px;
             position: relative;
@@ -438,7 +509,7 @@
             top: 0; left: 0; right: 0;
             height: 3px;
             border-radius: 0 0 3px 3px;
-            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
 
         body.light-mode .header {
@@ -450,7 +521,7 @@
         }
 
         body.lashawn-theme .header::before {
-            background: linear-gradient(90deg, transparent, #e6b8c2, transparent);
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
 
         body.default-theme.color-midnight.light-mode .header::before {
@@ -477,7 +548,7 @@
             font-family: 'Playfair Display', serif;
             font-size: 48px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
         }
 
         .subtitle {
@@ -497,9 +568,9 @@
 
         .btn-small {
             padding: 5px 11px;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             background: transparent;
-            color: #d4af37;
+            color: var(--accent);
             font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
@@ -510,7 +581,7 @@
         }
 
         .btn-small:hover {
-            background: #d4af37;
+            background: var(--accent);
             color: #5a1f1f;
         }
 
@@ -523,8 +594,8 @@
             position: absolute;
             right: 0;
             top: calc(100% + 8px);
-            background: linear-gradient(165deg, #33201f, #2a1717);
-            border: 1px solid rgba(212,175,55,0.5);
+            background: linear-gradient(165deg, var(--card), var(--card-2));
+            border: 1px solid rgba(var(--accent-rgb),0.5);
             border-radius: 14px;
             min-width: 200px;
             max-height: 74vh;
@@ -539,29 +610,29 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1.2px;
-            color: #d4af37;
+            color: var(--accent);
             opacity: 0.6;
             padding: 10px 14px 4px;
             pointer-events: none;
         }
 
-        body.lashawn-theme .more-section-label { color: #e6b8c2; }
+        body.lashawn-theme .more-section-label { color: var(--accent); }
 
         .more-section-label:not(:first-child) {
             margin-top: 4px;
-            border-top: 1px solid rgba(212,175,55,0.15);
+            border-top: 1px solid rgba(var(--accent-rgb),0.15);
             padding-top: 10px;
         }
 
         body.lashawn-theme .more-section-label:not(:first-child) {
-            border-top-color: rgba(230,184,194,0.15);
+            border-top-color: rgba(var(--accent-rgb),0.15);
         }
 
         .more-section-danger { color: #ff6b6b; opacity: 0.85; }
 
         body.lashawn-theme .more-menu {
-            background: linear-gradient(165deg, #38223a, #2e1a2e);
-            border-color: rgba(230,184,194,0.5);
+            background: linear-gradient(165deg, var(--card), var(--card-2));
+            border-color: rgba(var(--accent-rgb),0.5);
         }
 
         .more-item {
@@ -571,8 +642,8 @@
             padding: 11px 14px;
             background: transparent;
             border: none;
-            border-bottom: 1px solid rgba(212,175,55,0.15);
-            color: #d4af37;
+            border-bottom: 1px solid rgba(var(--accent-rgb),0.15);
+            color: var(--accent);
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
@@ -582,18 +653,18 @@
         }
 
         body.lashawn-theme .more-item {
-            color: #e6b8c2;
-            border-bottom-color: rgba(230,184,194,0.15);
+            color: var(--accent);
+            border-bottom-color: rgba(var(--accent-rgb),0.15);
         }
 
         .more-item:last-child { border-bottom: none; }
 
         .more-item:hover {
-            background: rgba(212,175,55,0.15);
+            background: rgba(var(--accent-rgb),0.15);
         }
 
         body.lashawn-theme .more-item:hover {
-            background: rgba(230,184,194,0.15);
+            background: rgba(var(--accent-rgb),0.15);
         }
 
         .more-item-danger {
@@ -630,10 +701,10 @@
         }
         .day-lock-banner.locked-past {
             background: rgba(0,0,0,0.18);
-            border-color: rgba(212,175,55,0.4);
+            border-color: rgba(var(--accent-rgb),0.4);
             color: #ddd;
         }
-        body.lashawn-theme .day-lock-banner.locked-past { border-color: rgba(230,184,194,0.4); }
+        body.lashawn-theme .day-lock-banner.locked-past { border-color: rgba(var(--accent-rgb),0.4); }
         .day-lock-banner.editing {
             background: rgba(224,138,60,0.12);
             border-color: #e08a3c;
@@ -673,12 +744,12 @@
             margin-bottom: 20px;
             border-radius: 8px;
             background: rgba(0,0,0,0.15);
-            border: 1px solid rgba(212,175,55,0.2);
+            border: 1px solid rgba(var(--accent-rgb),0.2);
             color: #ddd;
         }
-        body.lashawn-theme .task-counter { border-color: rgba(230,184,194,0.2); }
-        .task-counter strong { color: #d4af37; }
-        body.lashawn-theme .task-counter strong { color: #e6b8c2; }
+        body.lashawn-theme .task-counter { border-color: rgba(var(--accent-rgb),0.2); }
+        .task-counter strong { color: var(--accent); }
+        body.lashawn-theme .task-counter strong { color: var(--accent); }
         .task-counter-complete {
             background: rgba(124,179,66,0.15);
             border-color: #7cb342;
@@ -691,40 +762,40 @@
             display: block;
             margin: 8px 0;
             padding: 5px 12px;
-            border: 1px dashed rgba(212,175,55,0.5);
-            background: rgba(212,175,55,0.08);
-            color: #d4af37;
+            border: 1px dashed rgba(var(--accent-rgb),0.5);
+            background: rgba(var(--accent-rgb),0.08);
+            color: var(--accent);
             font-size: 11px;
             font-weight: 700;
             cursor: pointer;
             border-radius: 14px;
         }
         body.lashawn-theme .tip-cycle-btn {
-            border-color: rgba(230,184,194,0.5);
-            background: rgba(230,184,194,0.08);
-            color: #e6b8c2;
+            border-color: rgba(var(--accent-rgb),0.5);
+            background: rgba(var(--accent-rgb),0.08);
+            color: var(--accent);
         }
-        .tip-cycle-btn:hover { background: rgba(212,175,55,0.18); }
-        body.lashawn-theme .tip-cycle-btn:hover { background: rgba(230,184,194,0.18); }
+        .tip-cycle-btn:hover { background: rgba(var(--accent-rgb),0.18); }
+        body.lashawn-theme .tip-cycle-btn:hover { background: rgba(var(--accent-rgb),0.18); }
 
         .guide-toggle {
             display: inline-block;
             font-size: 11px;
             font-weight: 700;
-            color: #d4af37;
+            color: var(--accent);
             cursor: pointer;
             padding: 5px 10px;
             margin-top: 6px;
-            border: 1px dashed rgba(212,175,55,0.45);
+            border: 1px dashed rgba(var(--accent-rgb),0.45);
             border-radius: 14px;
             user-select: none;
         }
         body.lashawn-theme .guide-toggle {
-            color: #e6b8c2;
-            border-color: rgba(230,184,194,0.45);
+            color: var(--accent);
+            border-color: rgba(var(--accent-rgb),0.45);
         }
-        .guide-toggle:hover { background: rgba(212,175,55,0.1); }
-        body.lashawn-theme .guide-toggle:hover { background: rgba(230,184,194,0.1); }
+        .guide-toggle:hover { background: rgba(var(--accent-rgb),0.1); }
+        body.lashawn-theme .guide-toggle:hover { background: rgba(var(--accent-rgb),0.1); }
 
         .guide-foldable {
             overflow: hidden;
@@ -748,16 +819,16 @@
             margin-bottom: 24px;
             padding: 12px;
             background: rgba(0,0,0,0.15);
-            border: 1px solid rgba(212,175,55,0.2);
+            border: 1px solid rgba(var(--accent-rgb),0.2);
             border-radius: 10px;
         }
-        body.lashawn-theme .jump-menu { border-color: rgba(230,184,194,0.2); }
+        body.lashawn-theme .jump-menu { border-color: rgba(var(--accent-rgb),0.2); }
 
         .jump-chip {
             padding: 7px 12px;
-            border: 1px solid rgba(212,175,55,0.4);
-            background: rgba(212,175,55,0.08);
-            color: #d4af37;
+            border: 1px solid rgba(var(--accent-rgb),0.4);
+            background: rgba(var(--accent-rgb),0.08);
+            color: var(--accent);
             font-size: 11px;
             font-weight: 700;
             cursor: pointer;
@@ -766,16 +837,16 @@
             white-space: nowrap;
         }
         .jump-chip:hover {
-            background: #d4af37;
+            background: var(--accent);
             color: #1a1414;
         }
         body.lashawn-theme .jump-chip {
-            border-color: rgba(230,184,194,0.4);
-            background: rgba(230,184,194,0.08);
-            color: #e6b8c2;
+            border-color: rgba(var(--accent-rgb),0.4);
+            background: rgba(var(--accent-rgb),0.08);
+            color: var(--accent);
         }
         body.lashawn-theme .jump-chip:hover {
-            background: #e6b8c2;
+            background: var(--accent);
             color: #2e1a2e;
         }
 
@@ -804,14 +875,14 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             background: rgba(0,0,0,0.16);
-            border: 1px solid rgba(212,175,55,0.2);
+            border: 1px solid rgba(var(--accent-rgb),0.2);
             border-radius: 14px;
             padding: 16px 10px;
             margin-bottom: 8px;
             box-shadow: 0 4px 14px rgba(0,0,0,0.15);
         }
 
-        body.lashawn-theme .stats { border-color: rgba(230,184,194,0.2); }
+        body.lashawn-theme .stats { border-color: rgba(var(--accent-rgb),0.2); }
 
         .stat-box {
             padding: 0;
@@ -827,7 +898,7 @@
             font-family: 'Playfair Display', serif;
             font-size: 26px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 2px;
             line-height: 1.1;
         }
@@ -849,11 +920,11 @@
             padding: 6px;
             background: rgba(0,0,0,0.18);
             border-radius: 12px;
-            border: 1px solid rgba(212,175,55,0.25);
+            border: 1px solid rgba(var(--accent-rgb),0.25);
         }
 
         body.lashawn-theme .tabs {
-            border-color: rgba(230,184,194,0.25);
+            border-color: rgba(var(--accent-rgb),0.25);
         }
 
         body.light-mode .tabs {
@@ -881,21 +952,21 @@
         }
 
         .tab-btn:hover {
-            color: #d4af37;
-            background: rgba(212,175,55,0.1);
+            color: var(--accent);
+            background: rgba(var(--accent-rgb),0.1);
         }
 
         .tab-btn.active {
             color: #1a1414;
-            background: #d4af37;
-            box-shadow: 0 2px 8px rgba(212,175,55,0.4);
+            background: var(--accent);
+            box-shadow: 0 2px 8px rgba(var(--accent-rgb),0.4);
         }
 
-        body.lashawn-theme .tab-btn:hover { color: #e6b8c2; background: rgba(230,184,194,0.1); }
+        body.lashawn-theme .tab-btn:hover { color: var(--accent); background: rgba(var(--accent-rgb),0.1); }
         body.lashawn-theme .tab-btn.active {
             color: #2e1a2e;
-            background: #e6b8c2;
-            box-shadow: 0 2px 8px rgba(230,184,194,0.4);
+            background: var(--accent);
+            box-shadow: 0 2px 8px rgba(var(--accent-rgb),0.4);
         }
 
         .tab-content {
@@ -928,16 +999,16 @@
         /* Hybrid layout: slim, always-open section boxes (lighter than the original heavy boxes) */
         .pillar-slim {
             padding: 16px 18px !important;
-            border: 1px solid rgba(212, 175, 55, 0.22);
+            border: 1px solid rgba(var(--accent-rgb), 0.22);
             border-radius: 16px;
             margin-bottom: 12px;
-            background: linear-gradient(160deg, rgba(212,175,55,0.07), rgba(212,175,55,0.015) 60%);
+            background: linear-gradient(160deg, rgba(var(--accent-rgb),0.07), rgba(var(--accent-rgb),0.015) 60%);
             box-shadow: 0 3px 10px rgba(0,0,0,0.10);
             transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
         }
         .pillar-slim:hover {
             box-shadow: 0 6px 16px rgba(0,0,0,0.16);
-            border-color: rgba(212, 175, 55, 0.4);
+            border-color: rgba(var(--accent-rgb), 0.4);
         }
         body.light-mode .pillar-slim {
             border-color: rgba(45, 122, 74, 0.3);
@@ -946,10 +1017,10 @@
         }
         body.light-mode .pillar-slim:hover { border-color: rgba(45, 122, 74, 0.5); }
         body.lashawn-theme .pillar-slim {
-            border-color: rgba(230,184,194,0.28);
-            background: linear-gradient(160deg, rgba(230,184,194,0.09), rgba(230,184,194,0.02) 60%);
+            border-color: rgba(var(--accent-rgb),0.28);
+            background: linear-gradient(160deg, rgba(var(--accent-rgb),0.09), rgba(var(--accent-rgb),0.02) 60%);
         }
-        body.lashawn-theme .pillar-slim:hover { border-color: rgba(230,184,194,0.5); }
+        body.lashawn-theme .pillar-slim:hover { border-color: rgba(var(--accent-rgb),0.5); }
         .pillar-slim::before { display: none; }
         .pillar-slim .pillar-header-static {
             padding-bottom: 8px !important;
@@ -1020,12 +1091,12 @@
             line-height: 1.6;
         }
         body.lashawn-theme .day-lock-review-banner {
-            background: rgba(230,184,194,0.12);
-            border-color: #e6b8c2;
+            background: rgba(var(--accent-rgb),0.12);
+            border-color: var(--accent);
         }
         .day-lock-review-banner strong { display: block; font-size: 14px; margin-bottom: 4px; }
         .unlock-day-btn {
-            background: #d4af37;
+            background: var(--accent);
             color: #1a1414;
             border: none;
             padding: 9px 18px;
@@ -1036,27 +1107,27 @@
             margin-top: 8px;
             cursor: pointer;
         }
-        body.lashawn-theme .unlock-day-btn { background: #e6b8c2; }
+        body.lashawn-theme .unlock-day-btn { background: var(--accent); }
 
         .wheel-daily-card {
-            background: rgba(212, 175, 55, 0.06);
-            border: 1px solid rgba(212, 175, 55, 0.4);
+            background: rgba(var(--accent-rgb), 0.06);
+            border: 1px solid rgba(var(--accent-rgb), 0.4);
             border-radius: 10px;
             padding: 14px 16px;
             margin-bottom: 14px;
             text-align: center;
         }
         body.lashawn-theme .wheel-daily-card {
-            background: rgba(230, 184, 194, 0.06);
-            border-color: rgba(230, 184, 194, 0.4);
+            background: rgba(var(--accent-rgb), 0.06);
+            border-color: rgba(var(--accent-rgb), 0.4);
         }
         .wheel-daily-title {
             font-weight: 700;
             font-size: 13px;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 6px;
         }
-        body.lashawn-theme .wheel-daily-title { color: #e6b8c2; }
+        body.lashawn-theme .wheel-daily-title { color: var(--accent); }
         .wheel-daily-sub {
             font-size: 11px;
             opacity: 0.8;
@@ -1101,7 +1172,7 @@
         }
         body.lashawn-theme .pillar-pinned {
             border-color: #f48fb1;
-            background: linear-gradient(135deg, rgba(244,143,177,0.10), rgba(230,184,194,0.12));
+            background: linear-gradient(135deg, rgba(244,143,177,0.10), rgba(var(--accent-rgb),0.12));
             box-shadow: 0 2px 6px rgba(244,143,177,0.1);
         }
         .pillar-pinned::before { display: none; }
@@ -1186,7 +1257,7 @@
             top: 0;
             width: 30px;
             height: 2px;
-            background: #d4af37;
+            background: var(--accent);
         }
 
         .pillar-header {
@@ -1201,7 +1272,7 @@
             letter-spacing: 2px;
             border-bottom: 1px solid #8b5a5a;
             margin-bottom: 20px;
-            color: #d4af37;
+            color: var(--accent);
             cursor: pointer;
             user-select: none;
         }
@@ -1230,12 +1301,12 @@
             font-weight: 700;
             letter-spacing: 0;
             opacity: 0.85;
-            background: rgba(212,175,55,0.15);
+            background: rgba(var(--accent-rgb),0.15);
             padding: 2px 8px;
             border-radius: 10px;
             transition: background 0.2s ease, color 0.2s ease;
         }
-        body.lashawn-theme .pillar-count { background: rgba(230,184,194,0.15); }
+        body.lashawn-theme .pillar-count { background: rgba(var(--accent-rgb),0.15); }
 
         .pillar-count-complete {
             background: #7cb342 !important;
@@ -1280,7 +1351,7 @@
 
         @keyframes itemCheckPulse {
             0% { transform: scale(1); background: transparent; }
-            35% { transform: scale(1.012); background: rgba(212,175,55,0.14); }
+            35% { transform: scale(1.012); background: rgba(var(--accent-rgb),0.14); }
             100% { transform: scale(1); background: transparent; }
         }
 
@@ -1294,7 +1365,7 @@
 
         @keyframes itemCheckPulseRose {
             0% { transform: scale(1); background: transparent; }
-            35% { transform: scale(1.012); background: rgba(230,184,194,0.16); }
+            35% { transform: scale(1.012); background: rgba(var(--accent-rgb),0.16); }
             100% { transform: scale(1); background: transparent; }
         }
 
@@ -1303,7 +1374,7 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
-            accent-color: #d4af37;
+            accent-color: var(--accent);
             transition: transform 0.15s ease;
         }
 
@@ -1333,8 +1404,8 @@
         .item input[type="text"],
         .item textarea,
         .item input[type="file"] {
-            background: rgba(212, 175, 55, 0.15);
-            border: 1px solid #d4af37;
+            background: rgba(var(--accent-rgb), 0.15);
+            border: 1px solid var(--accent);
             color: #ffffff;
             padding: 10px 12px;
             font-size: 12px;
@@ -1345,8 +1416,8 @@
 
         body.lashawn-theme .item input[type="text"],
         body.lashawn-theme .item textarea {
-            background: rgba(230, 184, 194, 0.18);
-            border-color: #e6b8c2;
+            background: rgba(var(--accent-rgb), 0.18);
+            border-color: var(--accent);
             color: #ffffff;
         }
         body.light-mode.lashawn-theme .item input[type="text"],
@@ -1369,8 +1440,8 @@
         }
 
         .goal-locked {
-            background: rgba(212, 175, 55, 0.18) !important;
-            border-color: #d4af37 !important;
+            background: rgba(var(--accent-rgb), 0.18) !important;
+            border-color: var(--accent) !important;
             color: #fff !important;
             cursor: default;
             opacity: 1;
@@ -1379,8 +1450,8 @@
         }
 
         body.lashawn-theme .goal-locked {
-            background: rgba(230, 184, 194, 0.18) !important;
-            border-color: #e6b8c2 !important;
+            background: rgba(var(--accent-rgb), 0.18) !important;
+            border-color: var(--accent) !important;
         }
 
         .reflect-q {
@@ -1396,8 +1467,8 @@
 
         .entry-note {
             position: relative;
-            background: rgba(212, 175, 55, 0.08);
-            border-left: 2px solid #d4af37;
+            background: rgba(var(--accent-rgb), 0.08);
+            border-left: 2px solid var(--accent);
             border-radius: 0 4px 4px 0;
             padding: 8px 28px 16px 12px;
             margin-bottom: 6px;
@@ -1406,8 +1477,8 @@
         }
 
         body.lashawn-theme .entry-note {
-            background: rgba(230, 184, 194, 0.08);
-            border-left-color: #e6b8c2;
+            background: rgba(var(--accent-rgb), 0.08);
+            border-left-color: var(--accent);
         }
 
         .entry-note-text {
@@ -1483,9 +1554,9 @@
         .entry-add-btn {
             flex-shrink: 0;
             padding: 10px 14px;
-            border: 1px solid #d4af37;
-            background: rgba(212, 175, 55, 0.15);
-            color: #d4af37;
+            border: 1px solid var(--accent);
+            background: rgba(var(--accent-rgb), 0.15);
+            color: var(--accent);
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
@@ -1496,18 +1567,18 @@
         }
 
         body.lashawn-theme .entry-add-btn {
-            border-color: #e6b8c2;
-            background: rgba(230, 184, 194, 0.15);
-            color: #e6b8c2;
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.15);
+            color: var(--accent);
         }
 
         .entry-add-btn:hover {
-            background: #d4af37;
+            background: var(--accent);
             color: #2e1a1a;
         }
 
         body.lashawn-theme .entry-add-btn:hover {
-            background: #e6b8c2;
+            background: var(--accent);
             color: #2e1a2e;
         }
 
@@ -1524,8 +1595,8 @@
         }
 
         .peace-hint {
-            background: rgba(212, 175, 55, 0.1);
-            border-left: 2px solid #d4af37;
+            background: rgba(var(--accent-rgb), 0.1);
+            border-left: 2px solid var(--accent);
             padding: 14px 16px;
             margin-top: 8px;
             font-size: 12px;
@@ -1536,21 +1607,21 @@
         .bible-study {
             margin-top: 10px;
             padding: 16px;
-            background: rgba(212, 175, 55, 0.06);
-            border: 1px solid rgba(212, 175, 55, 0.4);
+            background: rgba(var(--accent-rgb), 0.06);
+            border: 1px solid rgba(var(--accent-rgb), 0.4);
             border-radius: 10px;
         }
         body.lashawn-theme .bible-study {
-            background: rgba(230, 184, 194, 0.06);
-            border-color: rgba(230, 184, 194, 0.4);
+            background: rgba(var(--accent-rgb), 0.06);
+            border-color: rgba(var(--accent-rgb), 0.4);
         }
         .bible-study-title {
             font-weight: 700;
             font-size: 13px;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 10px;
         }
-        body.lashawn-theme .bible-study-title { color: #e6b8c2; }
+        body.lashawn-theme .bible-study-title { color: var(--accent); }
         .bible-pickers {
             display: flex;
             gap: 8px;
@@ -1570,7 +1641,7 @@
         }
         .bible-pick select {
             background: rgba(0,0,0,0.25);
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             color: #fff;
             padding: 7px 8px;
             border-radius: 6px;
@@ -1578,15 +1649,15 @@
             font-family: inherit;
             font-weight: 600;
         }
-        body.lashawn-theme .bible-pick select { border-color: #e6b8c2; }
+        body.lashawn-theme .bible-pick select { border-color: var(--accent); }
         .bible-ref {
             font-family: 'Playfair Display', serif;
             font-size: 20px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
             margin: 6px 0 8px;
         }
-        body.lashawn-theme .bible-ref { color: #e6b8c2; }
+        body.lashawn-theme .bible-ref { color: var(--accent); }
         .bible-ref-row {
             display: flex;
             align-items: center;
@@ -1611,7 +1682,7 @@
         .bible-blb-btn:hover { background: #25497f; }
         .bible-commentary {
             background: rgba(255,255,255,0.04);
-            border-left: 3px solid #d4af37;
+            border-left: 3px solid var(--accent);
             padding: 10px 12px;
             border-radius: 0 6px 6px 0;
             font-size: 12px;
@@ -1619,7 +1690,7 @@
             color: #ddd;
             margin-bottom: 12px;
         }
-        body.lashawn-theme .bible-commentary { border-left-color: #e6b8c2; }
+        body.lashawn-theme .bible-commentary { border-left-color: var(--accent); }
         .bible-commentary strong { color: #f0d98a; }
         body.lashawn-theme .bible-commentary strong { color: #f2cdd5; }
         .bible-notes-label {
@@ -1637,26 +1708,26 @@
             margin: 10px 0;
         }
         .bible-step-btn {
-            background: rgba(212,175,55,0.15);
-            border: 1px solid #d4af37;
-            color: #d4af37;
+            background: rgba(var(--accent-rgb),0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
             font-size: 12px;
             font-weight: 700;
             padding: 6px 12px;
             border-radius: 14px;
             cursor: pointer;
         }
-        body.lashawn-theme .bible-step-btn { border-color: #e6b8c2; color: #e6b8c2; background: rgba(230,184,194,0.15); }
-        .bible-step-btn:hover { background: rgba(212,175,55,0.3); }
+        body.lashawn-theme .bible-step-btn { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),0.15); }
+        .bible-step-btn:hover { background: rgba(var(--accent-rgb),0.3); }
         .bible-step-label {
             font-family: 'Playfair Display', serif;
             font-size: 16px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
             text-align: center;
             flex: 1;
         }
-        body.lashawn-theme .bible-step-label { color: #e6b8c2; }
+        body.lashawn-theme .bible-step-label { color: var(--accent); }
         .bible-read-btn {
             display: block;
             text-align: center;
@@ -1682,14 +1753,14 @@
         }
         .bible-verse-jump select {
             background: rgba(0,0,0,0.25);
-            border: 1px solid rgba(212,175,55,0.5);
+            border: 1px solid rgba(var(--accent-rgb),0.5);
             color: #fff;
             padding: 4px 8px;
             border-radius: 6px;
             font-size: 12px;
             font-family: inherit;
         }
-        body.lashawn-theme .bible-verse-jump select { border-color: rgba(230,184,194,0.5); }
+        body.lashawn-theme .bible-verse-jump select { border-color: rgba(var(--accent-rgb),0.5); }
 
         .optional-photo-row {
             margin-top: 8px;
@@ -1716,9 +1787,9 @@
             gap: 10px;
             margin-top: 10px;
             padding-top: 8px;
-            border-top: 1px dashed rgba(212,175,55,0.25);
+            border-top: 1px dashed rgba(var(--accent-rgb),0.25);
         }
-        body.lashawn-theme .section-save-row { border-top-color: rgba(230,184,194,0.25); }
+        body.lashawn-theme .section-save-row { border-top-color: rgba(var(--accent-rgb),0.25); }
         .section-save-btn {
             background: rgba(124,179,66,0.15);
             border: 1px solid #7cb342;
@@ -1737,15 +1808,15 @@
         }
         .section-unlock-btn {
             background: transparent;
-            border: 1px solid rgba(212,175,55,0.5);
-            color: #d4af37;
+            border: 1px solid rgba(var(--accent-rgb),0.5);
+            color: var(--accent);
             font-size: 11px;
             font-weight: 600;
             padding: 5px 12px;
             border-radius: 12px;
             cursor: pointer;
         }
-        body.lashawn-theme .section-unlock-btn { border-color: rgba(230,184,194,0.5); color: #e6b8c2; }
+        body.lashawn-theme .section-unlock-btn { border-color: rgba(var(--accent-rgb),0.5); color: var(--accent); }
         .pillar.section-locked {
             border-color: rgba(124,179,66,0.5);
             background: rgba(124,179,66,0.03);
@@ -1772,20 +1843,20 @@
             align-items: center;
             gap: 10px;
             padding: 10px 12px;
-            border: 1px solid rgba(212,175,55,0.4);
+            border: 1px solid rgba(var(--accent-rgb),0.4);
             border-radius: 10px;
-            background: rgba(212,175,55,0.05);
+            background: rgba(var(--accent-rgb),0.05);
         }
         body.lashawn-theme .customize-row {
-            border-color: rgba(230,184,194,0.4);
-            background: rgba(230,184,194,0.05);
+            border-color: rgba(var(--accent-rgb),0.4);
+            background: rgba(var(--accent-rgb),0.05);
         }
         .customize-row-hidden { opacity: 0.5; }
         .customize-arrows { display: flex; flex-direction: column; gap: 2px; }
         .customize-arrow {
-            background: rgba(212,175,55,0.15);
-            border: 1px solid #d4af37;
-            color: #d4af37;
+            background: rgba(var(--accent-rgb),0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
             width: 26px;
             height: 20px;
             border-radius: 5px;
@@ -1794,7 +1865,7 @@
             line-height: 1;
             padding: 0;
         }
-        body.lashawn-theme .customize-arrow { border-color: #e6b8c2; color: #e6b8c2; background: rgba(230,184,194,0.15); }
+        body.lashawn-theme .customize-arrow { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),0.15); }
         .customize-arrow:disabled { opacity: 0.3; cursor: default; }
         .customize-name { flex: 1; font-size: 14px; font-weight: 600; }
         .customize-toggle {
@@ -1820,9 +1891,9 @@
 
         .job-tracker-box { max-width: 560px; text-align: left; }
         .job-tracker-open-btn {
-            background: rgba(212,175,55,0.15);
-            border: 1px solid #d4af37;
-            color: #d4af37;
+            background: rgba(var(--accent-rgb),0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
@@ -1833,9 +1904,9 @@
             margin-top: 8px;
         }
         body.lashawn-theme .job-tracker-open-btn {
-            border-color: #e6b8c2;
-            color: #e6b8c2;
-            background: rgba(230,184,194,0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(var(--accent-rgb),0.15);
         }
         .job-tracker-form {
             display: grid;
@@ -1845,8 +1916,8 @@
         }
         .job-tracker-form input,
         .job-tracker-form select {
-            background: rgba(212,175,55,0.12);
-            border: 1px solid #d4af37;
+            background: rgba(var(--accent-rgb),0.12);
+            border: 1px solid var(--accent);
             color: inherit;
             padding: 10px 12px;
             font-size: 12px;
@@ -1857,8 +1928,8 @@
         }
         body.lashawn-theme .job-tracker-form input,
         body.lashawn-theme .job-tracker-form select {
-            border-color: #e6b8c2;
-            background: rgba(230,184,194,0.15);
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb),0.15);
         }
         .job-tracker-form button { grid-column: 1 / -1; }
         .job-tracker-list {
@@ -1881,13 +1952,13 @@
             gap: 8px;
             align-items: center;
             padding: 10px 12px;
-            border: 1px solid rgba(212,175,55,0.4);
+            border: 1px solid rgba(var(--accent-rgb),0.4);
             border-radius: 10px;
-            background: rgba(212,175,55,0.05);
+            background: rgba(var(--accent-rgb),0.05);
         }
         body.lashawn-theme .job-tracker-row {
-            border-color: rgba(230,184,194,0.4);
-            background: rgba(230,184,194,0.05);
+            border-color: rgba(var(--accent-rgb),0.4);
+            background: rgba(var(--accent-rgb),0.05);
         }
         .job-tracker-company { font-size: 13px; font-weight: 800; }
         .job-tracker-role { font-size: 11px; opacity: 0.75; }
@@ -1911,13 +1982,13 @@
 
         .optional-photo-btn {
             background: transparent !important;
-            border: 1px dashed rgba(212,175,55,0.4) !important;
+            border: 1px dashed rgba(var(--accent-rgb),0.4) !important;
             color: #999 !important;
             font-size: 11px !important;
             padding: 6px 12px !important;
         }
         body.lashawn-theme .optional-photo-btn {
-            border-color: rgba(230,184,194,0.4) !important;
+            border-color: rgba(var(--accent-rgb),0.4) !important;
         }
 
             text-align: center;
@@ -1937,8 +2008,8 @@
         .water-tracker {
             margin-top: 10px;
             padding: 16px;
-            background: rgba(212, 175, 55, 0.08);
-            border: 1px solid #d4af37;
+            background: rgba(var(--accent-rgb), 0.08);
+            border: 1px solid var(--accent);
         }
 
         .water-battery-wrap {
@@ -2047,7 +2118,7 @@
 
         .water-total {
             font-size: 13px;
-            color: #d4af37;
+            color: var(--accent);
             font-weight: 700;
             margin-bottom: 12px;
             line-height: 1.6;
@@ -2060,9 +2131,9 @@
 
         .water-btn {
             padding: 6px 14px;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             background: transparent;
-            color: #d4af37;
+            color: var(--accent);
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
@@ -2072,41 +2143,41 @@
         }
 
         .water-btn:hover {
-            background: #d4af37;
+            background: var(--accent);
             color: #5a1f1f;
         }
 
         .verse-box {
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             padding: 30px;
             margin-bottom: 40px;
-            text-align: center;            background: rgba(212, 175, 55, 0.08);
+            text-align: center;            background: rgba(var(--accent-rgb), 0.08);
             position: relative;
         }
 
         .greeting-box {
-            border-left: 3px solid #d4af37;
+            border-left: 3px solid var(--accent);
             padding: 20px 24px;
             margin-bottom: 30px;
-            background: rgba(212, 175, 55, 0.06);
+            background: rgba(var(--accent-rgb), 0.06);
             border-radius: 0 4px 4px 0;
         }
 
         body.lashawn-theme .greeting-box {
-            border-left-color: #e6b8c2;
-            background: rgba(230, 184, 194, 0.06);
+            border-left-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.06);
         }
 
         .greeting-text {
             font-family: 'Playfair Display', serif;
             font-size: 19px;
             font-weight: 700;
-            color: #d4af37;
+            color: var(--accent);
             line-height: 1.4;
             margin-bottom: 8px;
         }
 
-        body.lashawn-theme .greeting-text { color: #e6b8c2; }
+        body.lashawn-theme .greeting-text { color: var(--accent); }
 
         .greeting-emotion {
             font-size: 13px;
@@ -2118,8 +2189,8 @@
             opacity: 0.9;
             margin: 8px 0;
             padding: 8px 0;
-            border-top: 1px solid rgba(212,175,55,0.2);
-            border-bottom: 1px solid rgba(212,175,55,0.2);
+            border-top: 1px solid rgba(var(--accent-rgb),0.2);
+            border-bottom: 1px solid rgba(var(--accent-rgb),0.2);
             line-height: 1.5;
         }
         .greeting-checkin svg {
@@ -2129,17 +2200,17 @@
         }
 
         body.lashawn-theme .greeting-checkin {
-            border-color: rgba(230,184,194,0.2);
+            border-color: rgba(var(--accent-rgb),0.2);
         }
 
         .greeting-cta {
-            color: #d4af37;
+            color: var(--accent);
             font-weight: 700;
             cursor: pointer;
             text-decoration: underline;
         }
 
-        body.lashawn-theme .greeting-cta { color: #e6b8c2; }
+        body.lashawn-theme .greeting-cta { color: var(--accent); }
 
         .wheel-stage {
             position: relative;
@@ -2171,9 +2242,9 @@
             margin-bottom: 12px;
             line-height: 1.5;
             padding-bottom: 10px;
-            border-bottom: 1px solid rgba(212,175,55,0.2);
+            border-bottom: 1px solid rgba(var(--accent-rgb),0.2);
         }
-        body.lashawn-theme .wheel-def { border-bottom-color: rgba(230,184,194,0.2); }
+        body.lashawn-theme .wheel-def { border-bottom-color: rgba(var(--accent-rgb),0.2); }
 
         .wheel-spinner {
             font-size: 56px;
@@ -2188,31 +2259,31 @@
             100% { transform: rotate(1440deg); }
         }
         .wheel-result {
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             border-radius: 8px;
             padding: 18px;
-            background: rgba(212,175,55,0.07);
+            background: rgba(var(--accent-rgb),0.07);
         }
         body.lashawn-theme .wheel-result {
-            border-color: #e6b8c2;
-            background: rgba(230,184,194,0.07);
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb),0.07);
         }
         .wheel-focus {
             font-family: 'Playfair Display', serif;
             font-size: 22px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 12px;
             text-align: center;
         }
-        body.lashawn-theme .wheel-focus { color: #e6b8c2; }
+        body.lashawn-theme .wheel-focus { color: var(--accent); }
         .wheel-line {
             font-size: 13px;
             line-height: 1.6;
             padding: 7px 0;
-            border-top: 1px solid rgba(212,175,55,0.15);
+            border-top: 1px solid rgba(var(--accent-rgb),0.15);
         }
-        body.lashawn-theme .wheel-line { border-top-color: rgba(230,184,194,0.15); }
+        body.lashawn-theme .wheel-line { border-top-color: rgba(var(--accent-rgb),0.15); }
         .wheel-locked-note {
             font-size: 11px;
             opacity: 0.6;
@@ -2244,28 +2315,28 @@
         body.default-theme.color-rose .emotion-chip { border-color: #6b3550; }
 
         .emotion-chip:hover {
-            border-color: #d4af37;
+            border-color: var(--accent);
         }
 
-        body.lashawn-theme .emotion-chip:hover { border-color: #e6b8c2; }
+        body.lashawn-theme .emotion-chip:hover { border-color: var(--accent); }
 
         .emotion-chip.emotion-selected {
-            border-color: #d4af37;
-            background: rgba(212, 175, 55, 0.2);
-            color: #d4af37;
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.2);
+            color: var(--accent);
             font-weight: 700;
         }
 
         body.lashawn-theme .emotion-chip.emotion-selected {
-            border-color: #e6b8c2;
-            background: rgba(230, 184, 194, 0.2);
-            color: #e6b8c2;
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.2);
+            color: var(--accent);
         }
 
         .emotion-note {
             width: 100%;
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid #d4af37;
+            background: rgba(var(--accent-rgb), 0.1);
+            border: 1px solid var(--accent);
             color: #ffffff;
             padding: 12px;
             font-size: 13px;
@@ -2274,11 +2345,11 @@
             border-radius: 4px;
         }
 
-        body.lashawn-theme .emotion-note { border-color: #e6b8c2; }
+        body.lashawn-theme .emotion-note { border-color: var(--accent); }
 
         .emotion-note::placeholder { color: #888; }
-        .emo-date { color: #d4af37; }
-        body.lashawn-theme .emo-date { color: #e6b8c2 !important; }
+        .emo-date { color: var(--accent); }
+        body.lashawn-theme .emo-date { color: var(--accent) !important; }
 
         /* Companion check-in modal */
         .checkin-box {
@@ -2301,11 +2372,11 @@
         }
 
         .checkin-close:hover {
-            color: #d4af37;
+            color: var(--accent);
         }
 
         body.lashawn-theme .checkin-close:hover {
-            color: #e6b8c2;
+            color: var(--accent);
         }
         .checkin-avatar {
             margin-bottom: 6px;
@@ -2320,10 +2391,10 @@
             font-family: 'Playfair Display', serif;
             font-size: 24px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 12px;
         }
-        body.lashawn-theme .checkin-name { color: #e6b8c2; }
+        body.lashawn-theme .checkin-name { color: var(--accent); }
         .checkin-greeting {
             font-size: 14px;
             opacity: 0.9;
@@ -2338,8 +2409,8 @@
         }
         .checkin-input {
             width: 100%;
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid #d4af37;
+            background: rgba(var(--accent-rgb), 0.1);
+            border: 1px solid var(--accent);
             color: #fff;
             padding: 12px;
             font-size: 13px;
@@ -2347,19 +2418,19 @@
             min-height: 80px;
             border-radius: 4px;
         }
-        body.lashawn-theme .checkin-input { border-color: #e6b8c2; }
+        body.lashawn-theme .checkin-input { border-color: var(--accent); }
         .checkin-input::placeholder { color: #888; }
 
 
         .emotion-done {
             padding: 16px;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             border-radius: 4px;
-            background: rgba(212,175,55,0.08);
+            background: rgba(var(--accent-rgb),0.08);
         }
         body.lashawn-theme .emotion-done {
-            border-color: #e6b8c2;
-            background: rgba(230,184,194,0.08);
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb),0.08);
         }
         .emotion-delete-btn {
             margin-top: 12px;
@@ -2379,10 +2450,10 @@
             color: #fff;
         }
 
-        .pattern-head { color: #d4af37; }
-        body.lashawn-theme .pattern-head { color: #e6b8c2; }
-        .pattern-bar { background: #d4af37; }
-        body.lashawn-theme .pattern-bar { background: #e6b8c2; }
+        .pattern-head { color: var(--accent); }
+        body.lashawn-theme .pattern-head { color: var(--accent); }
+        .pattern-bar { background: var(--accent); }
+        body.lashawn-theme .pattern-bar { background: var(--accent); }
 
         .carousel-track {
             display: flex;
@@ -2402,14 +2473,14 @@
             width: 150px;
             height: 200px;
             object-fit: cover;
-            border: 2px solid #d4af37;
+            border: 2px solid var(--accent);
             border-radius: 6px;
             cursor: pointer;
             transition: transform 0.2s ease;
         }
 
         body.lashawn-theme .carousel-img {
-            border-color: #e6b8c2;
+            border-color: var(--accent);
         }
 
         .carousel-img:hover {
@@ -2418,22 +2489,22 @@
 
         .carousel-caption {
             font-size: 11px;
-            color: #d4af37;
+            color: var(--accent);
             font-weight: 700;
             margin-top: 6px;
         }
 
         body.lashawn-theme .carousel-caption {
-            color: #e6b8c2;
+            color: var(--accent);
         }
 
         .photo-upload-btn {
             display: inline-block;
             margin-top: 8px;
             padding: 8px 16px;
-            border: 1px solid #d4af37;
-            background: rgba(212,175,55,0.12);
-            color: #d4af37;
+            border: 1px solid var(--accent);
+            background: rgba(var(--accent-rgb),0.12);
+            color: var(--accent);
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
@@ -2442,12 +2513,12 @@
             border-radius: 4px;
         }
         body.lashawn-theme .photo-upload-btn {
-            border-color: #e6b8c2;
-            background: rgba(230,184,194,0.12);
-            color: #e6b8c2;
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb),0.12);
+            color: var(--accent);
         }
-        .photo-upload-btn:hover { background: #d4af37; color: #2e1a1a; }
-        body.lashawn-theme .photo-upload-btn:hover { background: #e6b8c2; color: #2e1a2e; }
+        .photo-upload-btn:hover { background: var(--accent); color: #2e1a1a; }
+        body.lashawn-theme .photo-upload-btn:hover { background: var(--accent); color: #2e1a2e; }
 
         .photo-day-grid {
             margin-top: 8px;
@@ -2475,12 +2546,12 @@
             width: 80px;
             height: 80px;
             object-fit: cover;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             border-radius: 4px;
             cursor: pointer;
         }
 
-        body.lashawn-theme .photo-thumb { border-color: #e6b8c2; }
+        body.lashawn-theme .photo-thumb { border-color: var(--accent); }
 
         .photo-del-btn {
             position: absolute;
@@ -2512,7 +2583,7 @@
             margin-top: 14px;
         }
         .together-card {
-            border: 1px solid rgba(212,175,55,0.3);
+            border: 1px solid rgba(var(--accent-rgb),0.3);
             border-radius: 6px;
             padding: 16px;
             background: rgba(255,255,255,0.03);
@@ -2576,19 +2647,19 @@
         .together-combined {
             margin-top: 18px;
             padding: 18px;
-            border: 1px solid rgba(212,175,55,0.3);
+            border: 1px solid rgba(var(--accent-rgb),0.3);
             border-radius: 6px;
             text-align: center;
-            background: rgba(212,175,55,0.05);
+            background: rgba(var(--accent-rgb),0.05);
         }
         .together-combined-title {
             font-family: 'Playfair Display', serif;
             font-size: 18px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 10px;
         }
-        body.lashawn-theme .together-combined-title { color: #e6b8c2; }
+        body.lashawn-theme .together-combined-title { color: var(--accent); }
         .together-combined-row {
             font-size: 13px;
             margin-bottom: 4px;
@@ -2597,9 +2668,9 @@
             font-family: 'Playfair Display', serif;
             font-size: 20px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
         }
-        body.lashawn-theme .tc-num { color: #e6b8c2; }
+        body.lashawn-theme .tc-num { color: var(--accent); }
         .together-nudge {
             margin-top: 12px;
             font-size: 13px;
@@ -2611,12 +2682,12 @@
         }
 
         .past-journey {
-            border: 1px solid rgba(212,175,55,0.3);
+            border: 1px solid rgba(var(--accent-rgb),0.3);
             border-radius: 4px;
             margin-bottom: 10px;
             overflow: hidden;
         }
-        body.lashawn-theme .past-journey { border-color: rgba(230,184,194,0.3); }
+        body.lashawn-theme .past-journey { border-color: rgba(var(--accent-rgb),0.3); }
         .past-journey-head {
             display: flex;
             justify-content: space-between;
@@ -2624,18 +2695,18 @@
             padding: 12px 14px;
             cursor: pointer;
             font-size: 13px;
-            background: rgba(212,175,55,0.05);
+            background: rgba(var(--accent-rgb),0.05);
         }
-        body.lashawn-theme .past-journey-head { background: rgba(230,184,194,0.05); }
-        .past-journey-head:hover { background: rgba(212,175,55,0.12); }
-        body.lashawn-theme .past-journey-head:hover { background: rgba(230,184,194,0.12); }
-        .pj-num { color: #d4af37; }
-        body.lashawn-theme .pj-num { color: #e6b8c2 !important; }
-        .pj-toggle { color: #d4af37; font-size: 14px; }
-        body.lashawn-theme .pj-toggle { color: #e6b8c2; }
+        body.lashawn-theme .past-journey-head { background: rgba(var(--accent-rgb),0.05); }
+        .past-journey-head:hover { background: rgba(var(--accent-rgb),0.12); }
+        body.lashawn-theme .past-journey-head:hover { background: rgba(var(--accent-rgb),0.12); }
+        .pj-num { color: var(--accent); }
+        body.lashawn-theme .pj-num { color: var(--accent) !important; }
+        .pj-toggle { color: var(--accent); font-size: 14px; }
+        body.lashawn-theme .pj-toggle { color: var(--accent); }
         .past-journey-body {
             padding: 12px 14px;
-            border-top: 1px solid rgba(212,175,55,0.2);
+            border-top: 1px solid rgba(var(--accent-rgb),0.2);
         }
         .pj-stat {
             font-size: 13px;
@@ -2694,11 +2765,11 @@
         }
 
         .quote-box {
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             padding: 30px;
             margin-bottom: 40px;
             text-align: center;
-            background: rgba(212, 175, 55, 0.04);
+            background: rgba(var(--accent-rgb), 0.04);
             position: relative;
         }
 
@@ -2706,7 +2777,7 @@
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 16px;
             font-weight: 800;
         }
@@ -2726,21 +2797,21 @@
 
         .verse-ref {
             font-size: 13px;
-            color: #d4af37;
+            color: var(--accent);
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .peace-hint strong {
-            color: #d4af37;
+            color: var(--accent);
             font-size: 12px;
         }
 
         .peace-hint em {
             display: block;
             margin-top: 8px;
-            color: #d4af37;
+            color: var(--accent);
             font-style: italic;
         }
 
@@ -2763,9 +2834,9 @@
 
         button {
             padding: 14px 32px;
-            border: 2px solid #d4af37;
+            border: 2px solid var(--accent);
             background: transparent;
-            color: #d4af37;
+            color: var(--accent);
             font-weight: 700;
             font-size: 12px;
             text-transform: uppercase;
@@ -2777,39 +2848,39 @@
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(212,175,55,0.25);
+            box-shadow: 0 8px 20px rgba(var(--accent-rgb),0.25);
         }
 
         button:active {
             transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(212,175,55,0.2);
+            box-shadow: 0 2px 8px rgba(var(--accent-rgb),0.2);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #e9c766, #d4af37 55%, #b8952e);
+            background: linear-gradient(135deg, #e9c766, var(--accent) 55%, #b8952e);
             color: #3a1810;
-            border-color: #d4af37;
-            box-shadow: 0 4px 16px rgba(212,175,55,0.3);
+            border-color: var(--accent);
+            box-shadow: 0 4px 16px rgba(var(--accent-rgb),0.3);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #f2d47a, #d4af37 55%, #b8952e);
+            background: linear-gradient(135deg, #f2d47a, var(--accent) 55%, #b8952e);
             color: #3a1810;
-            box-shadow: 0 10px 28px rgba(212,175,55,0.4);
+            box-shadow: 0 10px 28px rgba(var(--accent-rgb),0.4);
         }
 
         .btn-secondary:hover {
-            background: #d4af37;
+            background: var(--accent);
             color: #5a1f1f;
         }
 
         .summary-box {
             padding: 28px 30px;
-            border: 1px solid rgba(212,175,55,0.22);
+            border: 1px solid rgba(var(--accent-rgb),0.22);
             border-radius: 16px;
             margin-bottom: 22px;
             position: relative;
-            background: linear-gradient(160deg, rgba(212,175,55,0.05), rgba(212,175,55,0.01) 60%);
+            background: linear-gradient(160deg, rgba(var(--accent-rgb),0.05), rgba(var(--accent-rgb),0.01) 60%);
             box-shadow: 0 6px 20px rgba(0,0,0,0.16);
         }
 
@@ -2820,8 +2891,8 @@
         }
 
         body.lashawn-theme .summary-box {
-            border-color: rgba(230,184,194,0.28);
-            background: linear-gradient(160deg, rgba(230,184,194,0.07), rgba(230,184,194,0.015) 60%);
+            border-color: rgba(var(--accent-rgb),0.28);
+            background: linear-gradient(160deg, rgba(var(--accent-rgb),0.07), rgba(var(--accent-rgb),0.015) 60%);
         }
 
         .summary-title {
@@ -2830,7 +2901,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 20px;
-            color: #d4af37;
+            color: var(--accent);
             border-bottom: 1px solid #8b5a5a;
             padding-bottom: 16px;
         }
@@ -2856,7 +2927,7 @@
 
         .summary-value {
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
         }
 
         .summary-stat-block {
@@ -2919,8 +2990,8 @@
         .search-box input {
             width: 100%;
             padding: 12px;
-            background: rgba(212, 175, 55, 0.15);
-            border: 1px solid #d4af37;
+            background: rgba(var(--accent-rgb), 0.15);
+            border: 1px solid var(--accent);
             color: #ffffff;
             font-size: 13px;
             font-family: inherit;
@@ -2940,15 +3011,15 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #d4af37;
+            color: var(--accent);
             margin: 20px 0 8px 0;
             padding-bottom: 6px;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            border-bottom: 1px solid rgba(var(--accent-rgb), 0.3);
         }
 
         body.lashawn-theme .week-header {
-            color: #e6b8c2;
-            border-bottom-color: rgba(230, 184, 194, 0.3);
+            color: var(--accent);
+            border-bottom-color: rgba(var(--accent-rgb), 0.3);
         }
 
         .week-row {
@@ -2987,36 +3058,36 @@
         body.default-theme.color-rose.light-mode .day-card { border-color: #c084a0; }
 
         .day-card:hover {
-            border-color: #d4af37;
-            background: rgba(212, 175, 55, 0.12);
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.12);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         }
 
         body.lashawn-theme .day-card:hover {
-            border-color: #e6b8c2;
-            background: rgba(230, 184, 194, 0.12);
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.12);
         }
 
         .day-card.completed {
-            border-color: #d4af37;
-            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.15);
         }
 
         body.light-mode .day-card.completed {
-            background: rgba(212, 175, 55, 0.2);
+            background: rgba(var(--accent-rgb), 0.2);
         }
 
         .day-card.today {
-            border: 2px solid #d4af37;
-            background: rgba(212, 175, 55, 0.2);
-            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
+            border: 2px solid var(--accent);
+            background: rgba(var(--accent-rgb), 0.2);
+            box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.3);
         }
 
         body.lashawn-theme .day-card.today {
-            border-color: #e6b8c2;
-            background: rgba(230, 184, 194, 0.2);
-            box-shadow: 0 0 0 2px rgba(230, 184, 194, 0.3);
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.2);
+            box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.3);
         }
 
         .day-card.future {
@@ -3029,20 +3100,20 @@
             font-size: 7px;
             font-weight: 800;
             letter-spacing: 1px;
-            background: #d4af37;
+            background: var(--accent);
             color: #2e1a1a;
             padding: 2px 6px;
             border-radius: 3px;
         }
 
         body.lashawn-theme .today-badge {
-            background: #e6b8c2;
+            background: var(--accent);
             color: #2e1a2e;
         }
 
         .day-tap {
             font-size: 7px;
-            color: #d4af37;
+            color: var(--accent);
             opacity: 0;
             margin-top: 4px;
             text-transform: uppercase;
@@ -3050,7 +3121,7 @@
             transition: opacity 0.2s ease;
         }
 
-        body.lashawn-theme .day-tap { color: #e6b8c2; }
+        body.lashawn-theme .day-tap { color: var(--accent); }
 
         .day-card:hover .day-tap {
             opacity: 1;
@@ -3060,15 +3131,15 @@
             font-family: 'Playfair Display', serif;
             font-size: 14px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
             line-height: 1.1;
         }
 
-        .milestone-level, .milestone-heading { color: #d4af37; }
-        .milestone-bar { background: #d4af37; }
+        .milestone-level, .milestone-heading { color: var(--accent); }
+        .milestone-bar { background: var(--accent); }
         body.lashawn-theme .milestone-level,
-        body.lashawn-theme .milestone-heading { color: #e6b8c2 !important; }
-        body.lashawn-theme .milestone-bar { background: #e6b8c2 !important; }
+        body.lashawn-theme .milestone-heading { color: var(--accent) !important; }
+        body.lashawn-theme .milestone-bar { background: var(--accent) !important; }
 
         .day-label {
             font-size: 9px;
@@ -3080,12 +3151,12 @@
 
         .day-progress {
             font-size: 11px;
-            color: #d4af37;
+            color: var(--accent);
             font-weight: 700;
             margin-top: 2px;
         }
 
-        body.lashawn-theme .day-progress { color: #e6b8c2; }
+        body.lashawn-theme .day-progress { color: var(--accent); }
 
         /* Calendar loading-in animation */
         @keyframes cardFadeUp {
@@ -3109,24 +3180,24 @@
 
         /* Selected (viewing) day — distinct from today */
         .day-card.selected {
-            border: 2px dashed #d4af37;
-            background: rgba(212, 175, 55, 0.12);
+            border: 2px dashed var(--accent);
+            background: rgba(var(--accent-rgb), 0.12);
         }
 
         body.lashawn-theme .day-card.selected {
-            border-color: #e6b8c2;
-            background: rgba(230, 184, 194, 0.12);
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.12);
         }
 
         .selected-badge {
             background: transparent !important;
-            border: 1px solid #d4af37;
-            color: #d4af37 !important;
+            border: 1px solid var(--accent);
+            color: var(--accent) !important;
         }
 
         body.lashawn-theme .selected-badge {
-            border-color: #e6b8c2;
-            color: #e6b8c2 !important;
+            border-color: var(--accent);
+            color: var(--accent) !important;
         }
 
         @media (max-width: 768px) {
@@ -3175,8 +3246,8 @@
         }
 
         .modal-box {
-            background: linear-gradient(165deg, #33201f, #2a1717);
-            border: 1px solid rgba(212,175,55,0.5);
+            background: linear-gradient(165deg, var(--card), var(--card-2));
+            border: 1px solid rgba(var(--accent-rgb),0.5);
             padding: 40px 32px;
             max-width: 380px;
             width: 90%;
@@ -3187,8 +3258,8 @@
         }
 
         body.lashawn-theme .modal-box {
-            background: linear-gradient(165deg, #38223a, #2e1a2e);
-            border-color: rgba(230,184,194,0.5);
+            background: linear-gradient(165deg, var(--card), var(--card-2));
+            border-color: rgba(var(--accent-rgb),0.5);
         }
 
         @keyframes modalPop {
@@ -3198,12 +3269,12 @@
 
         .modal-check {
             font-size: 48px;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 12px;
             animation: checkPop 0.5s ease;
         }
 
-        body.lashawn-theme .modal-check { color: #e6b8c2; }
+        body.lashawn-theme .modal-check { color: var(--accent); }
 
         @keyframes checkPop {
             0% { transform: scale(0); }
@@ -3215,11 +3286,11 @@
             font-family: 'Playfair Display', serif;
             font-size: 26px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 10px;
         }
 
-        body.lashawn-theme .modal-title { color: #e6b8c2; }
+        body.lashawn-theme .modal-title { color: var(--accent); }
 
         .modal-sub {
             font-size: 14px;
@@ -3236,9 +3307,9 @@
 
         .modal-btn {
             padding: 14px 20px;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             background: transparent;
-            color: #d4af37;
+            color: var(--accent);
             font-size: 13px;
             font-weight: 700;
             text-transform: uppercase;
@@ -3249,27 +3320,27 @@
         }
 
         body.lashawn-theme .modal-btn {
-            border-color: #e6b8c2;
-            color: #e6b8c2;
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .modal-btn:hover {
-            background: #d4af37;
+            background: var(--accent);
             color: #2e1a1a;
         }
 
         body.lashawn-theme .modal-btn:hover {
-            background: #e6b8c2;
+            background: var(--accent);
             color: #2e1a2e;
         }
 
         .modal-btn-primary {
-            background: #d4af37;
+            background: var(--accent);
             color: #2e1a1a;
         }
 
         body.lashawn-theme .modal-btn-primary {
-            background: #e6b8c2;
+            background: var(--accent);
             color: #2e1a2e;
         }
 
@@ -3310,8 +3381,8 @@
 
         .toast {
             pointer-events: auto;
-            background: linear-gradient(165deg, #33201f, #2a1717);
-            border: 1px solid rgba(212,175,55,0.5);
+            background: linear-gradient(165deg, var(--card), var(--card-2));
+            border: 1px solid rgba(var(--accent-rgb),0.5);
             border-radius: 14px;
             box-shadow: 0 16px 40px rgba(0,0,0,0.45);
             padding: 14px 40px 14px 18px;
@@ -3326,8 +3397,8 @@
         }
 
         body.lashawn-theme .toast {
-            background: linear-gradient(165deg, #38223a, #2e1a2e);
-            border-color: rgba(230,184,194,0.5);
+            background: linear-gradient(165deg, var(--card), var(--card-2));
+            border-color: rgba(var(--accent-rgb),0.5);
         }
 
         body.light-mode .toast {
@@ -3377,8 +3448,8 @@
         .modal-input {
             display: block;
             width: 100%;
-            background: rgba(212,175,55,0.12);
-            border: 1px solid #d4af37;
+            background: rgba(var(--accent-rgb),0.12);
+            border: 1px solid var(--accent);
             color: inherit;
             padding: 12px 14px;
             font-size: 13px;
@@ -3389,8 +3460,8 @@
         }
 
         body.lashawn-theme .modal-input {
-            border-color: #e6b8c2;
-            background: rgba(230,184,194,0.15);
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb),0.15);
         }
 
         .bottom-nav {
@@ -3398,7 +3469,7 @@
             gap: 8px;
             margin-top: 24px;
             padding-top: 18px;
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            border-top: 1px solid rgba(var(--accent-rgb), 0.3);
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -3409,14 +3480,14 @@
             justify-content: space-between;
             margin-top: 14px;
             padding: 12px 14px;
-            border: 1px solid rgba(212, 175, 55, 0.4);
+            border: 1px solid rgba(var(--accent-rgb), 0.4);
             border-radius: 4px;
-            background: rgba(212, 175, 55, 0.06);
+            background: rgba(var(--accent-rgb), 0.06);
         }
 
         body.lashawn-theme .select-switch-row {
-            border-color: rgba(230, 184, 194, 0.4);
-            background: rgba(230, 184, 194, 0.06);
+            border-color: rgba(var(--accent-rgb), 0.4);
+            background: rgba(var(--accent-rgb), 0.06);
         }
 
         .select-switch-label {
@@ -3424,11 +3495,11 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #d4af37;
+            color: var(--accent);
         }
 
         body.lashawn-theme .select-switch-label {
-            color: #e6b8c2;
+            color: var(--accent);
         }
 
         .switch {
@@ -3449,13 +3520,13 @@
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(255,255,255,0.15);
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             transition: 0.3s;
             border-radius: 26px;
         }
 
         body.lashawn-theme .slider {
-            border-color: #e6b8c2;
+            border-color: var(--accent);
         }
 
         .slider:before {
@@ -3465,21 +3536,21 @@
             width: 18px;
             left: 3px;
             bottom: 3px;
-            background-color: #d4af37;
+            background-color: var(--accent);
             transition: 0.3s;
             border-radius: 50%;
         }
 
         body.lashawn-theme .slider:before {
-            background-color: #e6b8c2;
+            background-color: var(--accent);
         }
 
         .switch input:checked + .slider {
-            background-color: rgba(212, 175, 55, 0.3);
+            background-color: rgba(var(--accent-rgb), 0.3);
         }
 
         body.lashawn-theme .switch input:checked + .slider {
-            background-color: rgba(230, 184, 194, 0.3);
+            background-color: rgba(var(--accent-rgb), 0.3);
         }
 
         .switch input:checked + .slider:before {
@@ -3487,14 +3558,14 @@
         }
 
         body.lashawn-theme .bottom-nav {
-            border-top-color: rgba(230, 184, 194, 0.3);
+            border-top-color: rgba(var(--accent-rgb), 0.3);
         }
 
         .nav-btn {
             padding: 7px 12px;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             background: transparent;
-            color: #d4af37;
+            color: var(--accent);
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
@@ -3505,27 +3576,27 @@
         }
 
         body.lashawn-theme .nav-btn {
-            border-color: #e6b8c2;
-            color: #e6b8c2;
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .nav-btn:hover {
-            background: #d4af37;
+            background: var(--accent);
             color: #2e1a1a;
         }
 
         body.lashawn-theme .nav-btn:hover {
-            background: #e6b8c2;
+            background: var(--accent);
             color: #2e1a2e;
         }
 
         .nav-btn-primary {
-            background: #d4af37;
+            background: var(--accent);
             color: #2e1a1a;
         }
 
         body.lashawn-theme .nav-btn-primary {
-            background: #e6b8c2;
+            background: var(--accent);
             color: #2e1a2e;
         }
 
@@ -3543,19 +3614,19 @@
             align-items: center;
             padding: 12px 20px;
             background: #1a1a1a;
-            border-bottom: 1px solid #d4af37;
+            border-bottom: 1px solid var(--accent);
         }
         .spectator-bar-title {
             font-size: 12px;
-            color: #d4af37;
+            color: var(--accent);
             font-weight: 700;
             letter-spacing: 0.5px;
         }
         .spectator-exit {
             padding: 7px 16px;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--accent);
             background: transparent;
-            color: #d4af37;
+            color: var(--accent);
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
@@ -3563,7 +3634,7 @@
             cursor: pointer;
             border-radius: 3px;
         }
-        .spectator-exit:hover { background: #d4af37; color: #1a1a1a; }
+        .spectator-exit:hover { background: var(--accent); color: #1a1a1a; }
 
         #spectatorScreen {
             min-height: 100vh;
@@ -3575,7 +3646,7 @@
             font-size: 32px;
             font-weight: 800;
             text-align: center;
-            color: #d4af37;
+            color: var(--accent);
             margin: 20px 0 6px;
         }
         .spec-sub {
@@ -3601,7 +3672,7 @@
             vertical-align: middle;
         }
         .lg-strong { background: #7cb342; }
-        .lg-partial { background: #d4af37; }
+        .lg-partial { background: var(--accent); }
         .lg-today { background: #4a90d9; }
         .lg-future { background: rgba(255,255,255,0.15); }
 
@@ -3614,7 +3685,7 @@
             .spec-cards { grid-template-columns: 1fr; }
         }
         .spec-card {
-            border: 1px solid rgba(212,175,55,0.25);
+            border: 1px solid rgba(var(--accent-rgb),0.25);
             border-radius: 8px;
             padding: 18px;
             background: rgba(255,255,255,0.03);
@@ -3647,7 +3718,7 @@
             background: rgba(255,255,255,0.08);
         }
         .spec-cell.spec-strong { background: #7cb342; }
-        .spec-cell.spec-partial { background: #d4af37; }
+        .spec-cell.spec-partial { background: var(--accent); }
         .spec-cell.spec-today { background: #4a90d9; box-shadow: 0 0 0 1px #fff; }
         .spec-cell.spec-future { background: rgba(255,255,255,0.05); }
         .spec-metrics {
@@ -3680,9 +3751,9 @@
             margin-top: 20px;
             padding: 20px;
             text-align: center;
-            border: 1px solid rgba(212,175,55,0.25);
+            border: 1px solid rgba(var(--accent-rgb),0.25);
             border-radius: 8px;
-            background: rgba(212,175,55,0.05);
+            background: rgba(var(--accent-rgb),0.05);
             font-size: 13px;
             line-height: 1.8;
         }
@@ -3690,14 +3761,14 @@
             font-family: 'Playfair Display', serif;
             font-size: 20px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
             margin-bottom: 8px;
         }
         .spec-cnum {
             font-family: 'Playfair Display', serif;
             font-size: 20px;
             font-weight: 800;
-            color: #d4af37;
+            color: var(--accent);
         }
         .spec-nudge {
             margin-top: 10px;
@@ -3769,21 +3840,21 @@
             <div class="onboarding-section">
                 <div class="auth-profile-label">Choose your colors</div>
                 <div class="onboarding-color-grid">
-                    <div class="onboarding-color-option selected" id="onboardingColor-midnight" onclick="selectOnboardingColor('midnight')">
-                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#1a2140,#d4af37);"></div>
-                        <div class="onboarding-color-name">Midnight Dawn</div>
+                    <div class="onboarding-color-option selected" id="onboardingColor-sage" onclick="selectOnboardingColor('sage')">
+                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#232a25,#9cbd96);"></div>
+                        <div class="onboarding-color-name">Sage & Cream</div>
                     </div>
-                    <div class="onboarding-color-option" id="onboardingColor-emerald" onclick="selectOnboardingColor('emerald')">
-                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#123832,#d4af37);"></div>
-                        <div class="onboarding-color-name">Emerald Ascent</div>
+                    <div class="onboarding-color-option" id="onboardingColor-blue" onclick="selectOnboardingColor('blue')">
+                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#222a30,#96b6d0);"></div>
+                        <div class="onboarding-color-name">Dusty Blue</div>
                     </div>
-                    <div class="onboarding-color-option" id="onboardingColor-slate" onclick="selectOnboardingColor('slate')">
-                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#22272e,#d4af37);"></div>
-                        <div class="onboarding-color-name">Slate & Gold</div>
+                    <div class="onboarding-color-option" id="onboardingColor-gold" onclick="selectOnboardingColor('gold')">
+                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#5a1f1f,#d4af37);"></div>
+                        <div class="onboarding-color-name">Classic Gold</div>
                     </div>
                     <div class="onboarding-color-option" id="onboardingColor-rose" onclick="selectOnboardingColor('rose')">
-                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#4a1f35,#d4af37);"></div>
-                        <div class="onboarding-color-name">Rose Quartz</div>
+                        <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#2e1a2e,#e6b8c2);"></div>
+                        <div class="onboarding-color-name">Rose Gold</div>
                     </div>
                 </div>
             </div>
@@ -4040,21 +4111,21 @@
         <div class="modal-box" style="max-width:460px;">
             <div class="modal-title">🎨 Choose Your Colors</div>
             <div class="onboarding-color-grid">
-                <div class="onboarding-color-option" id="ctmColor-midnight" onclick="selectColorThemeModalOption('midnight')">
-                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#1a2140,#d4af37);"></div>
-                    <div class="onboarding-color-name">Midnight Dawn</div>
+                <div class="onboarding-color-option" id="ctmColor-sage" onclick="selectColorThemeModalOption('sage')">
+                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#232a25,#9cbd96);"></div>
+                    <div class="onboarding-color-name">Sage & Cream</div>
                 </div>
-                <div class="onboarding-color-option" id="ctmColor-emerald" onclick="selectColorThemeModalOption('emerald')">
-                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#123832,#d4af37);"></div>
-                    <div class="onboarding-color-name">Emerald Ascent</div>
+                <div class="onboarding-color-option" id="ctmColor-blue" onclick="selectColorThemeModalOption('blue')">
+                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#222a30,#96b6d0);"></div>
+                    <div class="onboarding-color-name">Dusty Blue</div>
                 </div>
-                <div class="onboarding-color-option" id="ctmColor-slate" onclick="selectColorThemeModalOption('slate')">
-                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#22272e,#d4af37);"></div>
-                    <div class="onboarding-color-name">Slate & Gold</div>
+                <div class="onboarding-color-option" id="ctmColor-gold" onclick="selectColorThemeModalOption('gold')">
+                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#5a1f1f,#d4af37);"></div>
+                    <div class="onboarding-color-name">Classic Gold</div>
                 </div>
                 <div class="onboarding-color-option" id="ctmColor-rose" onclick="selectColorThemeModalOption('rose')">
-                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#4a1f35,#d4af37);"></div>
-                    <div class="onboarding-color-name">Rose Quartz</div>
+                    <div class="onboarding-color-swatch" style="background:linear-gradient(135deg,#2e1a2e,#e6b8c2);"></div>
+                    <div class="onboarding-color-name">Rose Gold</div>
                 </div>
             </div>
             <div class="modal-buttons" style="margin-top:20px;">
@@ -4216,27 +4287,34 @@
         let lastActivePillar = null; // the pillar the user most recently interacted with
         let spouseTipIndex = null; // manual index for clicking through Time with Lashawn ideas
 
-        // Per-user color themes. Mahdi: blood red / regal green. Lashawn: aubergine / dusty rose.
-        // Any other account picks (and can later change) one of these color themes at sign-up.
-        const DEFAULT_COLOR_THEMES = {
-            midnight: { name: 'Midnight Dawn', dark: '#1a2140', light: '#33407a', divider: '#3a4470', dividerLight: '#4a5aa0' },
-            emerald: { name: 'Emerald Ascent', dark: '#123832', light: '#2f6e5e', divider: '#2f6e5e', dividerLight: '#4a9683' },
-            slate: { name: 'Slate & Gold', dark: '#22272e', light: '#4a5568', divider: '#3d434c', dividerLight: '#6b7686' },
-            rose: { name: 'Rose Quartz', dark: '#4a1f35', light: '#a3617a', divider: '#6b3550', dividerLight: '#c084a0' }
+        // Palettes — every account (Mahdi, Lashawn, and any public sign-up alike) picks one of
+        // these, backing the CSS variables defined at the top of <style> (body[data-palette]).
+        // 'dark'/'accent' here are only used to draw the little preview swatch; the actual
+        // theming is driven entirely by the CSS variables, not these JS values.
+        const PALETTES = {
+            gold: { name: 'Classic Gold', dark: '#5a1f1f', accent: '#d4af37' },
+            rose: { name: 'Rose Gold', dark: '#2e1a2e', accent: '#e6b8c2' },
+            sage: { name: 'Sage & Cream', dark: '#232a25', accent: '#9cbd96' },
+            blue: { name: 'Dusty Blue', dark: '#222a30', accent: '#96b6d0' }
         };
-        function colorThemeFor(uid) {
-            const key = (uid && data[uid] && data[uid].colorTheme) || 'midnight';
-            return DEFAULT_COLOR_THEMES[key] || DEFAULT_COLOR_THEMES.midnight;
-        }
-        // Keeps the body's color-<key> class in sync with this account's chosen theme.
-        // Only meaningful for non-Mahdi/Lashawn accounts — their look is fixed.
-        function applyColorThemeClass(uid) {
-            document.body.classList.remove('color-midnight', 'color-emerald', 'color-slate', 'color-rose');
+        // Resolves an account's palette, including a one-time best-effort migration from the
+        // older (and only ever partially wired) per-account colorTheme/midnight-emerald-slate-rose
+        // system this replaces, and sensible defaults for accounts that predate palettes entirely.
+        function paletteFor(uid) {
+            if (!uid || !data[uid]) return 'sage';
+            if (data[uid].palette && PALETTES[data[uid].palette]) return data[uid].palette;
+            const legacy = data[uid].colorTheme;
+            const legacyMap = { midnight: 'blue', emerald: 'sage', slate: 'blue', rose: 'rose' };
+            if (legacy && legacyMap[legacy]) return legacyMap[legacy];
             const pt = profileTypeFor(uid);
-            if (pt !== 'mahdi' && pt !== 'lashawn') {
-                const key = (data[uid] && data[uid].colorTheme && DEFAULT_COLOR_THEMES[data[uid].colorTheme]) ? data[uid].colorTheme : 'midnight';
-                document.body.classList.add('color-' + key);
-            }
+            if (pt === 'mahdi') return 'gold';
+            if (pt === 'lashawn') return 'rose';
+            return 'sage';
+        }
+        // Keeps body[data-palette] in sync with this account's chosen palette — every account
+        // now goes through this, not just non-Mahdi/Lashawn ones.
+        function applyPaletteClass(uid) {
+            document.body.setAttribute('data-palette', paletteFor(uid));
         }
         // Every post-auth path (fresh sign-up, log in, persisted session restore) funnels
         // through here — Mahdi/Lashawn's claimed accounts go straight into their journey since
@@ -4251,15 +4329,15 @@
             }
         }
 
-        // ===== ONBOARDING (first-time welcome + color choice for any non-Mahdi/Lashawn account) =====
+        // ===== ONBOARDING (first-time welcome + palette choice for any non-Mahdi/Lashawn account) =====
         let onboardingUid = null;
-        let onboardingSelectedColor = 'midnight';
+        let onboardingSelectedPalette = 'sage';
 
         function showOnboarding(uid) {
             onboardingUid = uid;
-            onboardingSelectedColor = (data[uid] && data[uid].colorTheme) || 'midnight';
+            onboardingSelectedPalette = paletteFor(uid);
             document.querySelectorAll('.onboarding-color-option').forEach(function(el) {
-                el.classList.toggle('selected', el.id === 'onboardingColor-' + onboardingSelectedColor);
+                el.classList.toggle('selected', el.id === 'onboardingColor-' + onboardingSelectedPalette);
             });
             const name = (data[uid] && data[uid].displayName) ? ', ' + data[uid].displayName : '';
             document.getElementById('onboardingName').textContent = name;
@@ -4270,7 +4348,7 @@
         }
 
         function selectOnboardingColor(key) {
-            onboardingSelectedColor = key;
+            onboardingSelectedPalette = key;
             document.querySelectorAll('.onboarding-color-option').forEach(function(el) {
                 el.classList.toggle('selected', el.id === 'onboardingColor-' + key);
             });
@@ -4280,7 +4358,7 @@
             const uid = onboardingUid;
             if (!uid) return;
             if (!data[uid]) data[uid] = {};
-            data[uid].colorTheme = onboardingSelectedColor;
+            data[uid].palette = onboardingSelectedPalette;
             data[uid].onboarded = true;
             data[uid].lastModified = Date.now();
             try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
@@ -4289,14 +4367,12 @@
             login(uid);
         }
 
-        // Change your color theme anytime after onboarding (⚙ More → Personalize).
+        // Change your palette anytime (⚙ More → Personalize) — open to every account, including
+        // Mahdi/Lashawn, who can switch away from their original Classic Gold / Rose Gold look
+        // if they want to, same as anyone else.
         function openColorThemeModal() {
             if (!currentUser || !data[currentUser]) return;
-            if (profileTypeFor(currentUser) === 'mahdi' || profileTypeFor(currentUser) === 'lashawn') {
-                alert('Your colors are already set as part of your journey.');
-                return;
-            }
-            const current = data[currentUser].colorTheme || 'midnight';
+            const current = paletteFor(currentUser);
             document.querySelectorAll('#colorThemeModal .onboarding-color-option').forEach(function(el) {
                 el.classList.toggle('selected', el.id === 'ctmColor-' + current);
             });
@@ -4304,33 +4380,27 @@
         }
 
         function selectColorThemeModalOption(key) {
-            data[currentUser].colorTheme = key;
+            data[currentUser].palette = key;
             data[currentUser].lastModified = Date.now();
             try { localStorage.setItem('75data', JSON.stringify(data)); } catch (e) {}
             scheduleCloudAutoSave();
             document.querySelectorAll('#colorThemeModal .onboarding-color-option').forEach(function(el) {
                 el.classList.toggle('selected', el.id === 'ctmColor-' + key);
             });
-            applyColorThemeClass(currentUser);
+            applyPaletteClass(currentUser);
             applyThemeMode();
             setTimeout(function() {
                 document.getElementById('colorThemeModal').style.display = 'none';
             }, 350);
         }
-        function getThemeColors() {
-            const isLight = document.body.classList.contains('light-mode');
-            if (currentProfileType === 'lashawn') {
-                return isLight ? '#7d5260' : '#2e1a2e'; // dusty rose-mauve / deep plum
-            }
-            if (currentProfileType !== 'mahdi') {
-                const theme = colorThemeFor(currentUser);
-                return isLight ? theme.light : theme.dark;
-            }
-            return isLight ? '#1b4d2f' : '#5a1f1f'; // regal green / blood red
-        }
 
+        // The page background now comes from the --bg variable (set by body[data-palette] and
+        // .light-mode in <style>), but #appScreen/.container/body have historically had their
+        // background painted inline by JS rather than a plain CSS rule — read the current
+        // resolved --bg value and keep applying it the same way, so this stays a one-line change
+        // instead of also auditing whether every surface truly falls back to the stylesheet.
         function applyThemeBackground() {
-            const bg = getThemeColors();
+            const bg = getComputedStyle(document.body).getPropertyValue('--bg').trim();
             const appScreen = document.getElementById('appScreen');
             if (appScreen) appScreen.style.background = bg;
             document.body.style.background = bg;
@@ -5898,7 +5968,7 @@
                 document.body.classList.remove('lashawn-theme');
                 document.body.classList.remove('default-theme');
             }
-            applyColorThemeClass(uid);
+            applyPaletteClass(uid);
         }
 
         function login(user) {
@@ -8248,8 +8318,13 @@
             // one and is waiting for a partner to redeem it).
             if (typeof data[u].partnerUid === 'undefined') data[u].partnerUid = null;
             if (typeof data[u].inviteCode === 'undefined') data[u].inviteCode = null;
-            // Which color theme a non-Mahdi/Lashawn account chose at onboarding (or since).
-            if (!data[u].colorTheme) data[u].colorTheme = 'midnight';
+            // Which palette this account uses (gold/rose/sage/blue — see PALETTES), chosen at
+            // onboarding or since via ⚙ More → Personalize. paletteFor() also migrates any
+            // older colorTheme value (the previous, only partially-wired midnight/emerald/
+            // slate/rose system) the first time this runs for an account that still has one;
+            // data[u].colorTheme itself is left alone (not reused or re-defaulted) since it's
+            // now legacy data, not something new code should read.
+            if (!data[u].palette || !PALETTES[data[u].palette]) data[u].palette = paletteFor(u);
             // Has this account completed the post-sign-up onboarding (name/theme) yet?
             if (typeof data[u].onboarded === 'undefined') data[u].onboarded = false;
             // Running job-application list (Job Apps item) — persists across the whole

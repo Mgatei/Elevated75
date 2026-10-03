@@ -45,8 +45,11 @@ now a multi-tenant app anyone can sign up for, with optional partner pairing.
     (see §6). Drives which pillar set, companion avatar, and journey title an
     account gets — **never index `pillars`/`COMPANIONS` by a raw UID**, always go
     through `profileTypeFor(uid)` / `pillarsFor(uid)` / `companionFor(uid)`.
-  - `colorTheme`: chosen at onboarding (non-Mahdi/Lashawn accounts), e.g. `'midnight'`.
-  - `onboarded`: whether the post-sign-up name/theme flow has been completed.
+  - `palette`: `'gold'` | `'rose'` | `'sage'` | `'blue'` — every account's chosen
+    color palette (see §6a), not just non-Mahdi/Lashawn ones. `colorTheme` is an
+    older, now-unused key from a previous, only partially-wired theming attempt;
+    `paletteFor()` migrates it once but new code should never read it directly.
+  - `onboarded`: whether the post-sign-up name/palette flow has been completed.
   - `teamMode`, `lastTeamResetAt`, `lastSeenPartnerResetAt`: mutual opt-in linked
     resets between paired partners (see §6).
   - `partnerUid`, `inviteCode`: invite-code pairing state.
@@ -92,7 +95,7 @@ now a multi-tenant app anyone can sign up for, with optional partner pairing.
   a disruptive live subscription. Manual "☁️ Load from Cloud" still exists too.
   ⚠️ `startCloudListener_DISABLED()`'s inline key-migration block is a separate,
   older copy of what `ensureUserKeys()` does and has drifted out of sync (missing
-  `teamMode`, `partnerUid`, `colorTheme`, etc.) — if it's ever re-enabled, replace
+  `teamMode`, `partnerUid`, `palette`, `focusItems`, etc.) — if it's ever re-enabled, replace
   that block with a call to `ensureUserKeys()` instead of hand-copying keys again.
 
 ## 5. The sync "golden rule" (do NOT break this)
@@ -123,8 +126,21 @@ UID or literal name — resolve with `pillarsFor(uid)`:
 - **`default`** (every other sign-up): Nourish [Water, Healthy Choices] · Faith
   [Prayer, Faith and Mind, Journal] · Physical [Physical Activity] ·
   Professional [Prof Dev] · Love [Love and Connection] — a generic, shorter
-  starter set. New accounts also pick a `colorTheme` (e.g. "Midnight Dawn") at
-  onboarding, since the app no longer defaults everyone into Mahdi/Lashawn's look.
+  starter set. New accounts also pick a `palette` (see §6a) at onboarding, since
+  the app no longer defaults everyone into Mahdi/Lashawn's look.
+
+**Today's Focus**: a small, customizable subset of item keys
+(`data[u].focusItems`, format `"Pillar-Item"`, defaults to one item per pillar)
+shown in its own card at the top of the daily view, above the full pillar list —
+the achievable daily bar, vs. the full list underneath which stays available but
+isn't required. Its checkboxes are separate DOM elements (`focus-<itemKey>`) from
+the real pillar checkboxes over the same data key; `syncFocusCheckbox()` /
+`tryCheckFocus()` keep the two in sync whichever one you check. Customizable via
+`openCustomizeFocus()` (⚙ More menu). **`weekCompletion()`** — which feeds the
+two-strikes weekly-accountability auto-reset (§ WEEK_THRESHOLD, 70%) — counts
+only these focus items, not every checkbox across every pillar, so that
+threshold is actually achievable rather than demanding near-total daily
+completion.
 
 **Identity claiming**: `profileType` is set once at sign-up via
 `claimProfileSlot(uid, profileType)`, which atomically claims `slots/mahdi` or
@@ -155,6 +171,54 @@ Behaviors:
 - **Customize Layout** (⚙ More menu) lets each user reorder + hide sections; the
   daily view uses `getOrderedPillars(user)`, never the raw `pillars` array. The raw
   array still drives stats so hidden sections' data is never lost.
+
+## 6a. Color palettes (`data[u].palette`)
+
+Every account — Mahdi, Lashawn, and any public sign-up alike — has a palette:
+`'gold'` (Classic Gold, Mahdi's original look), `'rose'` (Rose Gold, Lashawn's
+original look), `'sage'` (Sage & Cream, the default for new sign-ups), or
+`'blue'` (Dusty Blue). `PALETTES` holds display metadata; `paletteFor(uid)`
+resolves an account's actual palette (falling back through a legacy
+`colorTheme` migration, then a profileType-based default, then `'sage'`).
+
+- **Mechanism**: CSS custom properties on `body[data-palette="X"]`, combined
+  with the existing `.light-mode` class for that palette's light variant —
+  `--bg`, `--card`, `--card-2`, `--ink`, `--ink-soft`, `--accent`,
+  `--accent-rgb` (comma-separated triplet, for composing
+  `rgba(var(--accent-rgb), 0.X)`), `--accent-deep`, `--accent-bg`, `--line`,
+  `--verse`. `:root` holds the Classic Gold dark values as a pre-JS fallback.
+  **`applyPaletteClass(uid)`** sets the `data-palette` attribute; called from
+  `applyAccountThemeClasses()` on every login/session-restore.
+- **`.light-mode` was redefined by this system** — it used to swap to an
+  unrelated hardcoded dark-green background; it now means "this palette's
+  light/pale variant," genuinely light for the first time.
+- **`applyThemeBackground()`/`getThemeColors()`-equivalent**: `#appScreen`,
+  `.container`, and `body` have their background painted inline by JS (always
+  have, independent of the plain CSS `body { background: var(--bg) }` rule) —
+  that JS now just reads the resolved `--bg` via `getComputedStyle` instead of
+  branching on hardcoded hex per profileType. If you add a new top-level
+  surface that needs the palette background, make sure it's covered by one of
+  these, not a hardcoded color.
+- **Not fully exhaustive**: the ~400 gold/rose hex and `rgba(212,175,55,…)` /
+  `rgba(230,184,194,…)` occurrences that *were* the dominant accent color are
+  converted to `var(--accent)`/`var(--accent-rgb)`, plus the body/login-screen
+  background and the two modal-gradient surfaces (`var(--card)`/`var(--card-2)`).
+  Secondary/muted text (the various `#888`/`#ccc`/`#ddd` grays) and one-off
+  decorative colors (Spiritual Spin wheel segments, status red/green, the
+  Nourish-pinned-widget blue/pink accent) are intentionally **not**
+  palette-driven — they're neutral or functional, not "theme" colors.
+- **Supersedes** the older `colorTheme`/`body.color-midnight|emerald|slate|rose`
+  system, which was only ever wired into a handful of CSS rules (dividers,
+  mostly) and never did a full re-skin. Those old CSS rules are still present
+  but now unreachable dead code (nothing sets those classes anymore) — safe to
+  delete in a future cleanup pass, not urgent.
+- **Settings UI**: ⚙ More → 🎨 Change Color Theme (`openColorThemeModal()`) is
+  open to every account now, including Mahdi/Lashawn (previously blocked with
+  an alert) — picking a swatch calls `selectColorThemeModalOption(key)`, which
+  updates `data[currentUser].palette`, re-applies `data-palette`, and re-runs
+  `applyThemeMode()` so the whole app recolors immediately. Onboarding
+  (`showOnboarding`/`completeOnboarding`) uses the same palette list for
+  first-time choice on non-Mahdi/Lashawn sign-ups.
 
 ## 7. REQUIRED validation after EVERY edit
 
@@ -199,6 +263,10 @@ it's out of date and only kept for reference. Grep for an existing key like
 - `profileTypeFor(uid)` / `pillarsFor(uid)` / `companionFor(uid)` — resolve an
   account's identity-dependent data; always go through these, never index
   `pillars`/`COMPANIONS` by a raw UID.
+- `paletteFor(uid)` / `applyPaletteClass(uid)` — resolve + apply an account's
+  color palette (§6a); same never-index-directly rule applies to `PALETTES`.
+- `openCustomizeFocus()` / `syncFocusCheckbox()` / `tryCheckFocus()` — Today's
+  Focus (§6).
 - `claimProfileSlot(uid, profileType)` — one-time `mahdi`/`lashawn` identity claim.
 - `migrateLegacyIdentity(uid, profileType)` — copies old name-keyed local/cloud
   data into a newly-authenticated Mahdi/Lashawn UID.
@@ -225,6 +293,9 @@ it's out of date and only kept for reference. Grep for an existing key like
 - `startCloudListener_DISABLED()` — kept intentionally as reference; not called.
 - The old `if (item === 'Progress Photo')` render block — never fires now that
   Progress Photo is an optional camera button inside Physical Activity.
+- `body.default-theme.color-midnight|emerald|slate|rose`-scoped CSS rules
+  (dividers/borders, ~49 lines) — nothing sets those classes anymore since the
+  palette system (§6a) replaced them; unreachable, harmless.
 
 ## 11. Release checklist (tell the user every time)
 
