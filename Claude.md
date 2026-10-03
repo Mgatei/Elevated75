@@ -1,4 +1,4 @@
-# CLAUDE.md — Elevated (75-Day Couples Transformation Tracker)
+# CLAUDE.md — Elevated (77-Day Couples Transformation Tracker)
 
 Guidance for Claude Code (or any AI/dev) working on this project.
 
@@ -7,11 +7,13 @@ Guidance for Claude Code (or any AI/dev) working on this project.
 ## 1. What this project is
 
 A **single self-contained HTML file** that is a faith-centered daily habit tracker
-over a 75-day journey. Originally built for one married couple (Mahdi & Lashawn),
-now a multi-tenant app anyone can sign up for, with optional partner pairing.
+over a 77-day journey (was 75 days; extended — see §6b). Originally built for one
+married couple (Mahdi & Lashawn), now a multi-tenant app anyone can sign up for,
+with optional partner pairing.
 
 - **Main file:** `index.html` (identical copy kept as `75-days-luxury-tracker.html`,
-  which is now stale relative to `index.html` — update both together or drop it).
+  which is now stale relative to `index.html` and also misnamed since the journey
+  length changed — update both together or drop it).
 - **Size:** ~9,700 lines. All CSS, JavaScript, SVG avatars, and Firebase config
   live INSIDE this one file. There are no build steps, no bundler, no external
   source files it depends on.
@@ -219,6 +221,41 @@ resolves an account's actual palette (falling back through a legacy
   `applyThemeMode()` so the whole app recolors immediately. Onboarding
   (`showOnboarding`/`completeOnboarding`) uses the same palette list for
   first-time choice on non-Mahdi/Lashawn sign-ups.
+
+## 6b. Daily Meditations (`MEDITATIONS`) and the 77-day journey length
+
+- **`MEDITATIONS[dayNumber]`** (1-77) holds `{ day, week, verse: {text, ref},
+  meaning, carry }` for every day of the journey — a verse with faithful
+  commentary ("What it means") and a concrete application ("How to carry it
+  today"), organized into 11 themed weeks (Identity, Surrender, Presence,
+  Discipline as Worship, Rest & Sabbath, Forgiveness, Stewardship, Community &
+  Marriage, Perseverance, Calling, Integration). This is the full content — see
+  git history for the source plan if extending it further.
+- `render()` looks up `MEDITATIONS[activeOffset + 1]` and renders it into the
+  `#verseOfDay` / `#quoteOfDay` boxes, **replacing** the old randomly-seeded
+  `VERSES`/`WISDOM_QUOTES`/`WISDOM_QUOTES_HER` content for any in-range day.
+  Those arrays are kept only as a fallback for a day number outside 1-77
+  (shouldn't normally happen on a 77-day journey, but covers edge cases like a
+  mid-journey start-date change) — don't delete them.
+- **The journey was extended from 75 to 77 days** to exactly match this
+  content (77 = 11 even weeks of 7; the old 75-day length made the last week a
+  5-day partial week, which this fixed as a side effect — see the `LEVELS`
+  array's Week 11 entry, now "Days 71–77" instead of "Days 71–75"). This
+  touched ~40 scattered literal `75`/`74` references across the file (day
+  counters, `getTodayOffset()`'s clamp, `weekCompletion()`'s loop bound, the
+  journey end-date calculation, date-picker population, export/reset text,
+  etc.) — if you ever need to change the journey length again, grep for `/ 75`,
+  `< 75`, `> 74`, `+ 74`, and `of 75` as a starting point, and be careful to
+  skip unrelated matches (the `elevated-75-tracker` Firebase project id, the
+  `'75data'` localStorage key — neither should ever change, each would be a
+  breaking/destructive change — and the many `0.75`/`75%` completion-percentage
+  thresholds like "Strong Days (75%+)", which are a different `75` entirely and
+  intentionally untouched).
+- `.verse-text` was hardcoded `color: #ffffff` (invisible against the new pale
+  light-mode palettes added in the theming work) — fixed to `var(--ink)` as
+  part of this change, since the Meditation card made the bug immediately
+  obvious. If you notice other hardcoded `#ffffff`/`#000`-ish colors that
+  predate the palette system, they likely have the same latent bug.
 
 ## 7. REQUIRED validation after EVERY edit
 
